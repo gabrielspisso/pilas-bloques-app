@@ -7,6 +7,7 @@ import { CreatorSubHeader } from "./EditorSubHeader/CreatorSubHeader";
 import { useTranslation } from "react-i18next";
 import { DiscardChallengeButton } from "./ActionButtons/DiscardChallengeButton";
 import { EmberPreviewButton } from "./ActionButtons/EmberPreviewButton";
+import { currentEmberSignals, shouldShowEmberPreview } from "./ActionButtons/emberPreview";
 import { PreviewButton } from "./ActionButtons/PreviewButton";
 import { BetaBadge } from "../BetaBadge";
 import { useThemeContext } from "../../../theme/ThemeContext";
@@ -30,7 +31,8 @@ export const CreatorEditor = () => {
 
   const challengeExists = LocalStorage.getCreatorChallenge()
 
-  const shouldShow = process.env.NODE_ENV !== 'production'
+  // Development only, and hidden unless asked for (?ember=1 or localStorage PB_SHOW_EMBER=1).
+  const shouldShow = shouldShowEmberPreview(currentEmberSignals())
 
   const [mode, setMode] = useCreatorMode()
 

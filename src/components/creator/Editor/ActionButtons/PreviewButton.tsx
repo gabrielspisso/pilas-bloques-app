@@ -5,7 +5,7 @@ import { Visibility } from "@mui/icons-material";
 export const PreviewButton = () => {
 
     return <Link to="/creador/ver">
-            <StyledCreatorActionButton startIcon={<Visibility/>} nametag='preview'/>
+            <StyledCreatorActionButton startIcon={<Visibility/>} nametag='preview' iconOnlyOnSmallScreen />
         </Link>
 
 }

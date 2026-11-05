@@ -29,17 +29,17 @@ type CreatorModeSwitchProps = { mode: CreatorMode, onChange: (mode: CreatorMode)
 export const CreatorModeSwitch = ({ mode, onChange }: CreatorModeSwitchProps) => {
     const { t } = useTranslation('creator')
     const { isSmallScreen } = useThemeContext()
-    const short = isSmallScreen ? 'Short' : ''
 
     return <ToggleButtonGroup exclusive value={mode} color="primary" size={isSmallScreen ? 'small' : 'medium'}
         aria-label={t('editor.mode.label')!} data-testid="creator-mode-switch"
         onChange={(_, value) => { if (isCreatorMode(value)) onChange(value) }}
-        sx={{ backgroundColor: 'background.paper', '& .MuiToggleButton-root': { textTransform: 'none', fontWeight: 700, gap: 0.5, minHeight: 44, paddingX: isSmallScreen ? 1 : 2, whiteSpace: 'nowrap' } }}>
-        <ToggleButton value="editor" data-testid="creator-mode-editor">
-            <Edit fontSize="small" aria-hidden />{t(`editor.mode.editor${short}`)}
+        sx={{ backgroundColor: 'background.paper', flexShrink: 0, '& .MuiToggleButton-root': { textTransform: 'none', fontWeight: 700, gap: 0.5, minHeight: 44, minWidth: 44, paddingX: isSmallScreen ? 0 : 2, whiteSpace: 'nowrap' } }}>
+        {/* Small screens: icons only (the label stays as accessible name and tooltip) so the bar fits in 390 px. */}
+        <ToggleButton value="editor" data-testid="creator-mode-editor" aria-label={isSmallScreen ? t('editor.mode.editor')! : undefined} title={isSmallScreen ? t('editor.mode.editor')! : undefined}>
+            <Edit fontSize="small" aria-hidden />{!isSmallScreen && t('editor.mode.editor')}
         </ToggleButton>
-        <ToggleButton value="test" data-testid="creator-mode-test">
-            <PlayCircle fontSize="small" aria-hidden />{t(`editor.mode.test${short}`)}
+        <ToggleButton value="test" data-testid="creator-mode-test" aria-label={isSmallScreen ? t('editor.mode.test')! : undefined} title={isSmallScreen ? t('editor.mode.test')! : undefined}>
+            <PlayCircle fontSize="small" aria-hidden />{!isSmallScreen && t('editor.mode.test')}
         </ToggleButton>
     </ToggleButtonGroup>
 }
