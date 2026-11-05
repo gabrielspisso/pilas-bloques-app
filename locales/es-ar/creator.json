@@ -262,7 +262,12 @@
 			"cell": "Fila {{row}}, columna {{column}}: {{content}}",
 			"empty": "vacía",
 			"tools": "Herramientas",
-			"putObjectNamed": "Añadir {{object}}"
+			"putObjectNamed": "Añadir {{object}}",
+			"zoomGroup": "Zoom del tablero",
+			"zoomIn": "Acercar el tablero",
+			"zoomOut": "Alejar el tablero",
+			"zoomReset": "Restablecer el zoom",
+			"zoomLevel": "Zoom del tablero: {{percent}} %"
 		},
 		"mode": {
 			"label": "Modo del creador",

@@ -56,6 +56,11 @@ type SceneDragContextType = {
     /** A tap / Enter on a cell with the Move tool: pick, drop or move (see moveToolTap). */
     moveTap: (position: Position) => void
     cancelMove: () => void
+    /**
+     * Abandons the press in progress (a second finger started a pinch): nothing more is painted or
+     * moved, and the click that may follow is ignored. A paint stroke keeps what it already painted.
+     */
+    cancelGesture: () => void
 }
 
 export const SceneDragContext = React.createContext<SceneDragContextType>({
@@ -65,7 +70,8 @@ export const SceneDragContext = React.createContext<SceneDragContextType>({
     shouldIgnoreClick: () => false,
     moveSelection: null,
     moveTap: () => { },
-    cancelMove: () => { }
+    cancelMove: () => { },
+    cancelGesture: () => { }
 })
 
 export const useSceneDrag = () => useContext(SceneDragContext)
@@ -256,13 +262,19 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
         return ignore
     }
 
+    const cancelGesture = () => {
+        if (!gesture.current) return
+        finish()
+        ignoreNextClick.current = true
+    }
+
     const startToolDrag = (event: React.PointerEvent, tool: string, image: string) => {
         if (!isPrimaryButton(event) || tool === MOVE_TOOL) return
         ignoreNextClick.current = false
         listen({ kind: 'tool', piece: tool, image, startX: event.clientX, startY: event.clientY, active: false, over: null, touch: isTouch(event) })
     }
 
-    return <SceneDragContext.Provider value={{ drag, startToolDrag, startCellDrag, shouldIgnoreClick, moveSelection, moveTap, cancelMove: () => setMoveSelection(null) }}>
+    return <SceneDragContext.Provider value={{ drag, startToolDrag, startCellDrag, shouldIgnoreClick, moveSelection, moveTap, cancelMove: () => setMoveSelection(null), cancelGesture }}>
         {children}
         {drag && drag.kind !== 'paint' && <DragGhost drag={drag} />}
     </SceneDragContext.Provider>

@@ -262,7 +262,12 @@
 			"cell": "Linha {{row}}, coluna {{column}}: {{content}}",
 			"empty": "vazia",
 			"tools": "Ferramentas",
-			"putObjectNamed": "Adicionar {{object}}"
+			"putObjectNamed": "Adicionar {{object}}",
+			"zoomGroup": "Zoom do tabuleiro",
+			"zoomIn": "Aproximar o tabuleiro",
+			"zoomOut": "Afastar o tabuleiro",
+			"zoomReset": "Redefinir o zoom",
+			"zoomLevel": "Zoom do tabuleiro: {{percent}} %"
 		},
 		"mode": {
 			"label": "Modo do criador",

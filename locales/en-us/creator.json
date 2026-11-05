@@ -262,7 +262,12 @@
 			"cell": "Row {{row}}, column {{column}}: {{content}}",
 			"empty": "empty",
 			"tools": "Tools",
-			"putObjectNamed": "Add {{object}}"
+			"putObjectNamed": "Add {{object}}",
+			"zoomGroup": "Board zoom",
+			"zoomIn": "Zoom in on the board",
+			"zoomOut": "Zoom out of the board",
+			"zoomReset": "Reset zoom",
+			"zoomLevel": "Board zoom: {{percent}} %"
 		},
 		"mode": {
 			"label": "Creator mode",

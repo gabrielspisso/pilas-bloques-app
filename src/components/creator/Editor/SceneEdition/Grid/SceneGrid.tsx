@@ -4,7 +4,9 @@ import { SceneType, SerializedChallenge, defaultChallenge } from "../../../../se
 import { LocalStorage } from "../../../../../localStorage"
 import styles from "./grid.module.css"
 import { SceneCell } from "./SceneCell"
-import { useContext, CSSProperties, useEffect, useRef, useState } from "react"
+import { useContext, CSSProperties, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { anchoredScrollDelta, distance, midpoint, panScroll, pinchZoom, Point, wheelZoom, zoomedCellSize } from "./boardZoom"
+import { BoardZoom, useBoardZoom } from "./useBoardZoom"
 import { CreatorContext } from "../../CreatorContext"
 import { CELL_COLUMN_ATTRIBUTE, CELL_ROW_ATTRIBUTE, SCENE_GRID_ATTRIBUTE, useSceneDrag } from "../SceneDrag"
 import { Position } from "./SceneCell"
@@ -41,11 +43,15 @@ const useAvailableSpace = (ref: React.RefObject<HTMLElement>): AvailableSpace | 
 /**
  * Square cells as big as the measured space allows (computeCellSize), as an explicit pixel width:
  * cells are flex: 1 with aspect-ratio 1, so each one is width / columns on both sides.
+ * The visual zoom multiplies that size (a real layout size: hit testing keeps working); the
+ * container scrolls (pans) when the zoomed board doesn't fit.
  */
-export const fluidGridStyle = (space: AvailableSpace | null, rows: number, columns: number): CSSProperties => {
-    const cellSize = space ? computeCellSize(space.width, space.height, rows, columns) : null
-    return cellSize === null ? { width: '100%' } : { width: `${cellSize * columns}px` }
+export const fluidGridStyle = (space: AvailableSpace | null, rows: number, columns: number, zoom = 1): CSSProperties => {
+    const cellSize = zoomedCellSize(space ? computeCellSize(space.width, space.height, rows, columns) : null, zoom)
+    return cellSize === null ? { width: `${Math.round(100 * zoom)}%` } : { width: `${cellSize * columns}px` }
 }
+
+const touchPoint = (touch: Touch): Point => ({ x: touch.clientX, y: touch.clientY })
 
 const KEY_MOVES: Record<string, Position> = {
     ArrowUp: { row: -1, column: 0 },
@@ -54,29 +60,33 @@ const KEY_MOVES: Record<string, Position> = {
     ArrowRight: { row: 0, column: 1 }
 }
 
-export const SceneGrid = () => {
+export const SceneGrid = (props: { boardZoom?: BoardZoom }) => {
     const { currentMap, setCurrentMap, selectedTool, index } = useContext(CreatorContext)
     const { t } = useTranslation('creator', { useSuspense: false }) // the board must render even before translations load
     const { theme } = useThemeContext()
-    const { moveSelection, moveTap, cancelMove } = useSceneDrag()
+    const { moveSelection, moveTap, cancelMove, cancelGesture } = useSceneDrag()
     const moveMode = selectedTool === MOVE_TOOL
+    const ownZoom = useBoardZoom()
+    const boardZoom = props.boardZoom ?? ownZoom
 
     const storageChallenge = LocalStorage.getCreatorChallenge()
     const challenge: SerializedChallenge = storageChallenge ? storageChallenge : defaultChallenge('Duba')
 
     const sceneType: SceneType = challenge.scene.type
 
-    const containerRef = useRef<HTMLDivElement>(null)
+    const containerRef = boardZoom.viewportRef
     const space = useAvailableSpace(containerRef)
-    const gridStyle = fluidGridStyle(space, currentMap.length, currentMap[0]?.length || 1)
+    const gridStyle = fluidGridStyle(space, currentMap.length, currentMap[0]?.length || 1, boardZoom.zoom)
 
     // Keyboard: one Tab stop (roving tabindex), arrows move, Enter/Space place the selected tool, Delete erases.
     const rows = currentMap.length
     const columns = currentMap[0]?.length || 1
     const [focused, setFocused] = useState<Position>({ row: 0, column: 0 })
     const active = { row: Math.min(focused.row, rows - 1), column: Math.min(focused.column, columns - 1) }
-    const gridRef = useRef<HTMLDivElement>(null)
+    const gridRef = boardZoom.gridRef
     const refocus = useRef(false)
+
+    useBoardGestures(boardZoom, cancelGesture)
 
     useEffect(() => {
         // Cells remount when their content changes, so focus is restored after keyboard edits/moves.
@@ -125,8 +135,9 @@ export const SceneGrid = () => {
         if (!samePosition(position, active)) setFocused(position)
     }
 
-    // The viewport scrolls inside when even the minimum cell size does not fit (never the page).
-    return <Box ref={containerRef} className={styles['board-viewport']} data-testid="board-viewport">
+    // The viewport scrolls inside when even the minimum cell size does not fit, or when zoomed (never the page).
+    return <Box ref={containerRef} className={styles['board-viewport']} data-testid="board-viewport" data-zoom={boardZoom.zoom}
+        onPointerDown={event => startPan(event, containerRef.current)}>
         <Stack justifyContent='flex-start' className={styles.grid} data-testid="dummy-test-scene-grid" {...{ [SCENE_GRID_ATTRIBUTE]: true }}
             ref={gridRef}
             role="grid"
@@ -152,4 +163,103 @@ export const SceneGrid = () => {
                 </Stack>)}
         </Stack>
     </Box>
+}
+
+/**
+ * Zoom gestures on the board viewport (native listeners, non passive so they can prevent the page zoom):
+ * - Ctrl/Cmd + wheel (also trackpad pinch) zooms around the pointer; a plain wheel scrolls as usual.
+ * - Two fingers: pinch zooms around their center and moving them pans. The second finger cancels the
+ *   press of the first one, so no piece is painted or moved by accident.
+ * One finger keeps the native scroll (a piece drag starts only after holding still, see TOUCH_HOLD_MS).
+ * After a zoom change, the board point that was under the anchor is scrolled back under it.
+ */
+const useBoardGestures = (boardZoom: BoardZoom, cancelGesture: () => void) => {
+    const latest = useRef({ boardZoom, cancelGesture })
+    latest.current = { boardZoom, cancelGesture }
+    const { zoom, viewportRef, gridRef, pendingAnchor } = boardZoom
+
+    useLayoutEffect(() => {
+        const anchor = pendingAnchor.current
+        pendingAnchor.current = null
+        const viewport = viewportRef.current
+        const grid = gridRef.current
+        if (!anchor || !viewport || !grid) return
+        const rect = grid.getBoundingClientRect()
+        viewport.scrollLeft += anchoredScrollDelta(anchor.fx, rect.left, rect.width, anchor.x)
+        viewport.scrollTop += anchoredScrollDelta(anchor.fy, rect.top, rect.height, anchor.y)
+    }, [zoom, viewportRef, gridRef, pendingAnchor])
+
+    useEffect(() => {
+        const viewport = viewportRef.current
+        if (!viewport) return
+        let pinch: { startDistance: number, startZoom: number, lastCenter: Point } | null = null
+
+        const onWheel = (event: WheelEvent) => {
+            if (!event.ctrlKey && !event.metaKey) return
+            event.preventDefault()
+            const { zoom, zoomTo } = latest.current.boardZoom
+            zoomTo(wheelZoom(zoom, event.deltaY, event.deltaMode), { x: event.clientX, y: event.clientY })
+        }
+        const onTouchStart = (event: TouchEvent) => {
+            if (event.touches.length < 2) return
+            event.preventDefault()
+            latest.current.cancelGesture()
+            const a = touchPoint(event.touches[0])
+            const b = touchPoint(event.touches[1])
+            pinch = { startDistance: distance(a, b), startZoom: latest.current.boardZoom.zoom, lastCenter: midpoint(a, b) }
+        }
+        const onTouchMove = (event: TouchEvent) => {
+            if (!pinch || event.touches.length < 2) return
+            event.preventDefault()
+            const a = touchPoint(event.touches[0])
+            const b = touchPoint(event.touches[1])
+            const center = midpoint(a, b)
+            const panned = panScroll({ x: viewport.scrollLeft, y: viewport.scrollTop }, pinch.lastCenter, center)
+            viewport.scrollLeft = panned.x
+            viewport.scrollTop = panned.y
+            pinch.lastCenter = center
+            latest.current.boardZoom.zoomTo(pinchZoom(pinch.startZoom, pinch.startDistance, distance(a, b)), center)
+        }
+        const onTouchEnd = (event: TouchEvent) => { if (event.touches.length < 2) pinch = null }
+
+        viewport.addEventListener('wheel', onWheel, { passive: false })
+        viewport.addEventListener('touchstart', onTouchStart, { passive: false })
+        viewport.addEventListener('touchmove', onTouchMove, { passive: false })
+        viewport.addEventListener('touchend', onTouchEnd)
+        viewport.addEventListener('touchcancel', onTouchEnd)
+        return () => {
+            viewport.removeEventListener('wheel', onWheel)
+            viewport.removeEventListener('touchstart', onTouchStart)
+            viewport.removeEventListener('touchmove', onTouchMove)
+            viewport.removeEventListener('touchend', onTouchEnd)
+            viewport.removeEventListener('touchcancel', onTouchEnd)
+        }
+    }, [viewportRef])
+}
+
+/**
+ * Mouse panning: dragging with the middle button anywhere on the board, or with the main button on
+ * the empty area around the cells (pressing a cell keeps painting / moving pieces as before).
+ */
+const startPan = (event: React.PointerEvent, viewport: HTMLElement | null) => {
+    if (!viewport || event.pointerType === 'touch') return
+    const onCell = !!(event.target as HTMLElement).closest?.(`[${CELL_ROW_ATTRIBUTE}]`)
+    const middle = event.button === 1
+    if (!middle && !(event.button === 0 && !onCell)) return
+    event.preventDefault()
+    const start = { x: event.clientX, y: event.clientY }
+    const startScroll = { x: viewport.scrollLeft, y: viewport.scrollTop }
+    const onMove = (move: PointerEvent) => {
+        const next = panScroll(startScroll, start, { x: move.clientX, y: move.clientY })
+        viewport.scrollLeft = next.x
+        viewport.scrollTop = next.y
+    }
+    const stop = () => {
+        window.removeEventListener('pointermove', onMove)
+        window.removeEventListener('pointerup', stop)
+        window.removeEventListener('pointercancel', stop)
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', stop)
+    window.addEventListener('pointercancel', stop)
 }

@@ -8,6 +8,7 @@ import { CreatorContext } from "../../CreatorContext";
 import { IconButtonTooltip } from "../IconButtonTooltip";
 import { SceneGrid } from "./SceneGrid";
 import { MissionCard } from "../MissionCard";
+import { useBoardZoom, ZoomControls } from "./useBoardZoom";
 
 /**
  * Board card: one compact row (previous, "Scenario n / N", next), the mission and the board.
@@ -20,18 +21,24 @@ export const Scenarios = () => {
 
     const { t } = useTranslation('creator');
 
+    const boardZoom = useBoardZoom()
+
     const isFirstMap = index === 0
     const isLastMap = index === maps.length - 1
 
     return <PBCard sx={{ flex: '1 1 0', minWidth: 0, minHeight: 0, alignItems: 'stretch' }} data-testid="scenarios-card">
         <Stack width='100%' alignItems='center' sx={{ minHeight: 0, minWidth: 0 }}>
-            <Stack direction='row' width='100%' alignItems='center' justifyContent='center' gap={1} sx={{ paddingTop: theme.spacing(0.5) }}>
-                <IconButtonTooltip sx={{ visibility: isFirstMap ? "hidden" : "visible" }} disabled={isFirstMap} onClick={() => setIndex(index - 1)} icon={<KeyboardArrowLeft />} tooltip={t("mapNavigation.prev")} />
-                <Typography variant="subtitle1" fontWeight="bold">{`${isSmallScreen ? '' : t("mapNavigation.multipleInitialScenarios") + ':'} ${index + 1} / ${maps.length}`}</Typography>
-                <IconButtonTooltip sx={{ visibility: isLastMap ? "hidden" : "visible" }} disabled={isLastMap} onClick={() => setIndex(index + 1)} icon={<KeyboardArrowRight />} tooltip={t("mapNavigation.next")} />
+            {/* One row: the scenario navigation (centered in the free space) and the zoom buttons at the end. */}
+            <Stack direction='row' width='100%' alignItems='center' sx={{ paddingTop: theme.spacing(0.5), minWidth: 0 }}>
+                <Stack direction='row' alignItems='center' justifyContent='center' gap={isSmallScreen ? 0 : 1} sx={{ flex: '1 1 0', minWidth: 0 }}>
+                    <IconButtonTooltip sx={{ visibility: isFirstMap ? "hidden" : "visible" }} disabled={isFirstMap} onClick={() => setIndex(index - 1)} icon={<KeyboardArrowLeft />} tooltip={t("mapNavigation.prev")} />
+                    <Typography variant="subtitle1" fontWeight="bold" noWrap>{`${isSmallScreen ? '' : t("mapNavigation.multipleInitialScenarios") + ':'} ${index + 1} / ${maps.length}`}</Typography>
+                    <IconButtonTooltip sx={{ visibility: isLastMap ? "hidden" : "visible" }} disabled={isLastMap} onClick={() => setIndex(index + 1)} icon={<KeyboardArrowRight />} tooltip={t("mapNavigation.next")} />
+                </Stack>
+                <ZoomControls boardZoom={boardZoom} />
             </Stack>
             <MissionCard />
-            <SceneGrid />
+            <SceneGrid boardZoom={boardZoom} />
             {maps.length > 1 && <MobileStepper
                 variant="dots"
                 style={{ padding: theme.spacing(0.5), backgroundColor: 'transparent' }}
