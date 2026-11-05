@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { SceneMap, defaultChallenge } from '../../serializedChallenge';
+import { Assesments, SceneMap, Toolbox, defaultChallenge } from '../../serializedChallenge';
 import { LocalStorage } from '../../../localStorage';
 import { ACTOR } from './SceneEdition/mapUtils';
 
@@ -22,6 +22,10 @@ export type CreatorContextType = {
     setStatement: (statement: string) => void
     clue?: string
     setClue: (clue?: string) => void
+    toolbox: Toolbox
+    setToolbox: (toolbox: Toolbox) => void
+    assesments?: Assesments
+    setAssesments: (assesments?: Assesments) => void
     undo: () => void
     redo: () => void
     canUndo: boolean
@@ -48,6 +52,10 @@ const defaultCreatorContext = {
     setStatement: () => { },
     clue: undefined,
     setClue: () => { },
+    toolbox: { blocks: [] },
+    setToolbox: () => { },
+    assesments: undefined,
+    setAssesments: () => { },
     undo: () => { },
     redo: () => { },
     canUndo: false,
@@ -80,6 +88,8 @@ export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ childre
     const [title, setTitle] = useState(challenge.title)
     const [statement, setStatement] = useState(challenge.statement.description)
     const [clue, setClue] = useState<string | undefined>(challenge.statement.clue)
+    const [toolbox, setToolbox] = useState<Toolbox>(challenge.toolbox)
+    const [assesments, setAssesments] = useState<Assesments | undefined>(challenge.assesments)
 
     const [past, setPast] = useState<HistoryEntry[]>([])
     const [future, setFuture] = useState<HistoryEntry[]>([])
@@ -148,12 +158,15 @@ export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ childre
         challenge.title = title
         challenge.statement = { ...challenge.statement, description: statement, clue }
         if (clue === undefined) delete challenge.statement.clue
+        challenge.toolbox = toolbox
+        if (assesments) challenge.assesments = assesments
+        else delete challenge.assesments
         LocalStorage.saveCreatorChallenge(challenge)
-    }, [maps, challenge, sharedId, title, statement, clue])
+    }, [maps, challenge, sharedId, title, statement, clue, toolbox, assesments])
 
     return (
         <CreatorContext.Provider value={{
-            selectedTool, setSelectedTool, currentMap, setCurrentMap, sharedId: sharedId, setSharedId: setSharedId, title, setTitle, statement, setStatement, clue, setClue, index, setIndex, setMaps, maps,
+            selectedTool, setSelectedTool, currentMap, setCurrentMap, sharedId: sharedId, setSharedId: setSharedId, title, setTitle, statement, setStatement, clue, setClue, toolbox, setToolbox, assesments, setAssesments, index, setIndex, setMaps, maps,
             undo, redo, canUndo: past.length > 0, canRedo: future.length > 0, beginHistoryBatch, endHistoryBatch
         }}>
             {children}

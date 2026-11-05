@@ -8,14 +8,14 @@ import { ChecklistItem, missingItems, publishChecklist } from "../../../publishC
 import { CreatorContext } from "../../CreatorContext"
 
 /**
- * Live requirements to publish. Title, statement and maps come from CreatorContext (LocalStorage
- * is only written after render); the toolbox is saved straight to LocalStorage by ToolBoxEditor.
+ * Live requirements to publish. Title, statement, maps and toolbox come from CreatorContext
+ * (LocalStorage is only written after render).
  */
 export const usePublishChecklist = () => {
-    const { title, statement, maps } = useContext(CreatorContext)
+    const { title, statement, maps, toolbox } = useContext(CreatorContext)
     const { t } = useTranslation('creator')
     const saved = LocalStorage.getCreatorChallenge()
-    const challenge = saved && { ...saved, title, statement: { ...saved.statement, description: statement }, scene: { ...saved.scene, maps } }
+    const challenge = saved && { ...saved, title, statement: { ...saved.statement, description: statement }, scene: { ...saved.scene, maps }, toolbox }
     const items = publishChecklist(challenge, {
         title: t('statement.defaultTitle')!,
         statement: t('statement.defaultDescription')!
