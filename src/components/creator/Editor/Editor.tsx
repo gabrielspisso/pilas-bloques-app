@@ -19,6 +19,7 @@ import { AutosaveStatus } from "./EditorSubHeader/AutosaveStatus";
 import { CreatorThemeProvider, creatorPageBackground } from "../../../theme/creatorTheme";
 import { CreatorMode, CreatorModeSwitch, SIDE_BY_SIDE_MIN_WIDTH, useCreatorMode } from "./CreatorMode";
 import { CreatorLivePreview } from "./CreatorLivePreview";
+import { CreatorTutorial } from "./CreatorTutorial";
 
 export const CreatorEditor = () => {
   const { darkModeEnabled } = useThemeContext()
@@ -47,6 +48,7 @@ export const CreatorEditor = () => {
               SubHeader={<EditorSubHeader viewButton={shouldShow ? <EmberPreviewButton /> : undefined} reactViewButton={<PreviewButton />} showHistory
                 modeSwitch={<CreatorModeSwitch mode={mode} onChange={setMode} />} />} />
             <CreatorWorkspace mode={mode} />
+            <CreatorTutorial />
           </Stack>
           </CreatorThemeProvider>
         </CreatorContextProvider>

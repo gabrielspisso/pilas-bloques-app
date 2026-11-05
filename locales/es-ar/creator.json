@@ -271,6 +271,27 @@
 			"noVersions": "Todavía no hay versiones",
 			"restore": "Volver a la versión de las {{time}}",
 			"untitled": "Sin título"
+		},
+		"tutorial": {
+			"progress": "Paso {{current}} de {{total}}",
+			"skip": "Saltar",
+			"back": "Atrás",
+			"next": "Siguiente",
+			"done": "¡A crear!",
+			"steps": {
+				"board": {
+					"title": "1. Armá el escenario",
+					"text": "Arrastrá piezas desde la paleta hasta el tablero, o tocá una pieza y después una casilla. Arrastrando por varias casillas las pintás de una vez."
+				},
+				"texts": {
+					"title": "2. Contá de qué se trata",
+					"text": "Escribí el título y el enunciado arriba del tablero. Después elegí los bloques que va a tener el alumno y, si querés, las evaluaciones."
+				},
+				"try": {
+					"title": "3. Probalo y compartilo",
+					"text": "Elegí \"Editor con prueba\" para jugar el desafío mientras lo armás. Cuando la lista de publicación esté completa, compartilo o descargalo."
+				}
+			}
 		}
 	},
 	"title": {

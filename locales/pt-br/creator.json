@@ -271,6 +271,27 @@
 			"noVersions": "Ainda não há versões",
 			"restore": "Voltar à versão das {{time}}",
 			"untitled": "Sem título"
+		},
+		"tutorial": {
+			"progress": "Passo {{current}} de {{total}}",
+			"skip": "Pular",
+			"back": "Voltar",
+			"next": "Próximo",
+			"done": "Vamos criar!",
+			"steps": {
+				"board": {
+					"title": "1. Monte o cenário",
+					"text": "Arraste peças da paleta para o tabuleiro, ou toque numa peça e depois numa casa. Arrastando por várias casas você as pinta de uma vez."
+				},
+				"texts": {
+					"title": "2. Conte do que se trata",
+					"text": "Escreva o título e o enunciado acima do tabuleiro. Depois escolha os blocos que o aluno terá e, se quiser, as avaliações."
+				},
+				"try": {
+					"title": "3. Teste e compartilhe",
+					"text": "Escolha \"Editor com teste\" para jogar o desafio enquanto o monta. Quando a lista de publicação estiver completa, compartilhe ou baixe."
+				}
+			}
 		}
 	},
 	"title": {

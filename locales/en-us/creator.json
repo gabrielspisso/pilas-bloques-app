@@ -271,6 +271,27 @@
 			"noVersions": "No versions yet",
 			"restore": "Go back to the {{time}} version",
 			"untitled": "Untitled"
+		},
+		"tutorial": {
+			"progress": "Step {{current}} of {{total}}",
+			"skip": "Skip",
+			"back": "Back",
+			"next": "Next",
+			"done": "Let's create!",
+			"steps": {
+				"board": {
+					"title": "1. Build the scene",
+					"text": "Drag pieces from the palette onto the board, or tap a piece and then a cell. Drag across several cells to paint them at once."
+				},
+				"texts": {
+					"title": "2. Say what it is about",
+					"text": "Write the title and the statement above the board. Then choose the blocks the student will have and, if you like, the assessments."
+				},
+				"try": {
+					"title": "3. Try it and share it",
+					"text": "Choose \"Editor with preview\" to play the challenge while you build it. When the publish checklist is complete, share it or download it."
+				}
+			}
 		}
 	},
 	"title": {

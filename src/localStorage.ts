@@ -18,6 +18,7 @@ export namespace LocalStorage {
     const PB_MULANG_SUGGESTIONS_ENABLED = 'PB_MULANG_SUGGESTIONS_ENABLED'
     const PB_CREATOR_MODE = 'PB_CREATOR_MODE'
     const PB_CREATOR_VERSIONS = 'PB_CREATOR_VERSIONS'
+    const PB_CREATOR_TUTORIAL_DONE = 'PB_CREATOR_TUTORIAL_DONE'
 
     const remove = (key: string) => { localStorage.removeItem(key) }
 
@@ -40,6 +41,8 @@ export namespace LocalStorage {
         return Array.isArray(versions) ? versions : []
     }
     export const saveCreatorVersions = (versions: CreatorVersion[]) => _save(PB_CREATOR_VERSIONS, versions)
+    export const getCreatorTutorialDone = (): boolean => _get(PB_CREATOR_TUTORIAL_DONE) === true
+    export const saveCreatorTutorialDone = () => _save(PB_CREATOR_TUTORIAL_DONE, true)
 
     export const saveSelectedLocale = (selectedLocale: LanguageCode) => _save(PB_SELECTED_LOCALE, selectedLocale)
     export const saveImportedChallenge = (importedChallenge: EmberExecutableChallenge) => _save(PB_IMPORTED_CHALLENGE, importedChallenge)
