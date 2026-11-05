@@ -90,4 +90,55 @@ describe('Scene drag and drop', () => {
             expect(savedMap()[2][0]).toBe('L')
         })
     })
+
+    describe('painting by dragging', () => {
+        const stroke = (cells: Element[]) => {
+            pointer('pointerdown', cells[0], 0, 0)
+            cells.forEach((c, i) => {
+                over(c)
+                pointer('pointermove', window, 40 * (i + 1), 0)
+            })
+            pointer('pointerup', window, 40 * cells.length, 0)
+        }
+
+        test('a stroke over three cells changes the three, and one undo reverts them together', async () => {
+            await renderEditor(OBSTACLE)
+            const before = JSON.stringify(savedMap())
+            stroke([cellAt(1, 0), cellAt(1, 1), cellAt(1, 2)])
+            expect(savedMap()[1]).toEqual([OBSTACLE, OBSTACLE, OBSTACLE])
+
+            fireEvent.keyDown(window, { key: 'z', ctrlKey: true })
+            expect(JSON.stringify(savedMap())).toBe(before)
+            expect(screen.getByTestId('undo-button')).toBeDisabled()
+
+            fireEvent.keyDown(window, { key: 'z', ctrlKey: true, shiftKey: true })
+            expect(savedMap()[1]).toEqual([OBSTACLE, OBSTACLE, OBSTACLE])
+        })
+
+        test('works with objects and fills cells skipped by a fast stroke', async () => {
+            await renderEditor('L')
+            pointer('pointerdown', cellAt(2, 0), 0, 0)
+            over(cellAt(2, 2))
+            pointer('pointermove', window, 200, 0)
+            pointer('pointerup', window, 200, 0)
+            expect(savedMap()[2]).toEqual(['L', 'L', 'L'])
+        })
+
+        test('keeps the actor rules: the actor at the initial cell is not painted over', async () => {
+            await renderEditor(OBSTACLE)
+            stroke([cellAt(1, 0), cellAt(0, 0), cellAt(0, 1)])
+            expect(savedMap()[0]).toEqual([ACTOR, OBSTACLE, '-'])
+            expect(savedMap()[1][0]).toBe(OBSTACLE)
+        })
+
+        test('the click fired after a stroke is ignored, the next one works', async () => {
+            await renderEditor('L')
+            stroke([cellAt(1, 0), cellAt(1, 1)])
+            fireEvent.click(cellAt(2, 2)) // the click browsers may fire at the end of the stroke
+            expect(savedMap()[2][2]).toBe('-')
+            fireEvent.click(cellAt(2, 2))
+            expect(savedMap()[2][2]).toBe('L')
+        })
+    })
 })
+

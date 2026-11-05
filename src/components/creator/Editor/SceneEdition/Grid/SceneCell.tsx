@@ -21,7 +21,7 @@ export type Position = {
 export const SceneCell: React.FC<CellProps> = (props) => {
 
     const { selectedTool, currentMap, setCurrentMap } = useContext(CreatorContext)
-    const { drag } = useSceneDrag()
+    const { drag, startCellDrag, shouldIgnoreClick } = useSceneDrag()
     const { theme } = useThemeContext()
 
     const imagePath = `imagenes/sceneImages/${props.sceneType}`
@@ -36,6 +36,7 @@ export const SceneCell: React.FC<CellProps> = (props) => {
     const isDropTarget = samePosition(drag?.over, props.position)
 
     const handleClick = () => {
+        if (shouldIgnoreClick()) return // the click that follows a paint/move stroke
         setCurrentMap(applyTool(currentMap, selectedTool, props.position))
     }
 
@@ -51,6 +52,7 @@ export const SceneCell: React.FC<CellProps> = (props) => {
             boxShadow: isDropTarget ? `inset 0 0 0 999px ${alpha(theme.palette.success.main, 0.25)}` : undefined
         }}
         onDragStart={(e) => e.preventDefault()}
+        onPointerDown={(e) => startCellDrag(e, props.position, props.content)}
         onClick={handleClick}>
         {objectsInCell.map(obj =>
             <img

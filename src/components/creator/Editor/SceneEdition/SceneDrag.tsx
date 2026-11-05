@@ -1,8 +1,9 @@
 import { Portal } from "@mui/material"
 import React, { useContext, useEffect, useRef, useState } from "react"
 import { CreatorContext } from "../CreatorContext"
+import { SceneMap } from "../../../serializedChallenge"
 import { Position } from "./Grid/SceneCell"
-import { applyTool } from "./mapUtils"
+import { applyTool, samePosition } from "./mapUtils"
 
 /** Pointer movement (px) before a press becomes a drag. Below it, it's a regular tap/click. */
 export const DRAG_THRESHOLD_PX = 6
@@ -11,7 +12,7 @@ export const CELL_ROW_ATTRIBUTE = 'data-cell-row'
 export const CELL_COLUMN_ATTRIBUTE = 'data-cell-column'
 export const SCENE_GRID_ATTRIBUTE = 'data-scene-grid'
 
-type DragKind = 'tool'
+type DragKind = 'tool' | 'paint'
 
 type Gesture = {
     kind: DragKind
@@ -21,6 +22,9 @@ type Gesture = {
     startY: number
     active: boolean
     over: Position | null
+    from?: Position
+    lastCell?: Position
+    map?: SceneMap
 }
 
 export type DragView = {
@@ -34,11 +38,16 @@ export type DragView = {
 type SceneDragContextType = {
     drag: DragView | null
     startToolDrag: (event: React.PointerEvent, tool: string, image: string) => void
+    startCellDrag: (event: React.PointerEvent, position: Position, content: string) => void
+    /** True (once) right after a drag ended, so the click that browsers may fire afterwards is ignored. */
+    shouldIgnoreClick: () => boolean
 }
 
 export const SceneDragContext = React.createContext<SceneDragContextType>({
     drag: null,
-    startToolDrag: () => { }
+    startToolDrag: () => { },
+    startCellDrag: () => { },
+    shouldIgnoreClick: () => false
 })
 
 export const useSceneDrag = () => useContext(SceneDragContext)
@@ -63,6 +72,19 @@ export const cellAtPoint = (x: number, y: number): PointAnalysis => {
     }
 }
 
+/** Cells crossed by a straight line between two cells, so fast strokes don't skip any. */
+export const cellsBetween = (from: Position, to: Position): Position[] => {
+    const steps = Math.max(Math.abs(to.row - from.row), Math.abs(to.column - from.column))
+    const cells: Position[] = []
+    for (let step = 1; step <= steps; step++) {
+        cells.push({
+            row: Math.round(from.row + (to.row - from.row) * step / steps),
+            column: Math.round(from.column + (to.column - from.column) * step / steps)
+        })
+    }
+    return cells
+}
+
 const isPrimaryButton = (event: React.PointerEvent) => event.button === undefined || event.button === 0
 
 export const SceneDragProvider = ({ children }: { children: React.ReactNode }) => {
@@ -73,6 +95,7 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
     const gesture = useRef<Gesture | null>(null)
     const [drag, setDrag] = useState<DragView | null>(null)
     const listeners = useRef<(() => void) | null>(null)
+    const ignoreNextClick = useRef(false)
 
     const stopListening = () => {
         listeners.current?.()
@@ -82,6 +105,10 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
     useEffect(() => stopListening, [])
 
     const finish = () => {
+        if (gesture.current?.active) {
+            ignoreNextClick.current = true
+            if (gesture.current.kind === 'paint') latest.current.endHistoryBatch()
+        }
         gesture.current = null
         setDrag(null)
         stopListening()
@@ -94,15 +121,28 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
             const distance = Math.hypot(event.clientX - current.startX, event.clientY - current.startY)
             if (!(distance >= DRAG_THRESHOLD_PX)) return
             current.active = true
+            if (current.kind === 'paint') {
+                latest.current.beginHistoryBatch()
+                paint(current, [current.from!])
+            }
         }
         event.preventDefault?.()
         current.over = cellAtPoint(event.clientX, event.clientY).cell
+        if (current.kind === 'paint' && current.over && !samePosition(current.over, current.lastCell)) {
+            paint(current, cellsBetween(current.lastCell!, current.over))
+            current.lastCell = current.over
+        }
         setDrag({ kind: current.kind, image: current.image, x: event.clientX, y: event.clientY, over: current.over })
+    }
+
+    const paint = (current: Gesture, cells: Position[]) => {
+        current.map = cells.reduce((map, cell) => applyTool(map, current.piece, cell), current.map || latest.current.currentMap)
+        latest.current.setCurrentMap(current.map)
     }
 
     const onUp = (event: PointerEvent) => {
         const current = gesture.current
-        if (current?.active) {
+        if (current?.active && current.kind === 'tool') {
             const target = cellAtPoint(event.clientX, event.clientY).cell
             const { currentMap, setCurrentMap, setSelectedTool } = latest.current
             if (target) {
@@ -127,15 +167,32 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
         }
     }
 
+    const startCellDrag = (event: React.PointerEvent, position: Position, content: string) => {
+        if (!isPrimaryButton(event)) return
+        ignoreNextClick.current = false
+        gesture.current = {
+            kind: 'paint', piece: latest.current.selectedTool, image: '', startX: event.clientX, startY: event.clientY,
+            active: false, over: null, from: position, lastCell: position
+        }
+        listen()
+    }
+
+    const shouldIgnoreClick = () => {
+        const ignore = ignoreNextClick.current
+        ignoreNextClick.current = false
+        return ignore
+    }
+
     const startToolDrag = (event: React.PointerEvent, tool: string, image: string) => {
         if (!isPrimaryButton(event)) return
+        ignoreNextClick.current = false
         gesture.current = { kind: 'tool', piece: tool, image, startX: event.clientX, startY: event.clientY, active: false, over: null }
         listen()
     }
 
-    return <SceneDragContext.Provider value={{ drag, startToolDrag }}>
+    return <SceneDragContext.Provider value={{ drag, startToolDrag, startCellDrag, shouldIgnoreClick }}>
         {children}
-        {drag && <DragGhost drag={drag} />}
+        {drag && drag.kind !== 'paint' && <DragGhost drag={drag} />}
     </SceneDragContext.Provider>
 }
 
