@@ -4,6 +4,7 @@ import { PBCard } from "../../../../PBCard";
 import { ScenarioEditionButtons } from "./ScenarioEditionButtons";
 import { useThemeContext } from "../../../../../theme/ThemeContext";
 import { ToolBoxEditor } from "../../ChallengeDetailsEdition/ToolBoxEditor/ToolBoxEditor";
+import { AssessmentsEdition } from "../../ChallengeDetailsEdition/AssessmentsEdition";
 
 export const GridOptions = (props: StyleGridProps) => {
     const { theme } = useThemeContext()
@@ -18,6 +19,7 @@ export const GridOptions = (props: StyleGridProps) => {
                 </Stack>
             </PBCard>
                 <ToolBoxEditor/>
+                <AssessmentsEdition/>
             {/*<Button>Bloques iniciales</Button> Not in the MVP*/}
         </Stack>
     </>

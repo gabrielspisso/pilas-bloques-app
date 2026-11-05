@@ -258,5 +258,22 @@
 		"prev": "Previous",
 		"multipleInitialScenarios": "Initial scenarios"
 	},
-	"importedChallengedHeader": "Challenge created by the community"
+	"importedChallengedHeader": "Challenge created by the community",
+	"assessments": {
+		"button": "Assessments",
+		"title": "Challenge assessments",
+		"hint": "Choose what is checked in the student's program. When the challenge ends, the final dialog shows whether each one was met.",
+		"active_one": "{{count}} active",
+		"active_other": "{{count}} active",
+		"items": {
+			"itWorks": "It works (congratulate when solved)",
+			"simpleRepetition": "Use simple repetition",
+			"conditionalRepetition": "Use conditional repetition",
+			"conditionalAlternative": "Use conditional alternative",
+			"decomposition": "Decomposition into procedures"
+		},
+		"maxProgramLength": "Maximum program length",
+		"maxProgramLengthHelp": "Number of blocks per procedure (between {{min}} and {{max}}).",
+		"close": "Done"
+	}
 }

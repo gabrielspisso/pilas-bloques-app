@@ -258,5 +258,22 @@
 		"prev": "Anterior",
 		"multipleInitialScenarios": "Cenários iniciais"
 	},
-	"importedChallengedHeader": "Desafio criado pela comunidade"
+	"importedChallengedHeader": "Desafio criado pela comunidade",
+	"assessments": {
+		"button": "Avaliações",
+		"title": "Avaliações do desafio",
+		"hint": "Escolha o que é verificado no programa do aluno. Ao terminar o desafio, o diálogo final mostra se cada uma foi cumprida.",
+		"active_one": "{{count}} ativa",
+		"active_other": "{{count}} ativas",
+		"items": {
+			"itWorks": "Que funcione (parabenizar ao resolver)",
+			"simpleRepetition": "Usar repetição simples",
+			"conditionalRepetition": "Usar repetição condicional",
+			"conditionalAlternative": "Usar alternativa condicional",
+			"decomposition": "Decomposição em procedimentos"
+		},
+		"maxProgramLength": "Tamanho máximo do programa",
+		"maxProgramLengthHelp": "Quantidade de blocos por procedimento (entre {{min}} e {{max}}).",
+		"close": "Pronto"
+	}
 }

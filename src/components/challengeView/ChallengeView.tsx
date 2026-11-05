@@ -21,6 +21,7 @@ import { SolutionButtons } from "./SolutionButtons";
 import { MultipleScenariosButton } from "./SceneButtons/MultipleScenarios";
 import { MoreVert } from "@mui/icons-material";
 import { PilasBloquesApi } from "../../pbApi";
+import { assesmentsToGrading } from "../creator/assessments";
 
 export const serializedSceneToDescriptor = (scene: Scene) => {
   const mapToString = (map: SceneMap) => `"${JSON.stringify(map).replace(/"/g, '')}"`
@@ -44,8 +45,9 @@ export const ChallengeView = ({ path, height, serializedChallenge }: ChallengeVi
 
   const impChallenge: boolean = !!path?.includes("react-imported-challenge")
 
-  const serializedChallengeToChallenge = (sc: SerializedChallenge): Challenge => (
+  const serializedChallengeToChallenge = (sc: SerializedChallenge): Challenge & { maxProgramLength?: number } => (
     {
+      ...assesmentsToGrading(sc.assesments),
       sceneDescriptor: serializedSceneToDescriptor(sc.scene),
       toolboxBlockIds: sc.toolbox.blocks,
       toolboxStyle: sc.toolbox.categorized ? 'categorized' : 'noCategories',
