@@ -12,6 +12,7 @@ import { DialogSnackbar } from '../../../../dialogSnackbar/DialogSnackbar';
 import { useTranslation } from 'react-i18next';
 import { SerializedChallenge } from '../../../../serializedChallenge';
 import { DownloadButton } from '../DownloadButton';
+import { ExportImageButton } from '../ExportImageButton';
 import ReactGA from "react-ga4";
 import { PublishChecklist, usePublishChecklist } from './PublishChecklist';
 
@@ -43,11 +44,14 @@ export const ShareButtons = () => {
 
     return <>
         <PublishChecklist items={items} disabledReason={disabledReason} />
-        <Stack direction="row" justifyContent="space-between" alignItems='center'>
+        <Stack direction="row" justifyContent="space-between" alignItems='center' flexWrap='wrap' rowGap={1}>
             {// If the challenge has already been saved, show Save, else show Share, which saves for the first time.
                 sharedId ? <SaveButton disabledReason={disabledReason} /> : <ShareUrlButton disabledReason={disabledReason} />
             }
-            <DownloadButton />
+            <Stack direction="row" alignItems='center' flexWrap='wrap' rowGap={1}>
+                <DownloadButton />
+                <ExportImageButton />
+            </Stack>
         </Stack>
     </>
 }

@@ -175,7 +175,9 @@
 			"creator": "Seleccionar personaje",
 			"creatorShort": "Seleccionar",
 			"loadChallenge": "Abrir desafío creado",
-			"loadChallengeShort": "Abrir"
+			"loadChallengeShort": "Abrir",
+			"exportImage": "Exportar imagen",
+			"exportImageShort": "Imagen"
 		},
 		"editorHeader": "Editar desafío",
 		"previewModeHeader": "Ver desafío",
@@ -301,6 +303,15 @@
 					"text": "Elegí \"Editor con prueba\" para jugar el desafío mientras lo armás. Cuando la lista de publicación esté completa, compartilo o descargalo."
 				}
 			}
+		},
+		"exportImage": {
+			"title": "Exportar el tablero como imagen",
+			"scenario": "Se exporta el escenario que estás editando ({{scenario}} de {{total}}).",
+			"includeTexts": "Incluir el título y el enunciado debajo del tablero",
+			"export": "Exportar PNG",
+			"cancel": "Cancelar",
+			"error": "No se pudo generar la imagen en este navegador.",
+			"missingImages": "Algunas imágenes no se pudieron cargar: se dibujó un marcador en su lugar."
 		}
 	},
 	"title": {

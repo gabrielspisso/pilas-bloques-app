@@ -175,7 +175,9 @@
 			"creator": "Select character",
 			"creatorShort": "Select",
 			"loadChallenge": "Open a created challenge",
-			"loadChallengeShort": "Open"
+			"loadChallengeShort": "Open",
+			"exportImage": "Export image",
+			"exportImageShort": "Image"
 		},
 		"editorHeader": "Edit challenge",
 		"previewModeHeader": "Challenge preview",
@@ -301,6 +303,15 @@
 					"text": "Choose \"Editor with preview\" to play the challenge while you build it. When the publish checklist is complete, share it or download it."
 				}
 			}
+		},
+		"exportImage": {
+			"title": "Export the board as an image",
+			"scenario": "The scenario you are editing is exported ({{scenario}} of {{total}}).",
+			"includeTexts": "Include the title and the statement below the board",
+			"export": "Export PNG",
+			"cancel": "Cancel",
+			"error": "The image could not be created in this browser.",
+			"missingImages": "Some images could not be loaded: a placeholder was drawn instead."
 		}
 	},
 	"title": {
