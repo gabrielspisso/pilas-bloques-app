@@ -12,6 +12,7 @@ import { Carousel } from 'react-carousel3';
 import { StyledCreatorActionButton } from "./../Editor/ActionButtons/CreatorActionButton"
 import { LoadChallengeButton } from "./LoadChallenge"
 import { sceneGoals } from "../sceneGoals"
+import { TemplatesButton } from "./TemplatesButton"
 
 const baseUrlImage = 'imagenes/selection/'
 const baseObjectUrlImage = 'imagenes/sceneImages/'
@@ -251,6 +252,7 @@ return (
                 {actors.map(ActorImage)}
             </Carousel>
             <GoToCreatorButton/>        
+            <TemplatesButton type={actorSelected.actor.id} />
             <LoadChallengeButton />
         </Stack>     
         <ActorInfoCard/>

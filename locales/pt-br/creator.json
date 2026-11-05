@@ -95,6 +95,60 @@
 					"football": "Chutar as bolas de futebol."
 				}
 			}
+		},
+		"templatesButton": "Começar a partir de um modelo",
+		"templatesTitle": "Modelos de {{name}}",
+		"templatesHint": "Um desafio de exemplo para modificar como quiser.",
+		"templatesEmpty": "Começar vazio",
+		"templates": {
+			"litaSalad": {
+				"title": "Uma salada em linha",
+				"statement": "Ajude a Lita a pegar a alface e o tomate e preparar a salada."
+			},
+			"litaTomatoes": {
+				"title": "Muitos tomates",
+				"statement": "Lita tem que pegar todos os tomates. Você consegue sem repetir os mesmos blocos várias vezes?"
+			},
+			"dubaSteak": {
+				"title": "O churrasco do Duba",
+				"statement": "Leve o Duba até o churrasco e coma-o."
+			},
+			"dubaDetour": {
+				"title": "Um obstáculo no caminho",
+				"statement": "Há um obstáculo entre o Duba e o churrasco. Encontre um caminho para contorná-lo."
+			},
+			"chuyTrophy": {
+				"title": "O troféu do Chuy",
+				"statement": "Leve o Chuy até o troféu e pegue-o."
+			},
+			"chuyPingPong": {
+				"title": "Bolas de pingue-pongue",
+				"statement": "Chuy tem que quicar cada bola de pingue-pongue. Use a repetição."
+			},
+			"manicStar": {
+				"title": "Uma estrela para Manic",
+				"statement": "Leve Manic até a estrela e observe-a."
+			},
+			"manicSky": {
+				"title": "Noite de observação",
+				"statement": "Manic quer observar a estrela e depois o planeta."
+			},
+			"capyCans": {
+				"title": "Latas na margem",
+				"statement": "Capy tem que pegar todas as latas. Use a repetição."
+			},
+			"capyRecycle": {
+				"title": "Vamos reciclar",
+				"statement": "Ajude a Capy a pegar a lata e o papel."
+			},
+			"yvotyNight": {
+				"title": "Noite na mata",
+				"statement": "Yvoty tem que acordar o vaga-lume e fotografar a borboleta."
+			},
+			"yvotyPhone": {
+				"title": "O celular da Yvoty",
+				"statement": "Leve a Yvoty até o celular e desbloqueie-o."
+			}
 		}
 	},
 	"editor": {

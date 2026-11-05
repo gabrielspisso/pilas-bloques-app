@@ -95,6 +95,60 @@
 					"football": "Patear las pelotas de fútbol."
 				}
 			}
+		},
+		"templatesButton": "Empezar desde una plantilla",
+		"templatesTitle": "Plantillas de {{name}}",
+		"templatesHint": "Un desafío de ejemplo para modificar a tu gusto.",
+		"templatesEmpty": "Empezar vacío",
+		"templates": {
+			"litaSalad": {
+				"title": "Una ensalada en línea",
+				"statement": "Ayudá a Lita a juntar la lechuga y el tomate y a preparar la ensalada."
+			},
+			"litaTomatoes": {
+				"title": "Muchos tomates",
+				"statement": "Lita tiene que juntar todos los tomates. ¿Podés hacerlo sin repetir los mismos bloques una y otra vez?"
+			},
+			"dubaSteak": {
+				"title": "El churrasco de Duba",
+				"statement": "Llevá a Duba hasta el churrasco y comételo."
+			},
+			"dubaDetour": {
+				"title": "Un obstáculo en el camino",
+				"statement": "Hay un obstáculo entre Duba y el churrasco. Encontrá un camino para rodearlo."
+			},
+			"chuyTrophy": {
+				"title": "El trofeo de Chuy",
+				"statement": "Llevá a Chuy hasta el trofeo y recogelo."
+			},
+			"chuyPingPong": {
+				"title": "Pelotas de ping pong",
+				"statement": "Chuy tiene que hacer rebotar cada pelota de ping pong. Usá la repetición."
+			},
+			"manicStar": {
+				"title": "Una estrella para Manic",
+				"statement": "Llevá a Manic hasta la estrella y observala."
+			},
+			"manicSky": {
+				"title": "Noche de observación",
+				"statement": "Manic quiere observar la estrella y después el planeta."
+			},
+			"capyCans": {
+				"title": "Latas en la orilla",
+				"statement": "Capy tiene que recoger todas las latas. Usá la repetición."
+			},
+			"capyRecycle": {
+				"title": "A reciclar",
+				"statement": "Ayudá a Capy a recoger la lata y el papel."
+			},
+			"yvotyNight": {
+				"title": "Noche en la selva",
+				"statement": "Yvoty tiene que despertar a la luciérnaga y fotografiar a la mariposa."
+			},
+			"yvotyPhone": {
+				"title": "El celular de Yvoty",
+				"statement": "Llevá a Yvoty hasta el celular y desbloquealo."
+			}
 		}
 	},
 	"editor": {

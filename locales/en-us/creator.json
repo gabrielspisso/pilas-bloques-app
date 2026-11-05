@@ -95,6 +95,60 @@
 					"football": "Kick the football balls."
 				}
 			}
+		},
+		"templatesButton": "Start from a template",
+		"templatesTitle": "{{name}} templates",
+		"templatesHint": "A sample challenge to change as you like.",
+		"templatesEmpty": "Start empty",
+		"templates": {
+			"litaSalad": {
+				"title": "A salad in a row",
+				"statement": "Help Lita pick up the lettuce and the tomato and make the salad."
+			},
+			"litaTomatoes": {
+				"title": "Lots of tomatoes",
+				"statement": "Lita has to pick up all the tomatoes. Can you do it without repeating the same blocks over and over?"
+			},
+			"dubaSteak": {
+				"title": "Duba's steak",
+				"statement": "Take Duba to the steak and eat it."
+			},
+			"dubaDetour": {
+				"title": "An obstacle on the way",
+				"statement": "There is an obstacle between Duba and the steak. Find a way around it."
+			},
+			"chuyTrophy": {
+				"title": "Chuy's trophy",
+				"statement": "Take Chuy to the trophy and pick it up."
+			},
+			"chuyPingPong": {
+				"title": "Ping pong balls",
+				"statement": "Chuy has to bounce every ping pong ball. Use repetition."
+			},
+			"manicStar": {
+				"title": "A star for Manic",
+				"statement": "Take Manic to the star and observe it."
+			},
+			"manicSky": {
+				"title": "Stargazing night",
+				"statement": "Manic wants to observe the star and then the planet."
+			},
+			"capyCans": {
+				"title": "Cans on the shore",
+				"statement": "Capy has to pick up all the cans. Use repetition."
+			},
+			"capyRecycle": {
+				"title": "Let's recycle",
+				"statement": "Help Capy pick up the can and the paper."
+			},
+			"yvotyNight": {
+				"title": "Night in the jungle",
+				"statement": "Yvoty has to wake up the firefly and photograph the butterfly."
+			},
+			"yvotyPhone": {
+				"title": "Yvoty's phone",
+				"statement": "Take Yvoty to the phone and unlock it."
+			}
 		}
 	},
 	"editor": {
