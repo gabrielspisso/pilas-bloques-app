@@ -138,12 +138,19 @@
 			"intro": "{{actor}} has to:",
 			"empty": "No goals yet. Add objects to the board to build the mission.",
 			"count": "× {{count}}"
+		},
+		"header": {
+			"region": "Challenge title and statement",
+			"expand": "Show title and statement",
+			"collapse": "Hide title and statement"
 		}
 	},
 	"title": {
 		"title": "Write the challenge's title for ",
 		"button": "Write the title",
-		"input": "Title"
+		"input": "Title",
+		"helper": "A short name that tells what the challenge is about.",
+		"counter": "{{count}}/{{max}}"
 	},
 	"statement": {
 		"title": "Write the challenge's statement for ",
@@ -153,7 +160,10 @@
 		"includeClue": "Include a clue",
 		"defaultDescription": "Your **statement** will look like this...",
 		"defaultClue": "Your **clue** will look like this...",
-		"defaultTitle": "Write your challenge's title..."
+		"defaultTitle": "Write your challenge's title...",
+		"preview": "Preview",
+		"markdownHelp": "You can use Markdown: **bold**, *italics*, lists with -.",
+		"clueToggle": "Add a clue (optional)"
 	},
 	"tools": {
 		"putObstacle": "Add obstacle",

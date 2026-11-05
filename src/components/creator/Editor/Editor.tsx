@@ -1,4 +1,5 @@
-import { Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
+import { ChallengeHeaderEdition } from "./ChallengeDetailsEdition/ChallengeHeaderEdition";
 import { Header, HeaderText } from "../../header/Header";
 import { SceneEdition } from "./SceneEdition/SceneEdition";
 import { CreatorContextProvider } from "./CreatorContext";
@@ -39,8 +40,11 @@ export const CreatorEditor = () => {
           <Stack alignItems="center" height="inherit" sx={{ backgroundColor: creatorPageBackground(darkModeEnabled) }}>
             <Header CenterComponent={<HeaderText text={t("editor.editorHeader")} />}
               SubHeader={<EditorSubHeader viewButton={shouldShow ? <EmberPreviewButton /> : undefined} reactViewButton={<PreviewButton />} showHistory />} />
-            <Stack justifyContent="center" width="100%" sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
-              <SceneEdition />
+            <Stack width="100%" sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+              <ChallengeHeaderEdition />
+              <Box sx={{ flex: 1, minHeight: 360 }}>
+                <SceneEdition />
+              </Box>
             </Stack>
           </Stack>
           </CreatorThemeProvider>

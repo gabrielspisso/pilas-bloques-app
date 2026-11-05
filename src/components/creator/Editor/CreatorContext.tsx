@@ -16,6 +16,12 @@ export type CreatorContextType = {
     maps: SceneMap[];
     sharedId: string
     setSharedId: (id: string) => void
+    title: string
+    setTitle: (title: string) => void
+    statement: string
+    setStatement: (statement: string) => void
+    clue?: string
+    setClue: (clue?: string) => void
     undo: () => void
     redo: () => void
     canUndo: boolean
@@ -36,6 +42,12 @@ const defaultCreatorContext = {
     maps: defaultChallenge('Duba').scene.maps,
     sharedId: "",
     setSharedId: (id: string) => {},
+    title: '',
+    setTitle: () => { },
+    statement: '',
+    setStatement: () => { },
+    clue: undefined,
+    setClue: () => { },
     undo: () => { },
     redo: () => { },
     canUndo: false,
@@ -65,6 +77,9 @@ export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ childre
     const [maps, setMapsState] = useState(challenge.scene.maps)
     const [index, setIndex] = useState(defaultIndex)
     const [sharedId, setSharedId] = useState(challenge.sharedId || "")
+    const [title, setTitle] = useState(challenge.title)
+    const [statement, setStatement] = useState(challenge.statement.description)
+    const [clue, setClue] = useState<string | undefined>(challenge.statement.clue)
 
     const [past, setPast] = useState<HistoryEntry[]>([])
     const [future, setFuture] = useState<HistoryEntry[]>([])
@@ -130,12 +145,15 @@ export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ childre
     useEffect(() => {
         challenge.scene.maps = maps
         challenge.sharedId = sharedId
+        challenge.title = title
+        challenge.statement = { ...challenge.statement, description: statement, clue }
+        if (clue === undefined) delete challenge.statement.clue
         LocalStorage.saveCreatorChallenge(challenge)
-    }, [maps, challenge, sharedId])
+    }, [maps, challenge, sharedId, title, statement, clue])
 
     return (
         <CreatorContext.Provider value={{
-            selectedTool, setSelectedTool, currentMap, setCurrentMap, sharedId: sharedId, setSharedId: setSharedId, index, setIndex, setMaps, maps,
+            selectedTool, setSelectedTool, currentMap, setCurrentMap, sharedId: sharedId, setSharedId: setSharedId, title, setTitle, statement, setStatement, clue, setClue, index, setIndex, setMaps, maps,
             undo, redo, canUndo: past.length > 0, canRedo: future.length > 0, beginHistoryBatch, endHistoryBatch
         }}>
             {children}

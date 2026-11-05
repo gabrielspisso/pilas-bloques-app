@@ -138,12 +138,19 @@
 			"intro": "{{actor}} tiene que:",
 			"empty": "Todavía no hay objetivos. Agregá objetos al tablero para armar la misión.",
 			"count": "× {{count}}"
+		},
+		"header": {
+			"region": "Título y enunciado del desafío",
+			"expand": "Mostrar título y enunciado",
+			"collapse": "Ocultar título y enunciado"
 		}
 	},
 	"title": {
 		"title": "Escribí el título del desafío para ",
 		"button": "Escribir título",
-		"input": "Título"
+		"input": "Título",
+		"helper": "Un nombre corto que cuente de qué se trata el desafío.",
+		"counter": "{{count}}/{{max}}"
 	},
 	"statement": {
 		"title": "Escribí el enunciado del desafío para ",
@@ -153,7 +160,10 @@
 		"includeClue": "Incluir una pista",
 		"defaultDescription": "Así se verá tu **enunciado**...",
 		"defaultClue": "Así se verá tu **pista**...",
-		"defaultTitle": "Escribí tu título..."
+		"defaultTitle": "Escribí tu título...",
+		"preview": "Vista previa",
+		"markdownHelp": "Podés usar Markdown: **negrita**, *cursiva*, listas con -.",
+		"clueToggle": "Agregar una pista (opcional)"
 	},
 	"tools": {
 		"putObstacle": "Añadir obstáculo",
