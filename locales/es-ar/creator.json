@@ -311,7 +311,10 @@
 			"export": "Exportar PNG",
 			"cancel": "Cancelar",
 			"error": "No se pudo generar la imagen en este navegador.",
-			"missingImages": "Algunas imágenes no se pudieron cargar: se dibujó un marcador en su lugar."
+			"missingImages": "Algunas imágenes no se pudieron cargar: se dibujó un marcador en su lugar.",
+			"includeSolution": "Incluir la solución inicial (si el desafío tiene una)",
+			"embedded": "La imagen lleva guardado el desafío completo: se puede abrir con \"Importá tu desafío\".",
+			"metadataWarning": "Si la imagen se recomprime (por ejemplo, al mandarla por mensajería) o se le saca una captura de pantalla, se pierde el desafío guardado adentro y solo queda el dibujo."
 		}
 	},
 	"title": {

@@ -311,7 +311,10 @@
 			"export": "Exportar PNG",
 			"cancel": "Cancelar",
 			"error": "Não foi possível gerar a imagem neste navegador.",
-			"missingImages": "Algumas imagens não puderam ser carregadas: um marcador foi desenhado no lugar."
+			"missingImages": "Algumas imagens não puderam ser carregadas: um marcador foi desenhado no lugar.",
+			"includeSolution": "Incluir a solução inicial (se o desafio tiver uma)",
+			"embedded": "A imagem guarda o desafio completo: pode ser aberta com \"Importe seu desafio\".",
+			"metadataWarning": "Se a imagem for recomprimida (por exemplo, ao enviá-la por um aplicativo de mensagens) ou se tirarem uma captura de tela, o desafio guardado dentro dela se perde e fica só o desenho."
 		}
 	},
 	"title": {

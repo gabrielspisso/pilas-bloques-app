@@ -311,7 +311,10 @@
 			"export": "Export PNG",
 			"cancel": "Cancel",
 			"error": "The image could not be created in this browser.",
-			"missingImages": "Some images could not be loaded: a placeholder was drawn instead."
+			"missingImages": "Some images could not be loaded: a placeholder was drawn instead.",
+			"includeSolution": "Include the initial solution (if the challenge has one)",
+			"embedded": "The image keeps the whole challenge inside: it can be opened with \"Import your challenge\".",
+			"metadataWarning": "If the image is recompressed (for example, when sent through a messaging app) or someone takes a screenshot of it, the challenge stored inside is lost and only the picture remains."
 		}
 	},
 	"title": {

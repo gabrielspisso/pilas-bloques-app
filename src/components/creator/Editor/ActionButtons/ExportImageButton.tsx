@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Stack, Typography } from "@mui/material";
+import { Alert, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Stack, Typography } from "@mui/material";
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import { useTranslation } from "react-i18next";
 import ReactGA from "react-ga4";
@@ -10,12 +10,16 @@ import { defaultChallenge } from "../../../serializedChallenge";
 import { canvasToPngBytes, downloadBytes, drawBoardImage } from "../../drawBoardImage";
 import { imageFileName } from "../../boardImage";
 import { DialogSnackbar } from "../../../dialogSnackbar/DialogSnackbar";
+import { embedChallenge } from "../../challengePng";
 
-export type ExportOptions = { includeTexts: boolean }
+export type ExportOptions = { includeTexts: boolean, includeSolution: boolean }
 
-export const DEFAULT_EXPORT_OPTIONS: ExportOptions = { includeTexts: true }
+export const DEFAULT_EXPORT_OPTIONS: ExportOptions = { includeTexts: true, includeSolution: true }
 
-/** Button next to "Download": exports the scenario being edited as a sharp PNG. */
+/**
+ * Button next to "Download": exports the scenario being edited as a sharp PNG that also carries
+ * the whole challenge (tEXt chunk, see challengePng.ts), so "Import your challenge" can open it.
+ */
 export const ExportImageButton = () => {
     const [open, setOpen] = useState(false)
     return <>
@@ -42,7 +46,8 @@ const ExportImageDialog = ({ open, onClose }: { open: boolean, onClose: () => vo
                 ...(options.includeTexts ? { title, statement } : {}),
                 devicePixelRatio: window.devicePixelRatio
             })
-            const png = await canvasToPngBytes(canvas)
+            // LocalStorage holds the complete draft (the context writes it after every change).
+            const png = embedChallenge(await canvasToPngBytes(canvas), challenge, { includeSolution: options.includeSolution })
             downloadBytes(png, imageFileName(title), 'image/png')
             ReactGA.event({ category: "creator", action: "export_image" })
             if (failedImages.length) setMessage(t('editor.exportImage.missingImages')!)
@@ -66,6 +71,12 @@ const ExportImageDialog = ({ open, onClose }: { open: boolean, onClose: () => vo
                         control={<Checkbox data-testid="export-include-texts" checked={options.includeTexts}
                             onChange={(_, checked) => setOptions({ ...options, includeTexts: checked })} />}
                         label={t('editor.exportImage.includeTexts')} />
+                    <FormControlLabel
+                        control={<Checkbox data-testid="export-include-solution" checked={options.includeSolution}
+                            onChange={(_, checked) => setOptions({ ...options, includeSolution: checked })} />}
+                        label={t('editor.exportImage.includeSolution')} />
+                    <Typography variant="body2">{t('editor.exportImage.embedded')}</Typography>
+                    <Alert severity="warning" data-testid="export-image-warning">{t('editor.exportImage.metadataWarning')}</Alert>
                 </Stack>
             </DialogContent>
             <DialogActions>

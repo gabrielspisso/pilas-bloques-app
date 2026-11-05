@@ -6,14 +6,18 @@ import { defaultChallenge, SerializedChallenge } from '../../../../components/se
 import { CreatorContextProvider } from '../../../../components/creator/Editor/CreatorContext'
 import { ShareButtons } from '../../../../components/creator/Editor/ActionButtons/ShareChallenge/ShareModalButtons'
 import { computeImageLayout } from '../../../../components/creator/boardImage'
-import { CanvasMock, mockCanvas } from '../../../helpers/canvasMock'
+import { blobBytes, CanvasMock, mockCanvas } from '../../../helpers/canvasMock'
+import { MINIMAL_PNG } from '../../../helpers/minimalPng'
+import { extractChallenge } from '../../../../components/creator/challengePng'
+import { readChunks } from '../../../../utils/pngMetadata'
 
 const challenge: SerializedChallenge = {
     ...defaultChallenge('Lita'),
     title: 'Mi ensalada',
     statement: { description: 'Juntá **el tomate**' },
     scene: { type: 'Lita', maps: [[['A', 'T'], ['-', 'E']], [['A', 'L', 'O']]] },
-    toolbox: { blocks: ['MoverACasillaDerecha'] }
+    toolbox: { blocks: ['MoverACasillaDerecha'] },
+    predefinedSolution: '<xml></xml>'
 }
 
 const renderShare = (defaultIndex = 0) => render(<I18nextProvider i18n={i18n}>
@@ -35,7 +39,7 @@ describe('Export the board as an image', () => {
     beforeAll(() => i18n.loadNamespaces(['creator']))
     beforeEach(() => {
         LocalStorage.saveCreatorChallenge(challenge)
-        canvas = mockCanvas({ pngBytes: new Uint8Array([1, 2, 3]) })
+        canvas = mockCanvas({ pngBytes: MINIMAL_PNG })
         Object.defineProperty(window, 'devicePixelRatio', { value: 2, configurable: true })
     })
     afterEach(() => {
@@ -93,7 +97,7 @@ describe('Export the board as an image', () => {
 
     test('an image that fails to load is replaced by a placeholder and the user is told', async () => {
         canvas.restore()
-        canvas = mockCanvas({ pngBytes: new Uint8Array([1]), failingImages: /T\.png$/ })
+        canvas = mockCanvas({ pngBytes: MINIMAL_PNG, failingImages: /T\.png$/ })
         renderShare()
         await exportWith()
         await waitFor(() => expect(canvas.downloads).toHaveLength(1))
@@ -104,10 +108,37 @@ describe('Export the board as an image', () => {
 
     test('without a 2D canvas it shows an error and downloads nothing', async () => {
         canvas.restore()
-        canvas = mockCanvas({ pngBytes: new Uint8Array([1]), noContext: true })
+        canvas = mockCanvas({ pngBytes: MINIMAL_PNG, noContext: true })
         renderShare()
         await exportWith()
         expect(await screen.findByText(/no se pudo generar la imagen/i)).toBeInTheDocument()
         expect(canvas.downloads).toHaveLength(0)
+    })
+
+    test('the PNG carries the whole challenge: export, read it back and compare', async () => {
+        renderShare()
+        fireEvent.click(await screen.findByTestId('export-image-button'))
+        expect(screen.getByTestId('export-include-solution').querySelector('input')).toBeChecked()
+        expect(screen.getByTestId('export-image-warning')).toHaveTextContent(/captura de pantalla/i)
+        fireEvent.click(screen.getByTestId('export-image-confirm'))
+        await waitFor(() => expect(canvas.downloads).toHaveLength(1))
+        const png = await blobBytes(canvas.downloads[0].blob)
+        readChunks(png).forEach(chunk => expect(chunk.crcOk).toBe(true))
+        expect(extractChallenge(png)).toEqual({ status: 'ok', challenge: LocalStorage.getCreatorChallenge() })
+        const result = extractChallenge(png)
+        expect(result.status === 'ok' && result.challenge.predefinedSolution).toBe('<xml></xml>')
+    })
+
+    test('the initial solution can be left out of the image', async () => {
+        renderShare()
+        await exportWith(() => fireEvent.click(screen.getByTestId('export-include-solution').querySelector('input')!))
+        await waitFor(() => expect(canvas.downloads).toHaveLength(1))
+        const result = extractChallenge(await blobBytes(canvas.downloads[0].blob))
+        expect(result.status).toBe('ok')
+        if (result.status === 'ok') {
+            expect(result.challenge.predefinedSolution).toBeUndefined()
+            expect(result.challenge.title).toBe('Mi ensalada')
+            expect(result.challenge.scene.maps).toEqual(challenge.scene.maps)
+        }
     })
 })
