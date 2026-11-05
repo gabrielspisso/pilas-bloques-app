@@ -3,15 +3,18 @@ import { SceneTools } from "./SceneTools";
 import { useState, CSSProperties } from 'react';
 import { GridOptions } from "./GridOptions/GridOptions";
 import { Scenarios } from "./Grid/Scenarios";
+import { SceneDragProvider } from "./SceneDrag";
 
 export const SceneEdition = () => {
     const [styleGrid, setStyleGrid] = useState<CSSProperties>({})
 
     return (
-        <Stack direction="row" alignItems="stretch" sx={{ height: "100%" }}>
-            <GridOptions setStyleGrid={setStyleGrid} />
-            <Scenarios styling={styleGrid} />
-            <SceneTools />
-        </Stack>
+        <SceneDragProvider>
+            <Stack direction="row" alignItems="stretch" sx={{ height: "100%" }}>
+                <GridOptions setStyleGrid={setStyleGrid} />
+                <Scenarios styling={styleGrid} />
+                <SceneTools />
+            </Stack>
+        </SceneDragProvider>
     )
 }

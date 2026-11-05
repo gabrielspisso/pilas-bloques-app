@@ -6,6 +6,7 @@ import { SerializedChallenge, sceneObjectByType } from '../../../serializedChall
 import { CreatorContext } from '../CreatorContext';
 import { PBCard } from '../../../PBCard';
 import { useThemeContext } from '../../../../theme/ThemeContext';
+import { useSceneDrag } from './SceneDrag';
 
 
 export const SceneTools = () => {
@@ -18,6 +19,7 @@ export const SceneTools = () => {
 
     const { t } = useTranslation('creator');
     const { selectedTool, setSelectedTool } = useContext(CreatorContext)
+    const { startToolDrag } = useSceneDrag()
 
     const challenge: SerializedChallenge | null = LocalStorage.getCreatorChallenge()
 
@@ -35,7 +37,10 @@ export const SceneTools = () => {
             id={props.id}
             data-testid={props.id}
             onClick={selectTool}
+            onPointerDown={(e) => startToolDrag(e, props.id, props.image || '')}
             style={{
+                touchAction: 'none', // lets touch drag the tool instead of scrolling
+                userSelect: 'none',
                 backgroundImage: `url("${props.image}")`,
                 backgroundSize: "contain", backgroundRepeat: "no-repeat",
                 backgroundPositionX: "center",

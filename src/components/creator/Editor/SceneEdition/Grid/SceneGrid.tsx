@@ -5,6 +5,7 @@ import styles from "./grid.module.css"
 import { SceneCell } from "./SceneCell"
 import { useContext, CSSProperties, useEffect, useRef, useState } from "react"
 import { CreatorContext } from "../../CreatorContext"
+import { SCENE_GRID_ATTRIBUTE } from "../SceneDrag"
 
 export type SceneGridProps = {
     styling?: CSSProperties
@@ -62,7 +63,7 @@ export const SceneGrid = (props: SceneGridProps) => {
     const gridStyle = fluidGridStyle(space, currentMap.length, currentMap[0]?.length || 1) || props.styling
 
     return <Box ref={containerRef} sx={{ flex: 1, alignSelf: 'stretch', minWidth: 0, minHeight: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Stack justifyContent='flex-start' className={styles.grid} style={gridStyle} data-testid="dummy-test-scene-grid">
+        <Stack justifyContent='flex-start' className={styles.grid} style={gridStyle} data-testid="dummy-test-scene-grid" {...{ [SCENE_GRID_ATTRIBUTE]: true }}>
             {currentMap.map((row, i) =>
                 <Stack key={i + row.join(',')} direction="row" data-testid="challenge-row">
                     {row.map((cellContent, j) =>
