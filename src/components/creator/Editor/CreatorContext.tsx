@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Assesments, SceneMap, Toolbox, defaultChallenge } from '../../serializedChallenge';
+import { Assesments, SceneMap, SerializedChallenge, Toolbox, defaultChallenge } from '../../serializedChallenge';
+import { addVersion } from '../versions';
 import { LocalStorage } from '../../../localStorage';
 import { ACTOR } from './SceneEdition/mapUtils';
 
@@ -26,6 +27,10 @@ export type CreatorContextType = {
     setToolbox: (toolbox: Toolbox) => void
     assesments?: Assesments
     setAssesments: (assesments?: Assesments) => void
+    /** When the draft was last written to LocalStorage after an edit (null: nothing edited in this visit). */
+    lastSavedAt: number | null
+    /** Replaces the whole draft (e.g. restoring a version). The map change can be undone. */
+    loadChallenge: (challenge: SerializedChallenge) => void
     undo: () => void
     redo: () => void
     canUndo: boolean
@@ -56,6 +61,8 @@ const defaultCreatorContext = {
     setToolbox: () => { },
     assesments: undefined,
     setAssesments: () => { },
+    lastSavedAt: null,
+    loadChallenge: () => { },
     undo: () => { },
     redo: () => { },
     canUndo: false,
@@ -90,6 +97,10 @@ export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ childre
     const [clue, setClue] = useState<string | undefined>(challenge.statement.clue)
     const [toolbox, setToolbox] = useState<Toolbox>(challenge.toolbox)
     const [assesments, setAssesments] = useState<Assesments | undefined>(challenge.assesments)
+
+    const [lastSavedAt, setLastSavedAt] = useState<number | null>(null)
+    const lastSavedJson = useRef<string | null>(null)
+    const openedAt = useRef<number | undefined>(undefined)
 
     const [past, setPast] = useState<HistoryEntry[]>([])
     const [future, setFuture] = useState<HistoryEntry[]>([])
@@ -149,6 +160,16 @@ export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ childre
         restore(entry, entry.index)
     }
 
+    const loadChallenge = (loaded: SerializedChallenge) => {
+        commit(cloneMaps(loaded.scene.maps))
+        setIndex(0)
+        setTitle(loaded.title)
+        setStatement(loaded.statement.description)
+        setClue(loaded.statement.clue)
+        setToolbox(loaded.toolbox)
+        setAssesments(loaded.assesments)
+    }
+
     const beginHistoryBatch = useCallback(() => { batch.current = { active: true, recorded: false } }, [])
     const endHistoryBatch = useCallback(() => { batch.current = { active: false, recorded: false } }, [])
 
@@ -162,11 +183,27 @@ export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ childre
         if (assesments) challenge.assesments = assesments
         else delete challenge.assesments
         LocalStorage.saveCreatorChallenge(challenge)
+
+        // Only real edits count for the indicator and the versions (this effect also runs on mount).
+        const json = JSON.stringify(challenge)
+        if (lastSavedJson.current === null) {
+            // The draft as it was when the editor opened is always a version, kept until it gets old.
+            const now = Date.now()
+            const versions = LocalStorage.getCreatorVersions()
+            const updated = addVersion(versions, challenge, now, versions[versions.length - 1]?.savedAt)
+            if (updated !== versions) LocalStorage.saveCreatorVersions(updated)
+            openedAt.current = updated[updated.length - 1]?.savedAt
+        } else if (lastSavedJson.current !== json) {
+            const now = Date.now()
+            LocalStorage.saveCreatorVersions(addVersion(LocalStorage.getCreatorVersions(), challenge, now, openedAt.current))
+            setLastSavedAt(now)
+        }
+        lastSavedJson.current = json
     }, [maps, challenge, sharedId, title, statement, clue, toolbox, assesments])
 
     return (
         <CreatorContext.Provider value={{
-            selectedTool, setSelectedTool, currentMap, setCurrentMap, sharedId: sharedId, setSharedId: setSharedId, title, setTitle, statement, setStatement, clue, setClue, toolbox, setToolbox, assesments, setAssesments, index, setIndex, setMaps, maps,
+            selectedTool, setSelectedTool, currentMap, setCurrentMap, sharedId: sharedId, setSharedId: setSharedId, title, setTitle, statement, setStatement, clue, setClue, toolbox, setToolbox, assesments, setAssesments, lastSavedAt, loadChallenge, index, setIndex, setMaps, maps,
             undo, redo, canUndo: past.length > 0, canRedo: future.length > 0, beginHistoryBatch, endHistoryBatch
         }}>
             {children}

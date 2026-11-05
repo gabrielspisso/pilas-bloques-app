@@ -209,6 +209,14 @@
 			"editTab": "Editar",
 			"tryTab": "Testar",
 			"invalid": "A pré-visualização aparece quando cada cenário tem pelo menos uma casa e um único personagem."
+		},
+		"autosave": {
+			"saved": "Rascunho salvo",
+			"savedAt": "Salvo {{time}}",
+			"versions": "Versões salvas neste navegador",
+			"noVersions": "Ainda não há versões",
+			"restore": "Voltar à versão das {{time}}",
+			"untitled": "Sem título"
 		}
 	},
 	"title": {

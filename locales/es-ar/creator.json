@@ -209,6 +209,14 @@
 			"editTab": "Editar",
 			"tryTab": "Probar",
 			"invalid": "La vista previa aparece cuando cada escenario tiene al menos una casilla y un solo personaje."
+		},
+		"autosave": {
+			"saved": "Borrador guardado",
+			"savedAt": "Guardado {{time}}",
+			"versions": "Versiones guardadas en este navegador",
+			"noVersions": "Todavía no hay versiones",
+			"restore": "Volver a la versión de las {{time}}",
+			"untitled": "Sin título"
 		}
 	},
 	"title": {

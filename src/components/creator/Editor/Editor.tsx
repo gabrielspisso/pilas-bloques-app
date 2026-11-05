@@ -15,6 +15,7 @@ import { LocalStorage } from "../../../localStorage";
 import { useEffect, useState } from "react";
 import { ShareButton } from "./ActionButtons/ShareChallenge/ShareButton";
 import { UndoRedoButtons } from "./EditorSubHeader/UndoRedoButtons";
+import { AutosaveStatus } from "./EditorSubHeader/AutosaveStatus";
 import { CreatorThemeProvider, creatorPageBackground } from "../../../theme/creatorTheme";
 import { CreatorMode, CreatorModeSwitch, SIDE_BY_SIDE_MIN_WIDTH, useCreatorMode } from "./CreatorMode";
 import { CreatorLivePreview } from "./CreatorLivePreview";
@@ -103,6 +104,7 @@ export const EditorSubHeader = (props: EditorSubHeaderProps) =>
   <CreatorSubHeader>
     <DiscardChallengeButton />
     {props.showHistory && <UndoRedoButtons />}
+    {props.showHistory && <AutosaveStatus />}
     {props.modeSwitch}
     {props.viewButton}
     {props.reactViewButton}

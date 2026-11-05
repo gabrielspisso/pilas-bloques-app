@@ -209,6 +209,14 @@
 			"editTab": "Edit",
 			"tryTab": "Try",
 			"invalid": "The preview appears when every scenario has at least one cell and a single character."
+		},
+		"autosave": {
+			"saved": "Draft saved",
+			"savedAt": "Saved {{time}}",
+			"versions": "Versions saved in this browser",
+			"noVersions": "No versions yet",
+			"restore": "Go back to the {{time}} version",
+			"untitled": "Untitled"
 		}
 	},
 	"title": {
