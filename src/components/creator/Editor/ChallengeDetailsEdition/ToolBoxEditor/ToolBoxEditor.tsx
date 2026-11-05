@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { LocalStorage } from "../../../../../localStorage";
+import { CreatorContext } from "../../CreatorContext";
 import { SerializedChallenge, defaultChallenge } from "../../../../serializedChallenge";
 import { useTranslation } from "react-i18next";
 import { GenericModalDialog } from "../../../../modalDialog/GenericModalDialog";
@@ -22,17 +23,20 @@ export const ToolBoxEditor = () => {
     const storageChallenge = LocalStorage.getCreatorChallenge()
     const challenge: SerializedChallenge = storageChallenge ? storageChallenge : defaultChallenge('Duba')
 
-    const currentToolBox = challenge!.toolbox.blocks
+    // The toolbox lives in CreatorContext so the checklist, the live preview and the autosave see it at once.
+    const { toolbox, setToolbox } = useContext(CreatorContext)
+    const currentToolBox = toolbox.blocks
     const [toolBoxItems, setToolBoxItems] = useState(currentToolBox);
     const toolboxState = new ToolboxState(challenge!, toolBoxItems)
     const [open, setOpen] = useState(false);
 
-    const currentIsCategorized = challenge!.toolbox.categorized
+    const currentIsCategorized = toolbox.categorized
     const [isCategorized, setIsCategorized] = useState(currentIsCategorized || toolboxState.categorizationShouldBeForced());
 
     const handleButtonClick = () => {
         if (!open) {
             setToolBoxItems(currentToolBox)
+            setIsCategorized(!!currentIsCategorized)
             setOpen(true)
         }
     }
@@ -42,9 +46,7 @@ export const ToolBoxEditor = () => {
     }
 
     const handleOnConfirm = () => {
-        challenge!.toolbox.blocks = toolBoxItems
-        challenge!.toolbox.categorized = isCategorized || toolboxState.categorizationShouldBeForced()
-        LocalStorage.saveCreatorChallenge(challenge)
+        setToolbox({ ...toolbox, blocks: toolBoxItems, categorized: isCategorized || toolboxState.categorizationShouldBeForced() })
         setOpen(false)
     }
 

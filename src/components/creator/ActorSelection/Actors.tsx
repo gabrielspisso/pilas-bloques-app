@@ -11,6 +11,8 @@ import { useThemeContext } from "../../../theme/ThemeContext"
 import { Carousel } from 'react-carousel3';
 import { StyledCreatorActionButton } from "./../Editor/ActionButtons/CreatorActionButton"
 import { LoadChallengeButton } from "./LoadChallenge"
+import { sceneGoals } from "../sceneGoals"
+import { TemplatesButton } from "./TemplatesButton"
 
 const baseUrlImage = 'imagenes/selection/'
 const baseObjectUrlImage = 'imagenes/sceneImages/'
@@ -37,99 +39,39 @@ type ActorInfoProps = {
     icon: React.ReactNode
 }
 
+const sceneGoalsWithImages = (type: SceneType): GoalDataType[] =>
+    (sceneGoals[type] || []).map(goal => ({ key: goal.key, object: `${goal.cell}.png` }))
+
 const actorsData: ActorDataType[] = [
 	{
 		name: "Lita",
         color: "#FF9C5D",
-        goals: [ 
-            { key: "letucce",
-              object: "L.png"
-            },
-            { key: "tomato",
-              object: "T.png"
-            },
-            { key: "salad",
-              object: "E.png"
-            }
-        ]
+        goals: sceneGoalsWithImages("Lita")
 	},
 	{
 		name: "Duba",
         color: "#FED473",
-        goals: [ 
-            { key: "steak",
-              object: "P.png"
-            }
-        ]
+        goals: sceneGoalsWithImages("Duba")
     },
 	{
 		name: "Chuy",
         color: "#FFB4E0",
-        goals: [ 
-            { key: "paddle",
-              object: "E.png"
-            },
-            { key: "trophy",
-              object: "T.png"
-            },
-            { key: "pingpong",
-              object: "P.png"
-            },
-            { key: "pulpito",
-              object: "U.png"
-            },
-            { key: "football",
-              object: "G.png"
-            },
-        ]
+        goals: sceneGoalsWithImages("Chuy")
     },
 	{
 		name: "Manic",
         color: "#FFFBB1",
-        goals: [ 
-            { key: "telescope",
-              object: "T.png"
-            },
-            { key: "star",
-              object: "E.png"
-            },
-            { key: "planet",
-              object: "P.png"
-            }
-        ]
+        goals: sceneGoalsWithImages("Manic")
     },
 	{
 		name: "Capy",
         color: "#B0E092",
-        goals: [ 
-            { key: "can",
-              object: "L.png"
-            },
-            { key: "paper",
-              object: "P.png"
-            }
-        ]
+        goals: sceneGoalsWithImages("Capy")
     },
 	{
 		name: "Yvoty",
         color: "#ABDEDB",
-        goals: [ 
-            { key: "firefly",
-              object: "L.png"
-            },
-            { key: "butterfly",
-              object: "M.png"
-            },
-            { key: "unlockCellphone",
-              object: "C.png"
-            },
-            { key: "charger",
-              object: "K.png"
-            },
-            { key: "chargeCellphone",
-              object: "P.png"
-            }
-        ]
+        goals: sceneGoalsWithImages("Yvoty")
     }
 ]
 
@@ -310,6 +252,7 @@ return (
                 {actors.map(ActorImage)}
             </Carousel>
             <GoToCreatorButton/>        
+            <TemplatesButton type={actorSelected.actor.id} />
             <LoadChallengeButton />
         </Stack>     
         <ActorInfoCard/>

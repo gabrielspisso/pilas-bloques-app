@@ -95,6 +95,60 @@
 					"football": "Patear las pelotas de fútbol."
 				}
 			}
+		},
+		"templatesButton": "Empezar desde una plantilla",
+		"templatesTitle": "Plantillas de {{name}}",
+		"templatesHint": "Un desafío de ejemplo para modificar a tu gusto.",
+		"templatesEmpty": "Empezar vacío",
+		"templates": {
+			"litaSalad": {
+				"title": "Una ensalada en línea",
+				"statement": "Ayudá a Lita a juntar la lechuga y el tomate y a preparar la ensalada."
+			},
+			"litaTomatoes": {
+				"title": "Muchos tomates",
+				"statement": "Lita tiene que juntar todos los tomates. ¿Podés hacerlo sin repetir los mismos bloques una y otra vez?"
+			},
+			"dubaSteak": {
+				"title": "El churrasco de Duba",
+				"statement": "Llevá a Duba hasta el churrasco y comételo."
+			},
+			"dubaDetour": {
+				"title": "Un obstáculo en el camino",
+				"statement": "Hay un obstáculo entre Duba y el churrasco. Encontrá un camino para rodearlo."
+			},
+			"chuyTrophy": {
+				"title": "El trofeo de Chuy",
+				"statement": "Llevá a Chuy hasta el trofeo y recogelo."
+			},
+			"chuyPingPong": {
+				"title": "Pelotas de ping pong",
+				"statement": "Chuy tiene que hacer rebotar cada pelota de ping pong. Usá la repetición."
+			},
+			"manicStar": {
+				"title": "Una estrella para Manic",
+				"statement": "Llevá a Manic hasta la estrella y observala."
+			},
+			"manicSky": {
+				"title": "Noche de observación",
+				"statement": "Manic quiere observar la estrella y después el planeta."
+			},
+			"capyCans": {
+				"title": "Latas en la orilla",
+				"statement": "Capy tiene que recoger todas las latas. Usá la repetición."
+			},
+			"capyRecycle": {
+				"title": "A reciclar",
+				"statement": "Ayudá a Capy a recoger la lata y el papel."
+			},
+			"yvotyNight": {
+				"title": "Noche en la selva",
+				"statement": "Yvoty tiene que despertar a la luciérnaga y fotografiar a la mariposa."
+			},
+			"yvotyPhone": {
+				"title": "El celular de Yvoty",
+				"statement": "Llevá a Yvoty hasta el celular y desbloquealo."
+			}
 		}
 	},
 	"editor": {
@@ -121,17 +175,159 @@
 			"creator": "Seleccionar personaje",
 			"creatorShort": "Seleccionar",
 			"loadChallenge": "Abrir desafío creado",
-			"loadChallengeShort": "Abrir"
+			"loadChallengeShort": "Abrir",
+			"exportImage": "Exportar imagen",
+			"exportImageShort": "Imagen"
 		},
 		"editorHeader": "Editar desafío",
 		"previewModeHeader": "Ver desafío",
 		"serverError": "Problema con el servidor, intente más tarde",
-		"loginWarning": "Para obtener el enlace del desafío es necesario iniciar sesión."
+		"loginWarning": "Para obtener el enlace del desafío es necesario iniciar sesión.",
+		"history": {
+			"undo": "Deshacer",
+			"redo": "Rehacer",
+			"undoShortcut": "Deshacer (Ctrl+Z)",
+			"redoShortcut": "Rehacer (Ctrl+Shift+Z)"
+		},
+		"mission": {
+			"title": "Misión",
+			"intro": "{{actor}} tiene que:",
+			"empty": "Todavía no hay objetivos. Agregá objetos al tablero para armar la misión.",
+			"count": "× {{count}}"
+		},
+		"header": {
+			"region": "Título y enunciado del desafío",
+			"expand": "Mostrar el enunciado",
+			"collapse": "Ocultar el enunciado",
+			"statementSummary": "Enunciado: {{text}}",
+			"statementEmpty": "Enunciado: todavía no escribiste nada",
+			"panel": "Enunciado y pista",
+			"writeTab": "Escribir",
+			"previewTab": "Vista previa",
+			"closePanel": "Cerrar el enunciado"
+		},
+		"checklist": {
+			"title": "Antes de publicar",
+			"items": {
+				"title": "Tiene un título propio",
+				"statement": "Tiene un enunciado propio",
+				"goals": "Cada escenario tiene al menos un objetivo",
+				"blocks": "Tiene bloques disponibles para quien juega"
+			},
+			"done": "listo",
+			"pending": "falta",
+			"missing": "Para compartir falta: {{items}}.",
+			"ready": "¡Todo listo para compartir!"
+		},
+		"objects": {
+			"obstacle": "obstáculo",
+			"Lita": {
+				"L": "lechuga",
+				"T": "tomate",
+				"E": "ensaladera"
+			},
+			"Duba": {
+				"P": "churrasco"
+			},
+			"Chuy": {
+				"E": "paleta",
+				"T": "trofeo",
+				"P": "pelota de ping pong",
+				"U": "pelota de goma",
+				"G": "pelota de fútbol"
+			},
+			"Manic": {
+				"T": "telescopio",
+				"E": "estrella",
+				"P": "planeta"
+			},
+			"Capy": {
+				"L": "lata",
+				"P": "papel"
+			},
+			"Yvoty": {
+				"L": "luciérnaga",
+				"M": "mariposa",
+				"C": "celular bloqueado",
+				"K": "cargador",
+				"P": "celular para cargar"
+			}
+		},
+		"board": {
+			"moveTool": "Mover piezas",
+			"moveInstructions": "Herramienta Mover: Enter levanta la pieza de la casilla, las flechas eligen el destino, Enter la suelta y Escape cancela.",
+			"picked": "Levantaste: {{piece}}. Elegí otra casilla y tocala o apretá Enter. Escape cancela.",
+			"label": "Tablero, escenario {{scenario}}: {{rows}} filas por {{columns}} columnas",
+			"instructions": "Usá las flechas para moverte entre las casillas, Enter para colocar la herramienta elegida y Suprimir para borrar.",
+			"cell": "Fila {{row}}, columna {{column}}: {{content}}",
+			"empty": "vacía",
+			"tools": "Herramientas",
+			"putObjectNamed": "Añadir {{object}}",
+			"zoomGroup": "Zoom del tablero",
+			"zoomIn": "Acercar el tablero",
+			"zoomOut": "Alejar el tablero",
+			"zoomReset": "Restablecer el zoom",
+			"zoomLevel": "Zoom del tablero: {{percent}} %"
+		},
+		"mode": {
+			"label": "Modo del creador",
+			"editor": "Editor",
+			"editorShort": "Editar",
+			"test": "Editor con prueba",
+			"testShort": "Con prueba",
+			"tabsLabel": "Editar o probar el desafío",
+			"editTab": "Editar",
+			"tryTab": "Probar",
+			"invalid": "La vista previa aparece cuando cada escenario tiene al menos una casilla y un solo personaje."
+		},
+		"autosave": {
+			"saved": "Borrador guardado",
+			"savedAt": "Guardado {{time}}",
+			"versions": "Versiones guardadas en este navegador",
+			"noVersions": "Todavía no hay versiones",
+			"restore": "Volver a la versión de las {{time}}",
+			"untitled": "Sin título"
+		},
+		"tutorial": {
+			"progress": "Paso {{current}} de {{total}}",
+			"skip": "Saltar",
+			"back": "Atrás",
+			"next": "Siguiente",
+			"done": "¡A crear!",
+			"steps": {
+				"board": {
+					"title": "1. Armá el escenario",
+					"text": "Arrastrá piezas desde la paleta hasta el tablero, o tocá una pieza y después una casilla. Arrastrando por varias casillas las pintás de una vez."
+				},
+				"texts": {
+					"title": "2. Contá de qué se trata",
+					"text": "Escribí el título y el enunciado arriba del tablero. Después elegí los bloques que va a tener el alumno y, si querés, las evaluaciones."
+				},
+				"try": {
+					"title": "3. Probalo y compartilo",
+					"text": "Elegí \"Editor con prueba\" para jugar el desafío mientras lo armás. Cuando la lista de publicación esté completa, compartilo o descargalo."
+				}
+			}
+		},
+		"exportImage": {
+			"title": "Exportar el tablero como imagen",
+			"scenario": "Se exporta el escenario que estás editando ({{scenario}} de {{total}}).",
+			"includeTexts": "Incluir el título y el enunciado debajo del tablero",
+			"export": "Exportar PNG",
+			"cancel": "Cancelar",
+			"error": "No se pudo generar la imagen en este navegador.",
+			"missingImages": "Algunas imágenes no se pudieron cargar: se dibujó un marcador en su lugar.",
+			"includeSolution": "Incluir la solución inicial (si el desafío tiene una)",
+			"embedded": "La imagen lleva guardado el desafío completo: se puede abrir con \"Importá tu desafío\".",
+			"metadataWarning": "Si la imagen se recomprime (por ejemplo, al mandarla por mensajería) o se le saca una captura de pantalla, se pierde el desafío guardado adentro y solo queda el dibujo."
+		}
 	},
 	"title": {
 		"title": "Escribí el título del desafío para ",
 		"button": "Escribir título",
-		"input": "Título"
+		"input": "Título",
+		"helper": "Un nombre corto que cuente de qué se trata el desafío.",
+		"counter": "{{count}}/{{max}}"
 	},
 	"statement": {
 		"title": "Escribí el enunciado del desafío para ",
@@ -141,15 +337,23 @@
 		"includeClue": "Incluir una pista",
 		"defaultDescription": "Así se verá tu **enunciado**...",
 		"defaultClue": "Así se verá tu **pista**...",
-		"defaultTitle": "Escribí tu título..."
+		"defaultTitle": "Escribí tu título...",
+		"preview": "Vista previa",
+		"markdownHelp": "Podés usar Markdown: **negrita**, *cursiva*, listas con -.",
+		"clueToggle": "Agregar una pista (opcional)"
 	},
 	"tools": {
+		"move": "Mover",
 		"putObstacle": "Añadir obstáculo",
 		"putObject": "Añadir objetos",
 		"putActor": "Mover a ",
 		"delete": "Borrar"
 	},
 	"scene": {
+		"size": "Tamaño del tablero: {{rows}} filas por {{columns}} columnas",
+		"pickerTitle": "Tamaño del tablero",
+		"pickerGrid": "Elegí filas y columnas, hasta {{rows}} por {{columns}}",
+		"pickerHelp": "Filas × columnas. Pasá el mouse o el dedo y soltá, o usá las flechas y Enter.",
 		"numCols": "Modificar columnas",
 		"numRows": "Modificar filas"
 	},
@@ -170,5 +374,22 @@
 		"prev": "Anterior",
 		"multipleInitialScenarios": "Escenarios iniciales"
 	},
-	"importedChallengedHeader": "Desafío creado por la comunidad"
+	"importedChallengedHeader": "Desafío creado por la comunidad",
+	"assessments": {
+		"button": "Evaluaciones",
+		"title": "Evaluaciones del desafío",
+		"hint": "Elegí qué se revisa del programa del alumno. Al terminar el desafío, el diálogo final muestra si cumplió cada una.",
+		"active_one": "{{count}} activa",
+		"active_other": "{{count}} activas",
+		"items": {
+			"itWorks": "Que funcione (felicitar al resolverlo)",
+			"simpleRepetition": "Usar repetición simple",
+			"conditionalRepetition": "Usar repetición condicional",
+			"conditionalAlternative": "Usar alternativa condicional",
+			"decomposition": "Descomposición en procedimientos"
+		},
+		"maxProgramLength": "Largo máximo del programa",
+		"maxProgramLengthHelp": "Cantidad de bloques por procedimiento (entre {{min}} y {{max}}).",
+		"close": "Listo"
+	}
 }

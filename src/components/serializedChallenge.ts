@@ -12,16 +12,18 @@ export type SerializedChallenge = {
     clue?: string
   },
   scene: Scene,
-  toolbox: {
-    blocks: string[], // for now, block ids, future: could be objects.
-    categorized?: boolean // default true
-  },
+  toolbox: Toolbox,
   stepByStep?: boolean,
   predefinedSolution?: string,
   assesments?: Assesments,
   sharedId?: string
 }
 
+
+export type Toolbox = {
+  blocks: string[], // for now, block ids, future: could be objects.
+  categorized?: boolean // default true
+}
 
 const sceneTypes = ["Lita", "Duba", "Toto", "Coty", "Manic", "Chuy", "Yvoty", "Capy", "Custom"] as const //Used for file validity checking
 export type SceneType = typeof sceneTypes[number]
@@ -181,7 +183,7 @@ export const defaultChallenge = (type: SceneType, defaultDescription = "", defau
   }
 }
 
-type Assesments = {
+export type Assesments = {
   itWorks?: boolean, // old "debeFelicitar", default true
   decomposition?: DecompositionAssessment,
   simpleRepetition?: boolean,
@@ -189,7 +191,7 @@ type Assesments = {
   conditionalAlternative?: boolean,
 }
 
-type DecompositionAssessment = { maxProgramLength: number }
+export type DecompositionAssessment = { maxProgramLength: number }
 
 
 export const isValidChallenge = (json: unknown): json is SerializedChallenge => {

@@ -3,6 +3,9 @@ import { User } from "./pbApi"
 import { LanguageCode } from "./language"
 import { SerializedChallenge } from "./components/serializedChallenge"
 
+/** A snapshot of the creator draft, kept so the teacher can go back to it. */
+export type CreatorVersion = { savedAt: number, challenge: SerializedChallenge }
+
 export namespace LocalStorage {
 
     const PB_SELECTED_LOCALE = 'PB_SELECTED_LOCALE'
@@ -13,6 +16,9 @@ export namespace LocalStorage {
     const PB_USE_SIMPLE_READ = 'PB_USE_SIMPLE_READ'
     const PB_USER_IP = 'PB_USER_IP'
     const PB_MULANG_SUGGESTIONS_ENABLED = 'PB_MULANG_SUGGESTIONS_ENABLED'
+    const PB_CREATOR_MODE = 'PB_CREATOR_MODE'
+    const PB_CREATOR_VERSIONS = 'PB_CREATOR_VERSIONS'
+    const PB_CREATOR_TUTORIAL_DONE = 'PB_CREATOR_TUTORIAL_DONE'
 
     const remove = (key: string) => { localStorage.removeItem(key) }
 
@@ -27,6 +33,16 @@ export namespace LocalStorage {
         const val = _get(PB_MULANG_SUGGESTIONS_ENABLED);
         return val === null ? true : val;
     }
+
+    export const getCreatorMode = (): string | null => _get(PB_CREATOR_MODE)
+    export const saveCreatorMode = (mode: string) => _save(PB_CREATOR_MODE, mode)
+    export const getCreatorVersions = (): CreatorVersion[] => {
+        const versions = _get(PB_CREATOR_VERSIONS)
+        return Array.isArray(versions) ? versions : []
+    }
+    export const saveCreatorVersions = (versions: CreatorVersion[]) => _save(PB_CREATOR_VERSIONS, versions)
+    export const getCreatorTutorialDone = (): boolean => _get(PB_CREATOR_TUTORIAL_DONE) === true
+    export const saveCreatorTutorialDone = () => _save(PB_CREATOR_TUTORIAL_DONE, true)
 
     export const saveSelectedLocale = (selectedLocale: LanguageCode) => _save(PB_SELECTED_LOCALE, selectedLocale)
     export const saveImportedChallenge = (importedChallenge: EmberExecutableChallenge) => _save(PB_IMPORTED_CHALLENGE, importedChallenge)

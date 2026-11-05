@@ -95,6 +95,60 @@
 					"football": "Kick the football balls."
 				}
 			}
+		},
+		"templatesButton": "Start from a template",
+		"templatesTitle": "{{name}} templates",
+		"templatesHint": "A sample challenge to change as you like.",
+		"templatesEmpty": "Start empty",
+		"templates": {
+			"litaSalad": {
+				"title": "A salad in a row",
+				"statement": "Help Lita pick up the lettuce and the tomato and make the salad."
+			},
+			"litaTomatoes": {
+				"title": "Lots of tomatoes",
+				"statement": "Lita has to pick up all the tomatoes. Can you do it without repeating the same blocks over and over?"
+			},
+			"dubaSteak": {
+				"title": "Duba's steak",
+				"statement": "Take Duba to the steak and eat it."
+			},
+			"dubaDetour": {
+				"title": "An obstacle on the way",
+				"statement": "There is an obstacle between Duba and the steak. Find a way around it."
+			},
+			"chuyTrophy": {
+				"title": "Chuy's trophy",
+				"statement": "Take Chuy to the trophy and pick it up."
+			},
+			"chuyPingPong": {
+				"title": "Ping pong balls",
+				"statement": "Chuy has to bounce every ping pong ball. Use repetition."
+			},
+			"manicStar": {
+				"title": "A star for Manic",
+				"statement": "Take Manic to the star and observe it."
+			},
+			"manicSky": {
+				"title": "Stargazing night",
+				"statement": "Manic wants to observe the star and then the planet."
+			},
+			"capyCans": {
+				"title": "Cans on the shore",
+				"statement": "Capy has to pick up all the cans. Use repetition."
+			},
+			"capyRecycle": {
+				"title": "Let's recycle",
+				"statement": "Help Capy pick up the can and the paper."
+			},
+			"yvotyNight": {
+				"title": "Night in the jungle",
+				"statement": "Yvoty has to wake up the firefly and photograph the butterfly."
+			},
+			"yvotyPhone": {
+				"title": "Yvoty's phone",
+				"statement": "Take Yvoty to the phone and unlock it."
+			}
 		}
 	},
 	"editor": {
@@ -121,17 +175,159 @@
 			"creator": "Select character",
 			"creatorShort": "Select",
 			"loadChallenge": "Open a created challenge",
-			"loadChallengeShort": "Open"
+			"loadChallengeShort": "Open",
+			"exportImage": "Export image",
+			"exportImageShort": "Image"
 		},
 		"editorHeader": "Edit challenge",
 		"previewModeHeader": "Challenge preview",
 		"serverError": "There's a problem with the server, try again later",
-		"loginWarning": "You need to be logged in to get the challenge link."
+		"loginWarning": "You need to be logged in to get the challenge link.",
+		"history": {
+			"undo": "Undo",
+			"redo": "Redo",
+			"undoShortcut": "Undo (Ctrl+Z)",
+			"redoShortcut": "Redo (Ctrl+Shift+Z)"
+		},
+		"mission": {
+			"title": "Mission",
+			"intro": "{{actor}} has to:",
+			"empty": "No goals yet. Add objects to the board to build the mission.",
+			"count": "× {{count}}"
+		},
+		"header": {
+			"region": "Challenge title and statement",
+			"expand": "Show the statement",
+			"collapse": "Hide the statement",
+			"statementSummary": "Statement: {{text}}",
+			"statementEmpty": "Statement: nothing written yet",
+			"panel": "Statement and clue",
+			"writeTab": "Write",
+			"previewTab": "Preview",
+			"closePanel": "Close the statement"
+		},
+		"checklist": {
+			"title": "Before publishing",
+			"items": {
+				"title": "Has its own title",
+				"statement": "Has its own statement",
+				"goals": "Every scenario has at least one goal",
+				"blocks": "Has blocks available for the player"
+			},
+			"done": "done",
+			"pending": "missing",
+			"missing": "To share it, it still needs: {{items}}.",
+			"ready": "All set to share!"
+		},
+		"objects": {
+			"obstacle": "obstacle",
+			"Lita": {
+				"L": "lettuce",
+				"T": "tomato",
+				"E": "salad bowl"
+			},
+			"Duba": {
+				"P": "steak"
+			},
+			"Chuy": {
+				"E": "paddle",
+				"T": "trophy",
+				"P": "ping pong ball",
+				"U": "rubber ball",
+				"G": "football"
+			},
+			"Manic": {
+				"T": "telescope",
+				"E": "star",
+				"P": "planet"
+			},
+			"Capy": {
+				"L": "can",
+				"P": "paper"
+			},
+			"Yvoty": {
+				"L": "firefly",
+				"M": "butterfly",
+				"C": "locked cellphone",
+				"K": "charger",
+				"P": "cellphone to charge"
+			}
+		},
+		"board": {
+			"moveTool": "Move pieces",
+			"moveInstructions": "Move tool: Enter picks up the piece in the cell, the arrows choose the destination, Enter drops it and Escape cancels.",
+			"picked": "Picked up: {{piece}}. Choose another cell and tap it or press Enter. Escape cancels.",
+			"label": "Board, scenario {{scenario}}: {{rows}} rows by {{columns}} columns",
+			"instructions": "Use the arrow keys to move between cells, Enter to place the selected tool and Delete to erase.",
+			"cell": "Row {{row}}, column {{column}}: {{content}}",
+			"empty": "empty",
+			"tools": "Tools",
+			"putObjectNamed": "Add {{object}}",
+			"zoomGroup": "Board zoom",
+			"zoomIn": "Zoom in on the board",
+			"zoomOut": "Zoom out of the board",
+			"zoomReset": "Reset zoom",
+			"zoomLevel": "Board zoom: {{percent}} %"
+		},
+		"mode": {
+			"label": "Creator mode",
+			"editor": "Editor",
+			"editorShort": "Edit",
+			"test": "Editor with preview",
+			"testShort": "With preview",
+			"tabsLabel": "Edit or try the challenge",
+			"editTab": "Edit",
+			"tryTab": "Try",
+			"invalid": "The preview appears when every scenario has at least one cell and a single character."
+		},
+		"autosave": {
+			"saved": "Draft saved",
+			"savedAt": "Saved {{time}}",
+			"versions": "Versions saved in this browser",
+			"noVersions": "No versions yet",
+			"restore": "Go back to the {{time}} version",
+			"untitled": "Untitled"
+		},
+		"tutorial": {
+			"progress": "Step {{current}} of {{total}}",
+			"skip": "Skip",
+			"back": "Back",
+			"next": "Next",
+			"done": "Let's create!",
+			"steps": {
+				"board": {
+					"title": "1. Build the scene",
+					"text": "Drag pieces from the palette onto the board, or tap a piece and then a cell. Drag across several cells to paint them at once."
+				},
+				"texts": {
+					"title": "2. Say what it is about",
+					"text": "Write the title and the statement above the board. Then choose the blocks the student will have and, if you like, the assessments."
+				},
+				"try": {
+					"title": "3. Try it and share it",
+					"text": "Choose \"Editor with preview\" to play the challenge while you build it. When the publish checklist is complete, share it or download it."
+				}
+			}
+		},
+		"exportImage": {
+			"title": "Export the board as an image",
+			"scenario": "The scenario you are editing is exported ({{scenario}} of {{total}}).",
+			"includeTexts": "Include the title and the statement below the board",
+			"export": "Export PNG",
+			"cancel": "Cancel",
+			"error": "The image could not be created in this browser.",
+			"missingImages": "Some images could not be loaded: a placeholder was drawn instead.",
+			"includeSolution": "Include the initial solution (if the challenge has one)",
+			"embedded": "The image keeps the whole challenge inside: it can be opened with \"Import your challenge\".",
+			"metadataWarning": "If the image is recompressed (for example, when sent through a messaging app) or someone takes a screenshot of it, the challenge stored inside is lost and only the picture remains."
+		}
 	},
 	"title": {
 		"title": "Write the challenge's title for ",
 		"button": "Write the title",
-		"input": "Title"
+		"input": "Title",
+		"helper": "A short name that tells what the challenge is about.",
+		"counter": "{{count}}/{{max}}"
 	},
 	"statement": {
 		"title": "Write the challenge's statement for ",
@@ -141,15 +337,23 @@
 		"includeClue": "Include a clue",
 		"defaultDescription": "Your **statement** will look like this...",
 		"defaultClue": "Your **clue** will look like this...",
-		"defaultTitle": "Write your challenge's title..."
+		"defaultTitle": "Write your challenge's title...",
+		"preview": "Preview",
+		"markdownHelp": "You can use Markdown: **bold**, *italics*, lists with -.",
+		"clueToggle": "Add a clue (optional)"
 	},
 	"tools": {
+		"move": "Move",
 		"putObstacle": "Add obstacle",
 		"putObject": "Add objects",
 		"putActor": "Move ",
 		"delete": "Delete"
 	},
 	"scene": {
+		"size": "Board size: {{rows}} rows by {{columns}} columns",
+		"pickerTitle": "Board size",
+		"pickerGrid": "Choose rows and columns, up to {{rows}} by {{columns}}",
+		"pickerHelp": "Rows × columns. Hover or drag your finger and release, or use the arrows and Enter.",
 		"numCols": "Modify columns",
 		"numRows": "Modify rows"
 	},
@@ -170,5 +374,22 @@
 		"prev": "Previous",
 		"multipleInitialScenarios": "Initial scenarios"
 	},
-	"importedChallengedHeader": "Challenge created by the community"
+	"importedChallengedHeader": "Challenge created by the community",
+	"assessments": {
+		"button": "Assessments",
+		"title": "Challenge assessments",
+		"hint": "Choose what is checked in the student's program. When the challenge ends, the final dialog shows whether each one was met.",
+		"active_one": "{{count}} active",
+		"active_other": "{{count}} active",
+		"items": {
+			"itWorks": "It works (congratulate when solved)",
+			"simpleRepetition": "Use simple repetition",
+			"conditionalRepetition": "Use conditional repetition",
+			"conditionalAlternative": "Use conditional alternative",
+			"decomposition": "Decomposition into procedures"
+		},
+		"maxProgramLength": "Maximum program length",
+		"maxProgramLengthHelp": "Number of blocks per procedure (between {{min}} and {{max}}).",
+		"close": "Done"
+	}
 }

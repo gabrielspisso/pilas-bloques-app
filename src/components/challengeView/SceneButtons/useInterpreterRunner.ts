@@ -146,7 +146,9 @@ export const useInterpreterRunner = (
     
     trackExecutionEvent(outcome, failedExpectationsString);
 
-    if (solved) setShowModal(true);
+    // Creator challenges can turn "it works" off (assesments.itWorks = false): no final dialog then.
+    const showsFinalDialog = challenge.id !== 0 || challenge.hasAutomaticGrading !== false
+    if (solved && showsFinalDialog) setShowModal(true);
     return solved;
   };
 

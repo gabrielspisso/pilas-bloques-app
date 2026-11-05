@@ -12,7 +12,7 @@ export const ShareButton = () => {
 
     return <>
         <ShareDialog open={dialogOpen} setDialogOpen={setDialogOpen} />
-        <CreatorActionButton onClick={() => { setDialogOpen(true) }} startIcon={<ShareIcon />} nametag='share' />
+        <CreatorActionButton onClick={() => { setDialogOpen(true) }} startIcon={<ShareIcon />} nametag='share' iconOnlyOnSmallScreen />
     </>
 
 }

@@ -1,3 +1,4 @@
+import { ChallengeTitleText } from "./creator/ChallengeTitleText";
 import { Link, useLocation } from "react-router-dom";
 import { ChallengeView } from "./challengeView/ChallengeView";
 import { Header } from "./header/Header";
@@ -30,7 +31,7 @@ const ImportedChallengeViewBreadcrumb = ({ importedChallenge }: { importedChalle
             <Typography>{t("importedChallengedHeader")}</Typography>
         </Link>
 
-        <Typography>{importedChallenge.title}</Typography>
+        <ChallengeTitleText title={importedChallenge.title} />
 
     </PBreadcrumbs>
 }
