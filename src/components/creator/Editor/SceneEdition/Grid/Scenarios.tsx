@@ -28,10 +28,10 @@ export const Scenarios = (props: SceneGridProps) => {
         setIndex(index + 1)
     }
 
-    return <PBCard sx={{ flexGrow: 1 }}>
-        <Stack width='100%' justifyContent='space-between' alignItems='center'>
+    return <PBCard sx={{ flexGrow: 1, minWidth: 0 }}>
+        <Stack width='100%' justifyContent='space-between' alignItems='center' sx={{ alignSelf: 'stretch', minHeight: 0 }}>
             <Typography variant="h6" sx={{ marginTop: theme.spacing(2) }}>{`${isVerySmallScreen ? '' : t("mapNavigation.multipleInitialScenarios") + ':'} ${index + 1} / ${maps.length}`}</Typography>
-            <Stack width='100%' direction='row' justifyContent='space-around' alignItems='center'>
+            <Stack width='100%' direction='row' justifyContent='space-around' alignItems='center' sx={{ flex: 1, minHeight: 0 }}>
                 <IconButtonTooltip sx={{ marginLeft: theme.spacing(1), visibility: isFirstMap ? "hidden" : "visible"}} disabled={isFirstMap} onClick={handleBack} icon={<KeyboardArrowLeft />} tooltip={t("mapNavigation.prev")} /> 
                 <SceneGrid styling={props.styling} />
                 <IconButtonTooltip sx={{ marginRight: theme.spacing(1), visibility: isLastMap ? "hidden" : "visible"}} disabled={isLastMap} onClick={handleNext} icon={<KeyboardArrowRight />} tooltip={t("mapNavigation.next")} /> 

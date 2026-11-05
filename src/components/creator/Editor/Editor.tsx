@@ -36,7 +36,7 @@ export const CreatorEditor = () => {
           <Stack alignItems="center" height="inherit" sx={{ backgroundColor: theme.palette.background.paper }}>
             <Header CenterComponent={<HeaderText text={t("editor.editorHeader")} />}
               SubHeader={<EditorSubHeader viewButton={shouldShow ? <EmberPreviewButton /> : undefined} reactViewButton={<PreviewButton />} />} />
-            <Stack justifyContent="center" height="100%" width="100%" sx={{ maxWidth: 'var(--creator-max-width)', maxHeight: 'var(--creator-max-height)' }}>
+            <Stack justifyContent="center" width="100%" sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
               <SceneEdition />
             </Stack>
           </Stack>
