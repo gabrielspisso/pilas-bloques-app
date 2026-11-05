@@ -52,7 +52,7 @@ export const SceneCell: React.FC<CellProps> = (props) => {
             boxShadow: isDropTarget ? `inset 0 0 0 999px ${alpha(theme.palette.success.main, 0.25)}` : undefined
         }}
         onDragStart={(e) => e.preventDefault()}
-        onPointerDown={(e) => startCellDrag(e, props.position, props.content)}
+        onPointerDown={(e) => startCellDrag(e, props.position, props.content, imagePath)}
         onClick={handleClick}>
         {objectsInCell.map(obj =>
             <img

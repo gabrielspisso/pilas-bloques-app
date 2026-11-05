@@ -1,12 +1,12 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { I18nextProvider } from 'react-i18next'
 import i18n from '../../../../i18n'
-import { defaultChallenge } from '../../../../components/serializedChallenge'
+import { SceneMap, defaultChallenge } from '../../../../components/serializedChallenge'
 import { LocalStorage } from '../../../../localStorage'
 import { CreatorContextProvider } from '../../../../components/creator/Editor/CreatorContext'
 import { SceneEdition } from '../../../../components/creator/Editor/SceneEdition/SceneEdition'
 import { UndoRedoButtons } from '../../../../components/creator/Editor/EditorSubHeader/UndoRedoButtons'
-import { ACTOR, OBSTACLE } from '../../../../components/creator/Editor/SceneEdition/mapUtils'
+import { ACTOR, EMPTY, OBSTACLE, cellDragMode, movePiece } from '../../../../components/creator/Editor/SceneEdition/mapUtils'
 
 // jsdom has neither PointerEvent nor layout: pointer events are MouseEvents with pointer names,
 // and elementFromPoint is mocked to say what is under the pointer.
@@ -138,6 +138,95 @@ describe('Scene drag and drop', () => {
             expect(savedMap()[2][2]).toBe('-')
             fireEvent.click(cellAt(2, 2))
             expect(savedMap()[2][2]).toBe('L')
+        })
+    })
+
+    describe('moving placed pieces', () => {
+        const saveMap = (map: SceneMap) => LocalStorage.saveCreatorChallenge({ ...defaultChallenge('Lita'), scene: { type: 'Lita', maps: [map] } })
+        const drag = (from: Element, to: Element | null) => {
+            pointer('pointerdown', from, 0, 0)
+            over(to)
+            pointer('pointermove', window, 80, 80)
+            pointer('pointerup', window, 80, 80)
+        }
+        const actorCount = () => savedMap().flat().filter(c => c.split('&').includes(ACTOR)).length
+
+        beforeEach(() => saveMap([[ACTOR, '-', '-'], ['-', 'L', '-'], ['-', '-', OBSTACLE]]))
+
+        test('the actor can be dragged to another cell and there is still only one', async () => {
+            await renderEditor(OBSTACLE)
+            drag(cellAt(0, 0), cellAt(1, 2))
+            expect(savedMap()[1][2]).toBe(ACTOR)
+            expect(savedMap()[0][0]).toBe(EMPTY)
+            expect(actorCount()).toBe(1)
+        })
+
+        test('an object dropped outside the board disappears, with a faded ghost while outside', async () => {
+            await renderEditor(OBSTACLE)
+            pointer('pointerdown', cellAt(1, 1), 0, 0)
+            over(document.body)
+            pointer('pointermove', window, 500, 500)
+            expect(screen.getByTestId('drag-ghost').style.opacity).toBe('0.35')
+            pointer('pointerup', window, 500, 500)
+            expect(savedMap()[1][1]).toBe(EMPTY)
+        })
+
+        test('the actor dropped outside the board does not disappear: it goes back to the initial cell', async () => {
+            saveMap([['-', '-', '-'], ['-', 'A&L', '-'], ['-', '-', '-']])
+            await renderEditor(OBSTACLE)
+            drag(cellAt(1, 1), document.body)
+            expect(savedMap()[1][1]).toBe('L')
+            expect(savedMap()[0][0]).toBe(ACTOR)
+            expect(actorCount()).toBe(1)
+        })
+
+        test('an obstacle can not replace the actor at the initial cell: nothing changes', async () => {
+            await renderEditor('L')
+            const before = JSON.stringify(savedMap())
+            drag(cellAt(2, 2), cellAt(0, 0))
+            expect(JSON.stringify(savedMap())).toBe(before)
+        })
+
+        test('a move is a single undo step', async () => {
+            await renderEditor(OBSTACLE)
+            const before = JSON.stringify(savedMap())
+            drag(cellAt(1, 1), cellAt(2, 0))
+            expect(savedMap()[2][0]).toBe('L')
+            expect(savedMap()[1][1]).toBe(EMPTY)
+            fireEvent.keyDown(window, { key: 'z', ctrlKey: true })
+            expect(JSON.stringify(savedMap())).toBe(before)
+        })
+
+        test('dragging from a cell that already has the selected piece paints instead of moving', async () => {
+            await renderEditor(OBSTACLE)
+            pointer('pointerdown', cellAt(2, 2), 0, 0)
+            over(cellAt(2, 1)); pointer('pointermove', window, 40, 0)
+            over(cellAt(2, 0)); pointer('pointermove', window, 80, 0)
+            pointer('pointerup', window, 80, 0)
+            expect(savedMap()[2]).toEqual([OBSTACLE, OBSTACLE, OBSTACLE])
+        })
+    })
+
+    describe('map rules (pure functions)', () => {
+        test('cellDragMode', () => {
+            expect(cellDragMode(EMPTY, OBSTACLE)).toEqual({ mode: 'paint' })
+            expect(cellDragMode('L', EMPTY)).toEqual({ mode: 'paint' })
+            expect(cellDragMode(OBSTACLE, OBSTACLE)).toEqual({ mode: 'paint' })
+            expect(cellDragMode('A&L', 'L')).toEqual({ mode: 'paint' })
+            expect(cellDragMode('A&L', OBSTACLE)).toEqual({ mode: 'move', piece: ACTOR })
+            expect(cellDragMode(ACTOR, ACTOR)).toEqual({ mode: 'move', piece: ACTOR })
+            expect(cellDragMode('L', OBSTACLE)).toEqual({ mode: 'move', piece: 'L' })
+        })
+
+        test('movePiece does not mutate its input and keeps the prize when the actor leaves', () => {
+            const map = [['A&L', '-'], ['-', '-']]
+            const moved = movePiece(map, { row: 0, column: 0 }, ACTOR, { row: 1, column: 1 })
+            expect(moved).toEqual([['L', '-'], ['-', ACTOR]])
+            expect(map).toEqual([['A&L', '-'], ['-', '-']])
+        })
+
+        test('movePiece of an object onto the actor keeps both', () => {
+            expect(movePiece([[ACTOR, 'L']], { row: 0, column: 1 }, 'L', { row: 0, column: 0 })).toEqual([['A&L', EMPTY]])
         })
     })
 })

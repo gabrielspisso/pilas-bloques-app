@@ -86,3 +86,44 @@ export const applyTool = (inMap: SceneMap, tool: string, position: Position): Sc
             return map
     }
 }
+
+/**
+ * Removes one piece from a cell. The actor is never removed: it goes back to the initial cell
+ * (and stays there if it already was there).
+ */
+export const removePiece = (inMap: SceneMap, position: Position, piece: string): SceneMap => {
+    const map = cloneMap(inMap)
+    const objects = objectsInCell(map[position.row][position.column])
+    if (!objects.includes(piece)) return map
+    if (piece === ACTOR && isInitialPosition(position)) return map
+    map[position.row][position.column] = objects.filter(o => o !== piece).join('&') || EMPTY
+    if (piece === ACTOR) setActorAtPosition(map)
+    return map
+}
+
+/**
+ * Moves a placed piece to another cell, with the same rules as the palette tools.
+ * A null destination (dropped outside the board) removes the piece.
+ * If the destination doesn't accept the piece, nothing changes.
+ */
+export const movePiece = (inMap: SceneMap, from: Position, piece: string, to: Position | null): SceneMap => {
+    if (!objectsInCell(inMap[from.row][from.column]).includes(piece)) return cloneMap(inMap)
+    if (!to) return removePiece(inMap, from, piece)
+    if (samePosition(from, to)) return cloneMap(inMap)
+    if (piece === ACTOR) return applyTool(inMap, ACTOR, to)
+    const moved = applyTool(removePiece(inMap, from, piece), piece, to)
+    return objectsInCell(moved[to.row][to.column]).includes(piece) ? moved : cloneMap(inMap)
+}
+
+export type CellDragMode = { mode: 'paint' } | { mode: 'move', piece: string }
+
+/**
+ * Dragging from a cell paints with the selected tool when the cell is empty, when the eraser is
+ * selected or when the cell already has the selected piece. Otherwise it moves the piece in the cell
+ * (the actor first, since it is drawn on top).
+ */
+export const cellDragMode = (content: string, selectedTool: string): CellDragMode => {
+    const objects = objectsInCell(content)
+    if (!objects.length || selectedTool === EMPTY || (selectedTool !== ACTOR && objects.includes(selectedTool))) return { mode: 'paint' }
+    return { mode: 'move', piece: objects.includes(ACTOR) ? ACTOR : objects[objects.length - 1] }
+}

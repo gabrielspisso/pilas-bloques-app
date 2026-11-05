@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from "react"
 import { CreatorContext } from "../CreatorContext"
 import { SceneMap } from "../../../serializedChallenge"
 import { Position } from "./Grid/SceneCell"
-import { applyTool, samePosition } from "./mapUtils"
+import { applyTool, cellDragMode, movePiece, samePosition } from "./mapUtils"
 
 /** Pointer movement (px) before a press becomes a drag. Below it, it's a regular tap/click. */
 export const DRAG_THRESHOLD_PX = 6
@@ -12,7 +12,7 @@ export const CELL_ROW_ATTRIBUTE = 'data-cell-row'
 export const CELL_COLUMN_ATTRIBUTE = 'data-cell-column'
 export const SCENE_GRID_ATTRIBUTE = 'data-scene-grid'
 
-type DragKind = 'tool' | 'paint'
+type DragKind = 'tool' | 'paint' | 'move'
 
 type Gesture = {
     kind: DragKind
@@ -33,12 +33,14 @@ export type DragView = {
     x: number
     y: number
     over: Position | null
+    /** Moving a piece outside the board: dropping it there removes it. */
+    outside: boolean
 }
 
 type SceneDragContextType = {
     drag: DragView | null
     startToolDrag: (event: React.PointerEvent, tool: string, image: string) => void
-    startCellDrag: (event: React.PointerEvent, position: Position, content: string) => void
+    startCellDrag: (event: React.PointerEvent, position: Position, content: string, imagePath: string) => void
     /** True (once) right after a drag ended, so the click that browsers may fire afterwards is ignored. */
     shouldIgnoreClick: () => boolean
 }
@@ -127,12 +129,16 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
             }
         }
         event.preventDefault?.()
-        current.over = cellAtPoint(event.clientX, event.clientY).cell
+        const point = cellAtPoint(event.clientX, event.clientY)
+        current.over = point.cell
         if (current.kind === 'paint' && current.over && !samePosition(current.over, current.lastCell)) {
             paint(current, cellsBetween(current.lastCell!, current.over))
             current.lastCell = current.over
         }
-        setDrag({ kind: current.kind, image: current.image, x: event.clientX, y: event.clientY, over: current.over })
+        setDrag({
+            kind: current.kind, image: current.image, x: event.clientX, y: event.clientY, over: current.over,
+            outside: current.kind === 'move' && !point.insideGrid
+        })
     }
 
     const paint = (current: Gesture, cells: Position[]) => {
@@ -142,13 +148,18 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
 
     const onUp = (event: PointerEvent) => {
         const current = gesture.current
+        const { currentMap, setCurrentMap, setSelectedTool } = latest.current
         if (current?.active && current.kind === 'tool') {
             const target = cellAtPoint(event.clientX, event.clientY).cell
-            const { currentMap, setCurrentMap, setSelectedTool } = latest.current
             if (target) {
                 setCurrentMap(applyTool(currentMap, current.piece, target))
                 setSelectedTool(current.piece)
             }
+        }
+        if (current?.active && current.kind === 'move') {
+            const { cell, insideGrid } = cellAtPoint(event.clientX, event.clientY)
+            // On a cell: move there. Outside the board: remove. On the board but between cells: nothing.
+            if (cell || !insideGrid) setCurrentMap(movePiece(currentMap, current.from!, current.piece, cell))
         }
         finish()
     }
@@ -167,13 +178,14 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
         }
     }
 
-    const startCellDrag = (event: React.PointerEvent, position: Position, content: string) => {
+    const startCellDrag = (event: React.PointerEvent, position: Position, content: string, imagePath: string) => {
         if (!isPrimaryButton(event)) return
         ignoreNextClick.current = false
-        gesture.current = {
-            kind: 'paint', piece: latest.current.selectedTool, image: '', startX: event.clientX, startY: event.clientY,
-            active: false, over: null, from: position, lastCell: position
-        }
+        const dragMode = cellDragMode(content, latest.current.selectedTool)
+        const common = { startX: event.clientX, startY: event.clientY, active: false, over: null, from: position, lastCell: position }
+        gesture.current = dragMode.mode === 'move'
+            ? { ...common, kind: 'move', piece: dragMode.piece, image: `${imagePath}/${dragMode.piece}.png` }
+            : { ...common, kind: 'paint', piece: latest.current.selectedTool, image: '' }
         listen()
     }
 
@@ -214,7 +226,7 @@ const DragGhost = ({ drag }: { drag: DragView }) =>
                 height: GHOST_SIZE_PX,
                 objectFit: 'contain',
                 pointerEvents: 'none',
-                opacity: 0.85,
+                opacity: drag.outside ? 0.35 : 0.85,
                 zIndex: 2000,
                 filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.35))'
             }} />
