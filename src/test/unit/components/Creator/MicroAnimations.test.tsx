@@ -17,7 +17,7 @@ describe("micro-animations", () => {
     afterEach(() => localStorage.clear())
 
     test("a newly placed piece pops in, the pieces that were already there do not", async () => {
-        renderComponent(<CreatorContextProvider defaultSelectedTool="T"><SceneDragProvider><SceneGrid styling={{}} /></SceneDragProvider></CreatorContextProvider>)
+        renderComponent(<CreatorContextProvider defaultSelectedTool="T"><SceneDragProvider><SceneGrid /></SceneDragProvider></CreatorContextProvider>)
         const cells = await screen.findAllByRole("gridcell")
         fireEvent.click(cells[1])
 

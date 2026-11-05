@@ -61,7 +61,9 @@ export const CreatorEditor = () => {
 const EditionPanel = () =>
   <Stack width="100%" data-testid="creator-edition-panel" sx={{ flex: 1, minHeight: 0, minWidth: 0, overflow: 'auto' }}>
     <ChallengeHeaderEdition />
-    <Box sx={{ flex: 1, minHeight: 360 }}>
+    {/* The board area takes the rest of the height; the floor keeps it usable on very short windows
+        (then the panel scrolls). The board computes its cells from this space (computeCellSize). */}
+    <Box sx={{ flex: '1 1 0', minHeight: { xs: 420, sm: 300 }, minWidth: 0 }} data-testid="creator-board-area">
       <SceneEdition />
     </Box>
   </Stack>

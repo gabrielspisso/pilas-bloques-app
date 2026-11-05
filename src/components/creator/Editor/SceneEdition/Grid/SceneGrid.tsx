@@ -1,4 +1,5 @@
 import { Box, Stack } from "@mui/material"
+import { computeCellSize } from "./cellSize"
 import { SceneType, SerializedChallenge, defaultChallenge } from "../../../../serializedChallenge"
 import { LocalStorage } from "../../../../../localStorage"
 import styles from "./grid.module.css"
@@ -11,18 +12,12 @@ import { applyTool, EMPTY, samePosition } from "../mapUtils"
 import { useTranslation } from "react-i18next"
 import { useThemeContext } from "../../../../../theme/ThemeContext"
 
-export type SceneGridProps = {
-    styling?: CSSProperties
-}
-
-const GRID_MARGIN_PX = 10 // keep in sync with .grid margin in grid.module.css
-const MIN_CELL_SIZE_PX = 16
-
 type AvailableSpace = { width: number, height: number }
 
 /**
- * Measures the space available for the grid. Returns null when it can't be measured
- * (e.g. no ResizeObserver in tests), so callers can fall back to the previous sizing.
+ * Measures the content box of the board container (ResizeObserver): it changes when the window is
+ * resized and when the panel remounts (switching between "Editor" and "Editor con prueba").
+ * Returns null when it can't be measured (e.g. no ResizeObserver in jsdom): the grid then fills the width (100%).
  */
 const useAvailableSpace = (ref: React.RefObject<HTMLElement>): AvailableSpace | null => {
     const [space, setSpace] = useState<AvailableSpace | null>(null)
@@ -43,15 +38,12 @@ const useAvailableSpace = (ref: React.RefObject<HTMLElement>): AvailableSpace | 
 }
 
 /**
- * Square cells as big as the available space allows, without distorting the board.
+ * Square cells as big as the measured space allows (computeCellSize), as an explicit pixel width:
+ * cells are flex: 1 with aspect-ratio 1, so each one is width / columns on both sides.
  */
-export const fluidGridStyle = (space: AvailableSpace | null, rows: number, columns: number): CSSProperties | null => {
-    if (!space || space.width <= 0) return null
-    const usableWidth = space.width - 2 * GRID_MARGIN_PX
-    const usableHeight = space.height - 2 * GRID_MARGIN_PX
-    const byWidth = usableWidth / columns
-    const cellSize = Math.max(MIN_CELL_SIZE_PX, Math.floor(usableHeight > 0 ? Math.min(byWidth, usableHeight / rows) : byWidth))
-    return { width: `${cellSize * columns}px` }
+export const fluidGridStyle = (space: AvailableSpace | null, rows: number, columns: number): CSSProperties => {
+    const cellSize = space ? computeCellSize(space.width, space.height, rows, columns) : null
+    return cellSize === null ? { width: '100%' } : { width: `${cellSize * columns}px` }
 }
 
 const KEY_MOVES: Record<string, Position> = {
@@ -61,7 +53,7 @@ const KEY_MOVES: Record<string, Position> = {
     ArrowRight: { row: 0, column: 1 }
 }
 
-export const SceneGrid = (props: SceneGridProps) => {
+export const SceneGrid = () => {
     const { currentMap, setCurrentMap, selectedTool, index } = useContext(CreatorContext)
     const { t } = useTranslation('creator', { useSuspense: false }) // the board must render even before translations load
     const { theme } = useThemeContext()
@@ -73,7 +65,7 @@ export const SceneGrid = (props: SceneGridProps) => {
 
     const containerRef = useRef<HTMLDivElement>(null)
     const space = useAvailableSpace(containerRef)
-    const gridStyle = fluidGridStyle(space, currentMap.length, currentMap[0]?.length || 1) || props.styling
+    const gridStyle = fluidGridStyle(space, currentMap.length, currentMap[0]?.length || 1)
 
     // Keyboard: one Tab stop (roving tabindex), arrows move, Enter/Space place the selected tool, Delete erases.
     const rows = currentMap.length
@@ -125,7 +117,8 @@ export const SceneGrid = (props: SceneGridProps) => {
         if (!samePosition(position, active)) setFocused(position)
     }
 
-    return <Box ref={containerRef} sx={{ flex: 1, alignSelf: 'stretch', minWidth: 0, minHeight: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    // The viewport scrolls inside when even the minimum cell size does not fit (never the page).
+    return <Box ref={containerRef} className={styles['board-viewport']} data-testid="board-viewport">
         <Stack justifyContent='flex-start' className={styles.grid} data-testid="dummy-test-scene-grid" {...{ [SCENE_GRID_ATTRIBUTE]: true }}
             ref={gridRef}
             role="grid"

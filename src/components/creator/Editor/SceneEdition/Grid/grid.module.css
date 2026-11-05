@@ -1,5 +1,22 @@
+/* Board container: takes all the space it is given and scrolls inside if the board doesn't fit
+   with the minimum cell size (44 px). The cell size comes from cellSize.ts (computeCellSize). */
+.board-viewport {
+    flex: 1 1 0;
+    align-self: stretch;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+/* margin: auto centers the board when it fits and keeps its start reachable when it scrolls
+   (justify-content: center would cut the left/top part). */
 .grid {
-    margin: 10px;
+    margin: auto;
+    flex-shrink: 0;
 }
 
 .cell {

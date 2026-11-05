@@ -18,7 +18,7 @@ export const SceneTools = () => {
         label: string
     }
     
-    const { theme } = useThemeContext()
+    const { theme, isSmallScreen } = useThemeContext()
 
     const { t } = useTranslation('creator');
     const { selectedTool, setSelectedTool } = useContext(CreatorContext)
@@ -68,8 +68,8 @@ type ToolGroupProps = {
 }
 
 const ToolGroup = (props: ToolGroupProps) =>
-    <Stack alignItems="center" sx={{ marginY: theme.spacing(0.5) }}>
-        {props.children}
+    <Stack alignItems="center" sx={{ marginY: theme.spacing(0.5), flexShrink: 0 }}>
+        <Stack direction={isSmallScreen ? "row" : "column"} gap={isSmallScreen ? 1 : 0} alignItems="center">{props.children}</Stack>
         <Typography sx={{ textAlign: 'center', lineHeight:"1", marginTop: theme.spacing(0.5) }} variant="subtitle2">{t(`tools.${props.type}`)}{props.name}</Typography>
     </Stack>
 
@@ -95,9 +95,12 @@ const DeleteTool = () =>
         <Tool id="-" image={`${imagePath}/eraser.png`} label={t('tools.delete')} />
     </ToolGroup>
 
+// Small screens: one row above the board that scrolls sideways (the board keeps the whole width).
 return (
-    <PBCard>
-        <Stack alignItems="center" justifyContent="flex-start" style={{ padding: theme.spacing(1), height: "100%" }}
+    <PBCard sx={{ flexShrink: 0, minWidth: 0 }}>
+        <Stack direction={isSmallScreen ? "row" : "column"} alignItems={isSmallScreen ? "flex-start" : "center"} justifyContent="flex-start" data-testid="scene-tools"
+            gap={isSmallScreen ? 1 : 0}
+            style={{ padding: theme.spacing(1), height: isSmallScreen ? undefined : "100%", width: "100%", overflowX: isSmallScreen ? "auto" : undefined }}
             role="group" aria-label={t('editor.board.tools')!}>
             <PutActorTool />
             <PutObstacleTool />
