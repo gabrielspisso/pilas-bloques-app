@@ -90,6 +90,14 @@ export const SceneGrid = (props: SceneGridProps) => {
         gridRef.current?.querySelector<HTMLElement>(`[${CELL_ROW_ATTRIBUTE}="${active.row}"][${CELL_COLUMN_ATTRIBUTE}="${active.column}"]`)?.focus()
     })
 
+    // Previous render's map, to know which cells just changed (for the placement animation).
+    const previous = useRef<{ index: number, map: string[][] } | null>(null)
+    const before = previous.current
+    const comparable = before && before.index === index && before.map.length === rows && (before.map[0]?.length || 1) === columns
+    const previousContentAt = (i: number, j: number, content: string) =>
+        comparable && before!.map[i][j] !== content ? before!.map[i][j] : undefined
+    useEffect(() => { previous.current = { index, map: currentMap.map(row => row.slice()) } })
+
     const handleKeyDown = (event: React.KeyboardEvent) => {
         const move = KEY_MOVES[event.key]
         if (move) {
@@ -135,6 +143,7 @@ export const SceneGrid = (props: SceneGridProps) => {
                             key={i * 100 + j + cellContent}
                             content={cellContent}
                             tabIndex={i === active.row && j === active.column ? 0 : -1}
+                            previousContent={previousContentAt(i, j, cellContent)}
                             sceneType={sceneType} />)}
                 </Stack>)}
         </Stack>

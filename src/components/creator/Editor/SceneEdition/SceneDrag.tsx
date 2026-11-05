@@ -1,4 +1,5 @@
 import { Portal } from "@mui/material"
+import gridStyles from "./Grid/grid.module.css"
 import React, { useContext, useEffect, useRef, useState } from "react"
 import { CreatorContext } from "../CreatorContext"
 import { SceneMap } from "../../../serializedChallenge"
@@ -244,6 +245,7 @@ const DragGhost = ({ drag }: { drag: DragView }) =>
     <Portal>
         <img
             data-testid="drag-ghost"
+            className={gridStyles['ghost-pop']}
             src={drag.image}
             alt=""
             aria-hidden

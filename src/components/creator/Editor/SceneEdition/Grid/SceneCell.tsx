@@ -1,5 +1,5 @@
 import styles from "./grid.module.css"
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import { CreatorContext } from "../../CreatorContext"
 import { applyTool, samePosition } from "../mapUtils"
 import { SceneType } from "../../../../serializedChallenge"
@@ -15,6 +15,8 @@ type CellProps = {
     sceneType: SceneType
     /** Roving tabindex: only the focused cell of the grid is reachable with Tab. */
     tabIndex?: number
+    /** Content of this cell before the last edit, when it changed: new pieces get a short pop animation. */
+    previousContent?: string
 }
 
 export type Position = {
@@ -34,7 +36,11 @@ export const SceneCell: React.FC<CellProps> = (props) => {
 
     const objectsInCell = props.content.split('&').filter(o => o !== '-')
 
-    const objectStyle = (object: string) => styles[`img-${object}`] || styles['img-default']
+    // A cell remounts when its content changes; what was new at mount keeps its animation class on later renders.
+    const [newPieces] = useState(() => props.previousContent === undefined ? [] :
+        props.content.split('&').filter(object => !props.previousContent!.split('&').includes(object)))
+    const isNewPiece = (object: string) => newPieces.includes(object)
+    const objectStyle = (object: string) => [styles[`img-${object}`] || styles['img-default'], isNewPiece(object) ? styles['piece-pop'] : ''].filter(Boolean).join(' ')
 
     const hasMultipleObjects = objectsInCell.length > 1
 

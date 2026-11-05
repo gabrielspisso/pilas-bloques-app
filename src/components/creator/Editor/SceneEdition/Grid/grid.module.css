@@ -15,6 +15,8 @@
     -webkit-touch-callout: none;
     user-select: none;
     -webkit-user-select: none;
+    /* drop target highlight fades in */
+    transition: box-shadow 150ms ease-out, outline-color 150ms ease-out;
 }
 
 .img-A{ 
@@ -54,4 +56,29 @@
     clip: rect(0 0 0 0);
     white-space: nowrap;
     border: 0;
+}
+
+/* Micro-animations: short (< 250 ms), never block input (pointer-events untouched), off with reduced motion.
+   The independent `scale` property composes with the transforms of .img-A / .img-default. */
+@keyframes piece-pop {
+    from { scale: 0.6; opacity: 0.4; }
+    to { scale: 1; opacity: 1; }
+}
+
+.piece-pop {
+    animation: piece-pop 180ms ease-out;
+}
+
+@keyframes ghost-pop {
+    from { scale: 0.7; }
+    to { scale: 1; }
+}
+
+.ghost-pop {
+    animation: ghost-pop 120ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cell { transition: none; }
+    .piece-pop, .ghost-pop { animation: none; }
 }

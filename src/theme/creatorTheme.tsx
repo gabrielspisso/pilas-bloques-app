@@ -1,4 +1,4 @@
-import { createTheme, ThemeOptions, ThemeProvider } from "@mui/material";
+import { createTheme, ThemeOptions, ThemeProvider, useMediaQuery } from "@mui/material";
 import { deepmerge } from '@mui/utils';
 import { FC, PropsWithChildren, useMemo } from "react";
 import { getDesignTokens } from "./theme";
@@ -113,8 +113,28 @@ const toyDark: ThemeOptions = {
     }
 }
 
-export const getCreatorDesignTokens = (darkModeEnabled: boolean, simpleReadModeEnabled: boolean): ThemeOptions =>
-    deepmerge(getDesignTokens(darkModeEnabled, simpleReadModeEnabled), deepmerge(darkModeEnabled ? toyDark : toyLight, toyCommon))
+/** Longest MUI transition in the creator (dialogs, menus, tabs...): micro-animations stay under 250 ms. */
+export const MAX_TRANSITION_MS = 240
+
+const quickMotion: ThemeOptions = {
+    transitions: {
+        duration: { shortest: 120, shorter: 150, short: 180, standard: 200, complex: MAX_TRANSITION_MS, enteringScreen: 200, leavingScreen: 160 }
+    }
+}
+
+/** prefers-reduced-motion: no MUI transitions and no ripple. */
+const noMotion: ThemeOptions = {
+    transitions: { create: () => 'none' },
+    components: {
+        MuiButtonBase: { defaultProps: { disableRipple: true } }
+    }
+}
+
+export const getCreatorDesignTokens = (darkModeEnabled: boolean, simpleReadModeEnabled: boolean, reducedMotion = false): ThemeOptions =>
+    deepmerge(
+        getDesignTokens(darkModeEnabled, simpleReadModeEnabled),
+        deepmerge(deepmerge(darkModeEnabled ? toyDark : toyLight, toyCommon), reducedMotion ? noMotion : quickMotion)
+    )
 
 /**
  * Nested theme for the creator: replaces both the MUI theme and the theme exposed by
@@ -124,10 +144,11 @@ export const getCreatorDesignTokens = (darkModeEnabled: boolean, simpleReadModeE
 export const CreatorThemeProvider: FC<PropsWithChildren> = ({ children }) => {
     const themeContext = useThemeContext()
     const { darkModeEnabled, simpleReadModeEnabled } = themeContext
+    const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
 
     const theme = useMemo(
-        () => createTheme(getCreatorDesignTokens(darkModeEnabled, simpleReadModeEnabled)),
-        [darkModeEnabled, simpleReadModeEnabled]
+        () => createTheme(getCreatorDesignTokens(darkModeEnabled, simpleReadModeEnabled, reducedMotion)),
+        [darkModeEnabled, simpleReadModeEnabled, reducedMotion]
     )
 
     return <ThemeContext.Provider value={{ ...themeContext, theme }}>
