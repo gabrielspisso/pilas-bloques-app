@@ -195,8 +195,14 @@
 		},
 		"header": {
 			"region": "Título e enunciado do desafio",
-			"expand": "Mostrar título e enunciado",
-			"collapse": "Ocultar título e enunciado"
+			"expand": "Mostrar o enunciado",
+			"collapse": "Ocultar o enunciado",
+			"statementSummary": "Enunciado: {{text}}",
+			"statementEmpty": "Enunciado: você ainda não escreveu nada",
+			"panel": "Enunciado e dica",
+			"writeTab": "Escrever",
+			"previewTab": "Pré-visualização",
+			"closePanel": "Fechar o enunciado"
 		},
 		"checklist": {
 			"title": "Antes de publicar",

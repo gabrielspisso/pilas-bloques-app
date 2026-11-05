@@ -195,8 +195,14 @@
 		},
 		"header": {
 			"region": "Challenge title and statement",
-			"expand": "Show title and statement",
-			"collapse": "Hide title and statement"
+			"expand": "Show the statement",
+			"collapse": "Hide the statement",
+			"statementSummary": "Statement: {{text}}",
+			"statementEmpty": "Statement: nothing written yet",
+			"panel": "Statement and clue",
+			"writeTab": "Write",
+			"previewTab": "Preview",
+			"closePanel": "Close the statement"
 		},
 		"checklist": {
 			"title": "Before publishing",
