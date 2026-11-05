@@ -252,6 +252,9 @@
 			}
 		},
 		"board": {
+			"moveTool": "Mover peças",
+			"moveInstructions": "Ferramenta Mover: Enter pega a peça da casa, as setas escolhem o destino, Enter a solta e Escape cancela.",
+			"picked": "Você pegou: {{piece}}. Escolha outra casa e toque nela ou aperte Enter. Escape cancela.",
 			"label": "Tabuleiro, cenário {{scenario}}: {{rows}} linhas por {{columns}} colunas",
 			"instructions": "Use as setas para se mover entre as casas, Enter para colocar a ferramenta escolhida e Delete para apagar.",
 			"cell": "Linha {{row}}, coluna {{column}}: {{content}}",
@@ -321,6 +324,7 @@
 		"clueToggle": "Adicionar uma dica (opcional)"
 	},
 	"tools": {
+		"move": "Mover",
 		"putObstacle": "Adicionar obstáculos",
 		"putObject": "Adicionar objetos ",
 		"putActor": "Mover para ",

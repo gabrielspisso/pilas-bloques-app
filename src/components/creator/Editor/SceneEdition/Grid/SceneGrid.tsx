@@ -6,9 +6,10 @@ import styles from "./grid.module.css"
 import { SceneCell } from "./SceneCell"
 import { useContext, CSSProperties, useEffect, useRef, useState } from "react"
 import { CreatorContext } from "../../CreatorContext"
-import { CELL_COLUMN_ATTRIBUTE, CELL_ROW_ATTRIBUTE, SCENE_GRID_ATTRIBUTE } from "../SceneDrag"
+import { CELL_COLUMN_ATTRIBUTE, CELL_ROW_ATTRIBUTE, SCENE_GRID_ATTRIBUTE, useSceneDrag } from "../SceneDrag"
 import { Position } from "./SceneCell"
-import { applyTool, EMPTY, samePosition } from "../mapUtils"
+import { applyTool, EMPTY, MOVE_TOOL, samePosition } from "../mapUtils"
+import { pieceName } from "../boardLabels"
 import { useTranslation } from "react-i18next"
 import { useThemeContext } from "../../../../../theme/ThemeContext"
 
@@ -57,6 +58,8 @@ export const SceneGrid = () => {
     const { currentMap, setCurrentMap, selectedTool, index } = useContext(CreatorContext)
     const { t } = useTranslation('creator', { useSuspense: false }) // the board must render even before translations load
     const { theme } = useThemeContext()
+    const { moveSelection, moveTap, cancelMove } = useSceneDrag()
+    const moveMode = selectedTool === MOVE_TOOL
 
     const storageChallenge = LocalStorage.getCreatorChallenge()
     const challenge: SerializedChallenge = storageChallenge ? storageChallenge : defaultChallenge('Duba')
@@ -101,8 +104,13 @@ export const SceneGrid = () => {
             refocus.current = true
         } else if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault()
-            setCurrentMap(applyTool(currentMap, selectedTool, active))
+            // Move tool: Enter picks the piece, arrows choose the destination, Enter drops it there.
+            if (moveMode) moveTap(active)
+            else setCurrentMap(applyTool(currentMap, selectedTool, active))
             refocus.current = true
+        } else if (event.key === 'Escape' && moveSelection) {
+            event.preventDefault()
+            cancelMove()
         } else if (event.key === 'Delete' || event.key === 'Backspace') {
             event.preventDefault()
             setCurrentMap(applyTool(currentMap, EMPTY, active))
@@ -127,7 +135,10 @@ export const SceneGrid = () => {
             onKeyDown={handleKeyDown}
             onFocus={handleFocus}
             style={{ ...gridStyle, ['--creator-focus-color' as any]: theme.palette.primary.main }}>
-            <span id="scene-grid-instructions" className={styles['visually-hidden']}>{t('editor.board.instructions')}</span>
+            <span id="scene-grid-instructions" className={styles['visually-hidden']}>{t(moveMode ? 'editor.board.moveInstructions' : 'editor.board.instructions')}</span>
+            <span role="status" aria-live="polite" className={styles['visually-hidden']} data-testid="move-status">
+                {moveSelection ? t('editor.board.picked', { piece: pieceName(t, sceneType, moveSelection.piece) }) : ''}
+            </span>
             {currentMap.map((row, i) =>
                 <Stack key={i + row.join(',')} direction="row" data-testid="challenge-row" role="row">
                     {row.map((cellContent, j) =>

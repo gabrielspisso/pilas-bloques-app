@@ -1,7 +1,7 @@
 import styles from "./grid.module.css"
 import { useContext, useState } from "react"
 import { CreatorContext } from "../../CreatorContext"
-import { applyTool, samePosition } from "../mapUtils"
+import { applyTool, MOVE_TOOL, samePosition } from "../mapUtils"
 import { SceneType } from "../../../../serializedChallenge"
 import { CELL_COLUMN_ATTRIBUTE, CELL_ROW_ATTRIBUTE, useSceneDrag } from "../SceneDrag"
 import { useThemeContext } from "../../../../../theme/ThemeContext"
@@ -27,7 +27,7 @@ export type Position = {
 export const SceneCell: React.FC<CellProps> = (props) => {
 
     const { selectedTool, currentMap, setCurrentMap } = useContext(CreatorContext)
-    const { drag, startCellDrag, shouldIgnoreClick } = useSceneDrag()
+    const { drag, startCellDrag, shouldIgnoreClick, moveSelection, moveTap } = useSceneDrag()
     const { theme } = useThemeContext()
     const { t } = useTranslation('creator', { useSuspense: false }) // the board must render even before translations load
 
@@ -46,24 +46,37 @@ export const SceneCell: React.FC<CellProps> = (props) => {
 
     const isDropTarget = samePosition(drag?.over, props.position)
 
+    const moveMode = selectedTool === MOVE_TOOL
+    const isPicked = moveMode && samePosition(moveSelection?.position, props.position)
+    // Move tool: pieces can be grabbed; once one is picked, any cell is a destination.
+    const cursor = !moveMode ? 'pointer' : objectsInCell.length ? 'grab' : moveSelection ? 'move' : 'default'
+
     const handleClick = () => {
         if (shouldIgnoreClick()) return // the click that follows a paint/move stroke
+        if (moveMode) return moveTap(props.position) // pick, drop or move; never paints
         setCurrentMap(applyTool(currentMap, selectedTool, props.position))
     }
+
+    const outline = isDropTarget ? `4px solid ${theme.palette.success.main}`
+        : isPicked ? `4px dashed ${theme.palette.primary.main}` : undefined
 
     return <div
         data-testid="challenge-cell"
         role="gridcell"
         aria-label={cellLabel(t, props.sceneType, props.position.row, props.position.column, props.content)}
         tabIndex={props.tabIndex ?? -1}
+        aria-selected={moveMode ? isPicked : undefined}
+        data-picked={isPicked || undefined}
         {...{ [CELL_ROW_ATTRIBUTE]: props.position.row, [CELL_COLUMN_ATTRIBUTE]: props.position.column }}
         className={styles.cell}
         style={{
             backgroundImage: `url(${backgroundCellImage})`,
             justifyContent: !hasMultipleObjects ? 'center' : '',
-            outline: isDropTarget ? `4px solid ${theme.palette.success.main}` : undefined,
+            outline,
             outlineOffset: '-4px',
-            boxShadow: isDropTarget ? `inset 0 0 0 999px ${alpha(theme.palette.success.main, 0.25)}` : undefined
+            cursor,
+            boxShadow: isDropTarget ? `inset 0 0 0 999px ${alpha(theme.palette.success.main, 0.25)}`
+                : isPicked ? `inset 0 0 0 999px ${alpha(theme.palette.primary.main, 0.18)}` : undefined
         }}
         onDragStart={(e) => e.preventDefault()}
         onPointerDown={(e) => startCellDrag(e, props.position, props.content, imagePath)}

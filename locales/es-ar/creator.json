@@ -252,6 +252,9 @@
 			}
 		},
 		"board": {
+			"moveTool": "Mover piezas",
+			"moveInstructions": "Herramienta Mover: Enter levanta la pieza de la casilla, las flechas eligen el destino, Enter la suelta y Escape cancela.",
+			"picked": "Levantaste: {{piece}}. Elegí otra casilla y tocala o apretá Enter. Escape cancela.",
 			"label": "Tablero, escenario {{scenario}}: {{rows}} filas por {{columns}} columnas",
 			"instructions": "Usá las flechas para moverte entre las casillas, Enter para colocar la herramienta elegida y Suprimir para borrar.",
 			"cell": "Fila {{row}}, columna {{column}}: {{content}}",
@@ -321,6 +324,7 @@
 		"clueToggle": "Agregar una pista (opcional)"
 	},
 	"tools": {
+		"move": "Mover",
 		"putObstacle": "Añadir obstáculo",
 		"putObject": "Añadir objetos",
 		"putActor": "Mover a ",

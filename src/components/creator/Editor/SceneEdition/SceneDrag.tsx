@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useRef, useState } from "react"
 import { CreatorContext } from "../CreatorContext"
 import { SceneMap } from "../../../serializedChallenge"
 import { Position } from "./Grid/SceneCell"
-import { applyTool, cellDragMode, movePiece, samePosition } from "./mapUtils"
+import { applyTool, cellDragMode, MOVE_TOOL, MoveSelection, movePiece, moveToolTap, samePosition } from "./mapUtils"
 
 /** Pointer movement (px) before a press becomes a drag. Below it, it's a regular tap/click. */
 export const DRAG_THRESHOLD_PX = 6
@@ -51,13 +51,21 @@ type SceneDragContextType = {
     startCellDrag: (event: React.PointerEvent, position: Position, content: string, imagePath: string) => void
     /** True (once) right after a drag ended, so the click that browsers may fire afterwards is ignored. */
     shouldIgnoreClick: () => boolean
+    /** Piece picked with the Move tool (tap or Enter), waiting for its destination. */
+    moveSelection: MoveSelection | null
+    /** A tap / Enter on a cell with the Move tool: pick, drop or move (see moveToolTap). */
+    moveTap: (position: Position) => void
+    cancelMove: () => void
 }
 
 export const SceneDragContext = React.createContext<SceneDragContextType>({
     drag: null,
     startToolDrag: () => { },
     startCellDrag: () => { },
-    shouldIgnoreClick: () => false
+    shouldIgnoreClick: () => false,
+    moveSelection: null,
+    moveTap: () => { },
+    cancelMove: () => { }
 })
 
 export const useSceneDrag = () => useContext(SceneDragContext)
@@ -108,6 +116,25 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
     const [drag, setDrag] = useState<DragView | null>(null)
     const listeners = useRef<(() => void) | null>(null)
     const ignoreNextClick = useRef(false)
+    const [moveSelection, setMoveSelection] = useState<MoveSelection | null>(null)
+
+    // The picked piece is dropped when the tool or the scenario changes.
+    useEffect(() => setMoveSelection(null), [creator.selectedTool, creator.index])
+
+    // Escape cancels a picked piece (wherever the focus is).
+    useEffect(() => {
+        if (!moveSelection) return
+        const onKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') setMoveSelection(null) }
+        window.addEventListener('keydown', onKeyDown)
+        return () => window.removeEventListener('keydown', onKeyDown)
+    }, [moveSelection])
+
+    const moveTap = (position: Position) => {
+        const { currentMap, setCurrentMap } = latest.current
+        const result = moveToolTap(currentMap, moveSelection, position)
+        if (result.map) setCurrentMap(result.map)
+        setMoveSelection(result.selection)
+    }
 
     const stopListening = () => {
         listeners.current?.()
@@ -178,6 +205,7 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
             const { cell, insideGrid } = cellAtPoint(event.clientX, event.clientY)
             // On a cell: move there. Outside the board: remove. On the board but between cells: nothing.
             if (cell || !insideGrid) setCurrentMap(movePiece(currentMap, current.from!, current.piece, cell))
+            setMoveSelection(null)
         }
         finish()
     }
@@ -215,6 +243,7 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
         if (!isPrimaryButton(event)) return
         ignoreNextClick.current = false
         const dragMode = cellDragMode(content, latest.current.selectedTool)
+        if (dragMode.mode === 'none') return // Move tool on an empty cell: never paints
         const common = { startX: event.clientX, startY: event.clientY, active: false, over: null, from: position, lastCell: position, touch: isTouch(event) }
         listen(dragMode.mode === 'move'
             ? { ...common, kind: 'move', piece: dragMode.piece, image: `${imagePath}/${dragMode.piece}.png` }
@@ -228,12 +257,12 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
     }
 
     const startToolDrag = (event: React.PointerEvent, tool: string, image: string) => {
-        if (!isPrimaryButton(event)) return
+        if (!isPrimaryButton(event) || tool === MOVE_TOOL) return
         ignoreNextClick.current = false
         listen({ kind: 'tool', piece: tool, image, startX: event.clientX, startY: event.clientY, active: false, over: null, touch: isTouch(event) })
     }
 
-    return <SceneDragContext.Provider value={{ drag, startToolDrag, startCellDrag, shouldIgnoreClick }}>
+    return <SceneDragContext.Provider value={{ drag, startToolDrag, startCellDrag, shouldIgnoreClick, moveSelection, moveTap, cancelMove: () => setMoveSelection(null) }}>
         {children}
         {drag && drag.kind !== 'paint' && <DragGhost drag={drag} />}
     </SceneDragContext.Provider>

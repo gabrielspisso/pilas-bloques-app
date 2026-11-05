@@ -252,6 +252,9 @@
 			}
 		},
 		"board": {
+			"moveTool": "Move pieces",
+			"moveInstructions": "Move tool: Enter picks up the piece in the cell, the arrows choose the destination, Enter drops it and Escape cancels.",
+			"picked": "Picked up: {{piece}}. Choose another cell and tap it or press Enter. Escape cancels.",
 			"label": "Board, scenario {{scenario}}: {{rows}} rows by {{columns}} columns",
 			"instructions": "Use the arrow keys to move between cells, Enter to place the selected tool and Delete to erase.",
 			"cell": "Row {{row}}, column {{column}}: {{content}}",
@@ -321,6 +324,7 @@
 		"clueToggle": "Add a clue (optional)"
 	},
 	"tools": {
+		"move": "Move",
 		"putObstacle": "Add obstacle",
 		"putObject": "Add objects",
 		"putActor": "Move ",

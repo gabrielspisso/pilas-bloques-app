@@ -8,6 +8,8 @@ import { PBCard } from '../../../PBCard';
 import { useThemeContext } from '../../../../theme/ThemeContext';
 import { useSceneDrag } from './SceneDrag';
 import { pieceName } from './boardLabels';
+import { MOVE_TOOL } from './mapUtils';
+import { OpenWith } from '@mui/icons-material';
 
 
 export const SceneTools = () => {
@@ -16,6 +18,8 @@ export const SceneTools = () => {
         image?: string
         /** Accessible name: the buttons only show an image */
         label: string
+        /** Shown instead of a background image (the Move tool). */
+        icon?: React.ReactNode
     }
     
     const { theme, isSmallScreen } = useThemeContext()
@@ -43,11 +47,12 @@ export const SceneTools = () => {
             aria-pressed={props.id === selectedTool}
             onClick={selectTool}
             onPointerDown={(e) => startToolDrag(e, props.id, props.image || '')}
+            sx={{ color: 'text.primary' }}
             style={{
                 touchAction: 'manipulation', // touch scrolls; holding still starts a drag (SceneDrag)
                 WebkitTouchCallout: 'none',
                 userSelect: 'none',
-                backgroundImage: `url("${props.image}")`,
+                backgroundImage: props.image ? `url("${props.image}")` : undefined,
                 backgroundSize: "contain", backgroundRepeat: "no-repeat",
                 backgroundPositionX: "center",
                 backgroundPositionY: "center",
@@ -58,7 +63,7 @@ export const SceneTools = () => {
                 height:'48px', // >= 44px touch target
                 marginTop: theme.spacing(1)
     }
-} />
+}>{props.icon}</Button>
     }
 
 type ToolGroupProps = {
@@ -72,6 +77,12 @@ const ToolGroup = (props: ToolGroupProps) =>
         <Stack direction={isSmallScreen ? "row" : "column"} gap={isSmallScreen ? 1 : 0} alignItems="center">{props.children}</Stack>
         <Typography sx={{ textAlign: 'center', lineHeight:"1", marginTop: theme.spacing(0.5) }} variant="subtitle2">{t(`tools.${props.type}`)}{props.name}</Typography>
     </Stack>
+
+// General Move tool: tap a piece and then a cell, or drag it. Never paints (see MOVE_TOOL).
+const MoveTool = () =>
+    <ToolGroup type='move'>
+        <Tool id={MOVE_TOOL} label={t('editor.board.moveTool')} icon={<OpenWith fontSize="large" aria-hidden />} />
+    </ToolGroup>
 
 const PutObstacleTool = () =>
     <ToolGroup type='putObstacle'>
@@ -102,6 +113,7 @@ return (
             gap={isSmallScreen ? 1 : 0}
             style={{ padding: theme.spacing(1), height: isSmallScreen ? undefined : "100%", width: "100%", overflowX: isSmallScreen ? "auto" : undefined }}
             role="group" aria-label={t('editor.board.tools')!}>
+            <MoveTool />
             <PutActorTool />
             <PutObstacleTool />
             <PutObjectTool />
