@@ -39,7 +39,8 @@ export const SceneTools = () => {
             onClick={selectTool}
             onPointerDown={(e) => startToolDrag(e, props.id, props.image || '')}
             style={{
-                touchAction: 'none', // lets touch drag the tool instead of scrolling
+                touchAction: 'manipulation', // touch scrolls; holding still starts a drag (SceneDrag)
+                WebkitTouchCallout: 'none',
                 userSelect: 'none',
                 backgroundImage: `url("${props.image}")`,
                 backgroundSize: "contain", backgroundRepeat: "no-repeat",

@@ -13,6 +13,13 @@ import { ACTOR, EMPTY, OBSTACLE, cellDragMode, movePiece } from '../../../../com
 const pointer = (type: string, target: EventTarget, x: number, y: number) =>
     act(() => { target.dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 0 })) })
 
+const touch = (type: string, target: EventTarget, x: number, y: number) =>
+    act(() => {
+        const event = new MouseEvent(type, { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 0 })
+        Object.defineProperty(event, 'pointerType', { value: 'touch' })
+        target.dispatchEvent(event)
+    })
+
 let elementUnderPointer: Element | null = null
 
 describe('Scene drag and drop', () => {
@@ -227,6 +234,63 @@ describe('Scene drag and drop', () => {
 
         test('movePiece of an object onto the actor keeps both', () => {
             expect(movePiece([[ACTOR, 'L']], { row: 0, column: 1 }, 'L', { row: 0, column: 0 })).toEqual([['A&L', EMPTY]])
+        })
+    })
+
+    describe('touch: hold to drag, otherwise scroll', () => {
+        afterEach(() => jest.useRealTimers())
+
+        test('moving right away is a scroll: no drag, nothing changes', async () => {
+            await renderEditor(OBSTACLE)
+            jest.useFakeTimers()
+            const before = JSON.stringify(savedMap())
+            touch('pointerdown', cellAt(1, 0), 0, 0)
+            over(cellAt(1, 2))
+            touch('pointermove', window, 0, 80)
+            act(() => { jest.advanceTimersByTime(400) })
+            touch('pointermove', window, 0, 120)
+            touch('pointerup', window, 0, 120)
+            expect(JSON.stringify(savedMap())).toBe(before)
+            expect(screen.queryByTestId('drag-ghost')).toBeNull()
+        })
+
+        test('holding 250 ms then moving paints, and the page scroll is blocked only while dragging', async () => {
+            await renderEditor(OBSTACLE)
+            jest.useFakeTimers()
+            touch('pointerdown', cellAt(1, 0), 0, 0)
+            const earlyMove = new Event('touchmove', { cancelable: true })
+            window.dispatchEvent(earlyMove)
+            expect(earlyMove.defaultPrevented).toBe(false)
+
+            act(() => { jest.advanceTimersByTime(260) })
+            const lateMove = new Event('touchmove', { cancelable: true })
+            window.dispatchEvent(lateMove)
+            expect(lateMove.defaultPrevented).toBe(true)
+
+            over(cellAt(1, 1)); touch('pointermove', window, 40, 0)
+            over(cellAt(1, 2)); touch('pointermove', window, 80, 0)
+            touch('pointerup', window, 80, 0)
+            expect(savedMap()[1]).toEqual([OBSTACLE, OBSTACLE, OBSTACLE])
+        })
+
+        test('holding a palette tool then dragging drops it on a cell', async () => {
+            await renderEditor()
+            jest.useFakeTimers()
+            touch('pointerdown', screen.getByTestId('L'), 0, 0)
+            act(() => { jest.advanceTimersByTime(260) })
+            expect(screen.getByTestId('drag-ghost')).toBeInTheDocument()
+            over(cellAt(2, 2)); touch('pointermove', window, 60, 60)
+            touch('pointerup', window, 60, 60)
+            expect(savedMap()[2][2]).toBe('L')
+        })
+
+        test('a quick tap is still a tap', async () => {
+            await renderEditor('L')
+            jest.useFakeTimers()
+            touch('pointerdown', cellAt(2, 1), 0, 0)
+            touch('pointerup', window, 0, 0)
+            fireEvent.click(cellAt(2, 1))
+            expect(savedMap()[2][1]).toBe('L')
         })
     })
 })

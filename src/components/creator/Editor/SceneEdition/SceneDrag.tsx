@@ -7,6 +7,11 @@ import { applyTool, cellDragMode, movePiece, samePosition } from "./mapUtils"
 
 /** Pointer movement (px) before a press becomes a drag. Below it, it's a regular tap/click. */
 export const DRAG_THRESHOLD_PX = 6
+/**
+ * With touch, a drag starts only after holding still this long; moving earlier is a regular
+ * scroll of the page. With mouse or pen the drag starts right away (after DRAG_THRESHOLD_PX).
+ */
+export const TOUCH_HOLD_MS = 250
 
 export const CELL_ROW_ATTRIBUTE = 'data-cell-row'
 export const CELL_COLUMN_ATTRIBUTE = 'data-cell-column'
@@ -25,6 +30,8 @@ type Gesture = {
     from?: Position
     lastCell?: Position
     map?: SceneMap
+    touch: boolean
+    holdTimer?: ReturnType<typeof setTimeout>
 }
 
 export type DragView = {
@@ -89,6 +96,8 @@ export const cellsBetween = (from: Position, to: Position): Position[] => {
 
 const isPrimaryButton = (event: React.PointerEvent) => event.button === undefined || event.button === 0
 
+const isTouch = (event: React.PointerEvent) => event.pointerType === 'touch'
+
 export const SceneDragProvider = ({ children }: { children: React.ReactNode }) => {
     const creator = useContext(CreatorContext)
     const latest = useRef(creator)
@@ -107,6 +116,7 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
     useEffect(() => stopListening, [])
 
     const finish = () => {
+        if (gesture.current?.holdTimer) clearTimeout(gesture.current.holdTimer)
         if (gesture.current?.active) {
             ignoreNextClick.current = true
             if (gesture.current.kind === 'paint') latest.current.endHistoryBatch()
@@ -122,11 +132,9 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
         if (!current.active) {
             const distance = Math.hypot(event.clientX - current.startX, event.clientY - current.startY)
             if (!(distance >= DRAG_THRESHOLD_PX)) return
-            current.active = true
-            if (current.kind === 'paint') {
-                latest.current.beginHistoryBatch()
-                paint(current, [current.from!])
-            }
+            // Touch moved before the hold time: it's a scroll, let the browser have it.
+            if (current.touch) return finish()
+            activate(current)
         }
         event.preventDefault?.()
         const point = cellAtPoint(event.clientX, event.clientY)
@@ -139,6 +147,15 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
             kind: current.kind, image: current.image, x: event.clientX, y: event.clientY, over: current.over,
             outside: current.kind === 'move' && !point.insideGrid
         })
+    }
+
+    const activate = (current: Gesture) => {
+        current.active = true
+        if (current.kind === 'paint') {
+            latest.current.beginHistoryBatch()
+            paint(current, [current.from!])
+        }
+        setDrag({ kind: current.kind, image: current.image, x: current.startX, y: current.startY, over: current.kind === 'paint' ? current.from! : null, outside: false })
     }
 
     const paint = (current: Gesture, cells: Position[]) => {
@@ -166,15 +183,30 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
 
     const onCancel = () => finish()
 
-    const listen = () => {
+    // Once a touch drag is active, stop the page from scrolling (touch-action stays scroll-friendly).
+    const onTouchMove = (event: TouchEvent) => { if (gesture.current?.active) event.preventDefault() }
+    // Long press would open the context menu / image callout on touch devices.
+    const onContextMenu = (event: Event) => { if (gesture.current?.touch) event.preventDefault() }
+
+    const listen = (current: Gesture) => {
         stopListening()
+        gesture.current = current
         window.addEventListener('pointermove', onMove)
         window.addEventListener('pointerup', onUp)
         window.addEventListener('pointercancel', onCancel)
+        window.addEventListener('touchmove', onTouchMove, { passive: false })
+        window.addEventListener('contextmenu', onContextMenu)
         listeners.current = () => {
             window.removeEventListener('pointermove', onMove)
             window.removeEventListener('pointerup', onUp)
             window.removeEventListener('pointercancel', onCancel)
+            window.removeEventListener('touchmove', onTouchMove)
+            window.removeEventListener('contextmenu', onContextMenu)
+        }
+        if (current.touch) {
+            current.holdTimer = setTimeout(() => {
+                if (gesture.current === current && !current.active) activate(current)
+            }, TOUCH_HOLD_MS)
         }
     }
 
@@ -182,11 +214,10 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
         if (!isPrimaryButton(event)) return
         ignoreNextClick.current = false
         const dragMode = cellDragMode(content, latest.current.selectedTool)
-        const common = { startX: event.clientX, startY: event.clientY, active: false, over: null, from: position, lastCell: position }
-        gesture.current = dragMode.mode === 'move'
+        const common = { startX: event.clientX, startY: event.clientY, active: false, over: null, from: position, lastCell: position, touch: isTouch(event) }
+        listen(dragMode.mode === 'move'
             ? { ...common, kind: 'move', piece: dragMode.piece, image: `${imagePath}/${dragMode.piece}.png` }
-            : { ...common, kind: 'paint', piece: latest.current.selectedTool, image: '' }
-        listen()
+            : { ...common, kind: 'paint', piece: latest.current.selectedTool, image: '' })
     }
 
     const shouldIgnoreClick = () => {
@@ -198,8 +229,7 @@ export const SceneDragProvider = ({ children }: { children: React.ReactNode }) =
     const startToolDrag = (event: React.PointerEvent, tool: string, image: string) => {
         if (!isPrimaryButton(event)) return
         ignoreNextClick.current = false
-        gesture.current = { kind: 'tool', piece: tool, image, startX: event.clientX, startY: event.clientY, active: false, over: null }
-        listen()
+        listen({ kind: 'tool', piece: tool, image, startX: event.clientX, startY: event.clientY, active: false, over: null, touch: isTouch(event) })
     }
 
     return <SceneDragContext.Provider value={{ drag, startToolDrag, startCellDrag, shouldIgnoreClick }}>

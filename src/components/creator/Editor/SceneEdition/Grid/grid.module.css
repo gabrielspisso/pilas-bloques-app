@@ -9,8 +9,10 @@
     display: flex;
     align-items: baseline;
     cursor: pointer;
-    /* pointer gestures (paint, move, drop) instead of scrolling on touch screens */
-    touch-action: none;
+    /* touch scrolls the page; a drag starts after holding still (see SceneDrag TOUCH_HOLD_MS).
+       manipulation only removes double-tap zoom so taps are not delayed. */
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
     user-select: none;
     -webkit-user-select: none;
 }
