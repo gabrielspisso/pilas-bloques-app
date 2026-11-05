@@ -13,6 +13,7 @@ export namespace LocalStorage {
     const PB_USE_SIMPLE_READ = 'PB_USE_SIMPLE_READ'
     const PB_USER_IP = 'PB_USER_IP'
     const PB_MULANG_SUGGESTIONS_ENABLED = 'PB_MULANG_SUGGESTIONS_ENABLED'
+    const PB_CREATOR_MODE = 'PB_CREATOR_MODE'
 
     const remove = (key: string) => { localStorage.removeItem(key) }
 
@@ -27,6 +28,9 @@ export namespace LocalStorage {
         const val = _get(PB_MULANG_SUGGESTIONS_ENABLED);
         return val === null ? true : val;
     }
+
+    export const getCreatorMode = (): string | null => _get(PB_CREATOR_MODE)
+    export const saveCreatorMode = (mode: string) => _save(PB_CREATOR_MODE, mode)
 
     export const saveSelectedLocale = (selectedLocale: LanguageCode) => _save(PB_SELECTED_LOCALE, selectedLocale)
     export const saveImportedChallenge = (importedChallenge: EmberExecutableChallenge) => _save(PB_IMPORTED_CHALLENGE, importedChallenge)

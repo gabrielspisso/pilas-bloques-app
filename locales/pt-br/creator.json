@@ -198,6 +198,17 @@
 			"empty": "vazia",
 			"tools": "Ferramentas",
 			"putObjectNamed": "Adicionar {{object}}"
+		},
+		"mode": {
+			"label": "Modo do criador",
+			"editor": "Editor",
+			"editorShort": "Editar",
+			"test": "Editor com teste",
+			"testShort": "Com teste",
+			"tabsLabel": "Editar ou testar o desafio",
+			"editTab": "Editar",
+			"tryTab": "Testar",
+			"invalid": "A pré-visualização aparece quando cada cenário tem pelo menos uma casa e um único personagem."
 		}
 	},
 	"title": {

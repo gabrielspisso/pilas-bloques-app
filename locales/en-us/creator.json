@@ -198,6 +198,17 @@
 			"empty": "empty",
 			"tools": "Tools",
 			"putObjectNamed": "Add {{object}}"
+		},
+		"mode": {
+			"label": "Creator mode",
+			"editor": "Editor",
+			"editorShort": "Edit",
+			"test": "Editor with preview",
+			"testShort": "With preview",
+			"tabsLabel": "Edit or try the challenge",
+			"editTab": "Edit",
+			"tryTab": "Try",
+			"invalid": "The preview appears when every scenario has at least one cell and a single character."
 		}
 	},
 	"title": {

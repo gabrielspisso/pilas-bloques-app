@@ -198,6 +198,17 @@
 			"empty": "vacía",
 			"tools": "Herramientas",
 			"putObjectNamed": "Añadir {{object}}"
+		},
+		"mode": {
+			"label": "Modo del creador",
+			"editor": "Editor",
+			"editorShort": "Editar",
+			"test": "Editor con prueba",
+			"testShort": "Con prueba",
+			"tabsLabel": "Editar o probar el desafío",
+			"editTab": "Editar",
+			"tryTab": "Probar",
+			"invalid": "La vista previa aparece cuando cada escenario tiene al menos una casilla y un solo personaje."
 		}
 	},
 	"title": {
