@@ -126,7 +126,13 @@
 		"editorHeader": "Editar desafío",
 		"previewModeHeader": "Ver desafío",
 		"serverError": "Problema con el servidor, intente más tarde",
-		"loginWarning": "Para obtener el enlace del desafío es necesario iniciar sesión."
+		"loginWarning": "Para obtener el enlace del desafío es necesario iniciar sesión.",
+		"history": {
+			"undo": "Deshacer",
+			"redo": "Rehacer",
+			"undoShortcut": "Deshacer (Ctrl+Z)",
+			"redoShortcut": "Rehacer (Ctrl+Shift+Z)"
+		}
 	},
 	"title": {
 		"title": "Escribí el título del desafío para ",

@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SceneMap, defaultChallenge } from '../../serializedChallenge';
 import { LocalStorage } from '../../../localStorage';
 import { ACTOR } from './SceneEdition/mapUtils';
+
+export const HISTORY_LIMIT = 50
 
 export type CreatorContextType = {
     selectedTool: string;
@@ -14,6 +16,13 @@ export type CreatorContextType = {
     maps: SceneMap[];
     sharedId: string
     setSharedId: (id: string) => void
+    undo: () => void
+    redo: () => void
+    canUndo: boolean
+    canRedo: boolean
+    /** Every map change between begin and end counts as a single undo step (e.g. a paint stroke). */
+    beginHistoryBatch: () => void
+    endHistoryBatch: () => void
 };
 
 const defaultCreatorContext = {
@@ -21,12 +30,18 @@ const defaultCreatorContext = {
     setSelectedTool: () => { },
     currentMap: defaultChallenge('Duba').scene.maps[0],
     setCurrentMap: () => { },
-    index: 0, 
+    index: 0,
     setIndex: () => { },
     setMaps: () => { },
     maps: defaultChallenge('Duba').scene.maps,
     sharedId: "",
-    setSharedId: (id: string) => {}
+    setSharedId: (id: string) => {},
+    undo: () => { },
+    redo: () => { },
+    canUndo: false,
+    canRedo: false,
+    beginHistoryBatch: () => { },
+    endHistoryBatch: () => { }
 }
 
 export const CreatorContext = React.createContext<CreatorContextType>(defaultCreatorContext);
@@ -37,20 +52,80 @@ export type CreatorProviderProps = {
     defaultIndex?: number;
 };
 
+type HistoryEntry = { maps: SceneMap[], index: number }
+
+const cloneMaps = (maps: SceneMap[]): SceneMap[] => maps.map(map => map.map(row => row.slice()))
+
+const sameMaps = (a: SceneMap[], b: SceneMap[]) => JSON.stringify(a) === JSON.stringify(b)
+
 export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ children, defaultSelectedTool = ACTOR, defaultIndex = 0 }: CreatorProviderProps) => {
     const [selectedTool, setSelectedTool] = useState(defaultSelectedTool);
 
     const challenge = LocalStorage.getCreatorChallenge() || defaultChallenge("Duba")
-    const [maps, setMaps] = useState(challenge.scene.maps)
+    const [maps, setMapsState] = useState(challenge.scene.maps)
     const [index, setIndex] = useState(defaultIndex)
     const [sharedId, setSharedId] = useState(challenge.sharedId || "")
 
+    const [past, setPast] = useState<HistoryEntry[]>([])
+    const [future, setFuture] = useState<HistoryEntry[]>([])
+
+    // Editing code mutates the current maps in place before calling setCurrentMap/setMaps,
+    // so the previous state is kept here as an independent copy.
+    const committed = useRef<HistoryEntry>({ maps: cloneMaps(maps), index })
+    const batch = useRef({ active: false, recorded: false })
+
     const currentMap = maps[index] || challenge.scene.maps[index]
+
+    const commit = (newMaps: SceneMap[]) => {
+        if (sameMaps(newMaps, committed.current.maps)) {
+            setMapsState(newMaps)
+            return
+        }
+        const shouldRecord = !batch.current.active || !batch.current.recorded
+        if (shouldRecord) {
+            const previous = committed.current
+            setPast(prev => prev.concat([previous]).slice(-HISTORY_LIMIT))
+            setFuture([])
+            if (batch.current.active) batch.current.recorded = true
+        }
+        committed.current = { maps: cloneMaps(newMaps), index }
+        setMapsState(newMaps)
+    }
 
     const setCurrentMap = (map: SceneMap) => {
         maps[index] = map
-        setMaps([...maps])
+        commit([...maps])
     }
+
+    const setMaps = (newMaps: SceneMap[]) => commit(newMaps)
+
+    // Each entry keeps the index where its maps were committed, so undo/redo show the edited scenario.
+    const restore = (entry: HistoryEntry, showIndex: number) => {
+        const restoredMaps = cloneMaps(entry.maps)
+        committed.current = { maps: cloneMaps(entry.maps), index: entry.index }
+        setMapsState(restoredMaps)
+        setIndex(Math.max(0, Math.min(showIndex, restoredMaps.length - 1)))
+    }
+
+    const undo = () => {
+        if (!past.length) return
+        const entry = past[past.length - 1]
+        const changedAt = committed.current.index
+        setPast(past.slice(0, -1))
+        setFuture(future.concat([committed.current]))
+        restore(entry, changedAt)
+    }
+
+    const redo = () => {
+        if (!future.length) return
+        const entry = future[future.length - 1]
+        setFuture(future.slice(0, -1))
+        setPast(past.concat([committed.current]).slice(-HISTORY_LIMIT))
+        restore(entry, entry.index)
+    }
+
+    const beginHistoryBatch = useCallback(() => { batch.current = { active: true, recorded: false } }, [])
+    const endHistoryBatch = useCallback(() => { batch.current = { active: false, recorded: false } }, [])
 
     useEffect(() => {
         challenge.scene.maps = maps
@@ -59,7 +134,10 @@ export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ childre
     }, [maps, challenge, sharedId])
 
     return (
-        <CreatorContext.Provider value={{ selectedTool, setSelectedTool, currentMap, setCurrentMap, sharedId: sharedId, setSharedId: setSharedId, index, setIndex, setMaps, maps}}>
+        <CreatorContext.Provider value={{
+            selectedTool, setSelectedTool, currentMap, setCurrentMap, sharedId: sharedId, setSharedId: setSharedId, index, setIndex, setMaps, maps,
+            undo, redo, canUndo: past.length > 0, canRedo: future.length > 0, beginHistoryBatch, endHistoryBatch
+        }}>
             {children}
         </CreatorContext.Provider>
     );

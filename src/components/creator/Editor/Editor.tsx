@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { LocalStorage } from "../../../localStorage";
 import { useEffect } from "react";
 import { ShareButton } from "./ActionButtons/ShareChallenge/ShareButton";
+import { UndoRedoButtons } from "./EditorSubHeader/UndoRedoButtons";
 import { CreatorThemeProvider, creatorPageBackground } from "../../../theme/creatorTheme";
 
 export const CreatorEditor = () => {
@@ -37,7 +38,7 @@ export const CreatorEditor = () => {
           <CreatorThemeProvider>
           <Stack alignItems="center" height="inherit" sx={{ backgroundColor: creatorPageBackground(darkModeEnabled) }}>
             <Header CenterComponent={<HeaderText text={t("editor.editorHeader")} />}
-              SubHeader={<EditorSubHeader viewButton={shouldShow ? <EmberPreviewButton /> : undefined} reactViewButton={<PreviewButton />} />} />
+              SubHeader={<EditorSubHeader viewButton={shouldShow ? <EmberPreviewButton /> : undefined} reactViewButton={<PreviewButton />} showHistory />} />
             <Stack justifyContent="center" width="100%" sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
               <SceneEdition />
             </Stack>
@@ -53,11 +54,13 @@ export const CreatorEditor = () => {
 type EditorSubHeaderProps = {
   viewButton: React.ReactNode
   reactViewButton?: React.ReactNode
+  showHistory?: boolean
 }
 
 export const EditorSubHeader = (props: EditorSubHeaderProps) =>
   <CreatorSubHeader>
     <DiscardChallengeButton />
+    {props.showHistory && <UndoRedoButtons />}
     {props.viewButton}
     {props.reactViewButton}
     <ShareButton />

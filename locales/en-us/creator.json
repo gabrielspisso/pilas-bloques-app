@@ -126,7 +126,13 @@
 		"editorHeader": "Edit challenge",
 		"previewModeHeader": "Challenge preview",
 		"serverError": "There's a problem with the server, try again later",
-		"loginWarning": "You need to be logged in to get the challenge link."
+		"loginWarning": "You need to be logged in to get the challenge link.",
+		"history": {
+			"undo": "Undo",
+			"redo": "Redo",
+			"undoShortcut": "Undo (Ctrl+Z)",
+			"redoShortcut": "Redo (Ctrl+Shift+Z)"
+		}
 	},
 	"title": {
 		"title": "Write the challenge's title for ",

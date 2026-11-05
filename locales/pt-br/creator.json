@@ -126,7 +126,13 @@
 		"editorHeader": "Editar desafio",
 		"previewModeHeader": "Ver desafio",
 		"serverError": "problema com o servidor, tente mais tarde.",
-		"loginWarning": "Para obter o link do desafio você precisa fazer login."
+		"loginWarning": "Para obter o link do desafio você precisa fazer login.",
+		"history": {
+			"undo": "Desfazer",
+			"redo": "Refazer",
+			"undoShortcut": "Desfazer (Ctrl+Z)",
+			"redoShortcut": "Refazer (Ctrl+Shift+Z)"
+		}
 	},
 	"title": {
 		"title": "Escrevi o título do desafio para ",
