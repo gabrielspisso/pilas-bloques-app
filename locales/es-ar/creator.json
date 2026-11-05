@@ -327,6 +327,10 @@
 		"delete": "Borrar"
 	},
 	"scene": {
+		"size": "Tamaño del tablero: {{rows}} filas por {{columns}} columnas",
+		"pickerTitle": "Tamaño del tablero",
+		"pickerGrid": "Elegí filas y columnas, hasta {{rows}} por {{columns}}",
+		"pickerHelp": "Filas × columnas. Pasá el mouse o el dedo y soltá, o usá las flechas y Enter.",
 		"numCols": "Modificar columnas",
 		"numRows": "Modificar filas"
 	},

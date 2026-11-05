@@ -96,7 +96,8 @@ describe('Undo and redo', () => {
                 <UndoRedoButtons />
             </CreatorContextProvider>
         </I18nextProvider>)
-        fireEvent.click(await screen.findByTestId('inc-btn-col'))
+        fireEvent.click(await screen.findByTestId('grid-size-button'))
+        fireEvent.click((await screen.findAllByTestId('grid-size-square'))[2 * 8 + 3]) // 3 x 4
         expect(savedMap()[0].length).toBe(4)
         undoKey()
         expect(savedMap()[0].length).toBe(3)

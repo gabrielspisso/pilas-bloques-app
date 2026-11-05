@@ -33,7 +33,7 @@ describe('Scene grid', () => {
 
         renderComponent(
             <CreatorContextProvider defaultIndex={index}>
-                <GridOptions setStyleGrid={()=>{}}/>
+                <GridOptions />
             </CreatorContextProvider>
         )
     

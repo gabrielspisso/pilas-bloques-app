@@ -327,6 +327,10 @@
 		"delete": "Delete"
 	},
 	"scene": {
+		"size": "Board size: {{rows}} rows by {{columns}} columns",
+		"pickerTitle": "Board size",
+		"pickerGrid": "Choose rows and columns, up to {{rows}} by {{columns}}",
+		"pickerHelp": "Rows × columns. Hover or drag your finger and release, or use the arrows and Enter.",
 		"numCols": "Modify columns",
 		"numRows": "Modify rows"
 	},

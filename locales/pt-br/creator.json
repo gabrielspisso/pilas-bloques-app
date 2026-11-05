@@ -327,6 +327,10 @@
 		"delete": "Excluir"
 	},
 	"scene": {
+		"size": "Tamanho do tabuleiro: {{rows}} linhas por {{columns}} colunas",
+		"pickerTitle": "Tamanho do tabuleiro",
+		"pickerGrid": "Escolha linhas e colunas, até {{rows}} por {{columns}}",
+		"pickerHelp": "Linhas × colunas. Passe o mouse ou o dedo e solte, ou use as setas e Enter.",
 		"numCols": "Modificar colunas",
 		"numRows": "Modificar linhas"
 	},

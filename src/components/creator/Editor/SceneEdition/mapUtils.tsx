@@ -115,6 +115,25 @@ export const movePiece = (inMap: SceneMap, from: Position, piece: string, to: Po
     return objectsInCell(moved[to.row][to.column]).includes(piece) ? moved : cloneMap(inMap)
 }
 
+/** Grid size limits of the creator (rows x columns). */
+export const GRID_LIMITS = { minRows: 1, maxRows: 10, minColumns: 1, maxColumns: 8 }
+
+const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value))
+
+/**
+ * Pure resize: returns a new rows x columns map (clamped to GRID_LIMITS). Cells in the area common
+ * to both sizes are kept, cells outside are discarded, new cells are empty. If the actor was cut out
+ * it goes back to the initial cell (relocateActorIfRemoved), so there is always exactly one.
+ */
+export const resizeMap = (inMap: SceneMap, rows: number, columns: number): SceneMap => {
+    const newRows = clamp(Math.round(rows), GRID_LIMITS.minRows, GRID_LIMITS.maxRows)
+    const newColumns = clamp(Math.round(columns), GRID_LIMITS.minColumns, GRID_LIMITS.maxColumns)
+    const map: SceneMap = Array.from({ length: newRows }, (_, i) =>
+        Array.from({ length: newColumns }, (_, j) => inMap[i]?.[j] ?? EMPTY))
+    relocateActorIfRemoved(map)
+    return map
+}
+
 export type CellDragMode = { mode: 'paint' } | { mode: 'move', piece: string }
 
 /**
