@@ -15,7 +15,7 @@ export const IncDecButtons = (props: IncDecButtonsProps) => {
     const { theme, isSmallScreen } = useThemeContext()
 
     const flexStyles = ( isSmallScreen ) 
-                             ? ( { flexMinWidth: "5px", flexTextWidth: "25px", flexFontSize: "small" } ) 
+                             ? ( { flexMinWidth: "44px", flexTextWidth: "25px", flexFontSize: "small" } ) // 44px: minimum touch target 
                              : ( { flexMinWidth: "40px", flexTextWidth: "45px", flexFontSize: "large" } )
     
     const handleValue = (inc: boolean) => {

@@ -26,6 +26,10 @@ export const toyColors = {
 /** Page background behind the creator cards. */
 export const creatorPageBackground = (darkModeEnabled: boolean) => darkModeEnabled ? toyColors.plumDeep : toyColors.plum
 
+/** Touch screens (coarse pointer): every interactive control at least this big. */
+export const MIN_TOUCH_TARGET_PX = 44
+const COARSE_POINTER = '@media (pointer: coarse)'
+
 const toyCommon: ThemeOptions = {
     shape: {
         borderRadius: 16
@@ -33,7 +37,28 @@ const toyCommon: ThemeOptions = {
     components: {
         MuiButton: {
             styleOverrides: {
-                root: { borderRadius: 16 }
+                root: { borderRadius: 16, [COARSE_POINTER]: { minHeight: MIN_TOUCH_TARGET_PX, minWidth: MIN_TOUCH_TARGET_PX } }
+            }
+        },
+        MuiIconButton: {
+            styleOverrides: {
+                root: { [COARSE_POINTER]: { minHeight: MIN_TOUCH_TARGET_PX, minWidth: MIN_TOUCH_TARGET_PX } }
+            }
+        },
+        MuiCardActionArea: {
+            styleOverrides: {
+                root: { [COARSE_POINTER]: { minHeight: MIN_TOUCH_TARGET_PX } }
+            }
+        },
+        // The whole label is clickable, so it is the switch's touch target.
+        MuiFormControlLabel: {
+            styleOverrides: {
+                root: { [COARSE_POINTER]: { minHeight: MIN_TOUCH_TARGET_PX } }
+            }
+        },
+        MuiTab: {
+            styleOverrides: {
+                root: { [COARSE_POINTER]: { minHeight: MIN_TOUCH_TARGET_PX } }
             }
         }
     }

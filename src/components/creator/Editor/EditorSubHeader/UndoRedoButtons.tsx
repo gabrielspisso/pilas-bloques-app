@@ -39,7 +39,7 @@ export const UndoRedoButtons = () => {
 
     useUndoRedoShortcuts(undo, redo)
 
-    return <Stack direction='row' alignItems='center'>
+    return <Stack direction='row' alignItems='center' gap={1}>
         <IconButtonTooltip icon={<Undo />} tooltip={t('editor.history.undoShortcut')} aria-label={t('editor.history.undo')!}
             onClick={undo} disabled={!canUndo} sx={{ opacity: canUndo ? 1 : 0.4 }} data-testid="undo-button" />
         <IconButtonTooltip icon={<Redo />} tooltip={t('editor.history.redoShortcut')} aria-label={t('editor.history.redo')!}

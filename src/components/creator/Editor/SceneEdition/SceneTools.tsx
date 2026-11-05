@@ -50,8 +50,8 @@ export const SceneTools = () => {
                 backgroundColor: props.id === selectedTool ? theme.palette.secondary.main : undefined,
                 outline: props.id === selectedTool ? `3px solid ${theme.palette.primary.main}` : undefined,
                 outlineOffset: '1px',
-                height:'40px',
-                marginTop: theme.spacing(0.5)
+                height:'48px', // >= 44px touch target
+                marginTop: theme.spacing(1)
     }
 } />
     }

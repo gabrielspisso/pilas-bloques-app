@@ -60,7 +60,7 @@ export const ChallengeHeaderEdition = () => {
                         clue={clue} setClue={setClue}
                         statementButtonRef={statementButtonRef} clueButtonRef={clueButtonRef} />
                 </Box>
-                <Box sx={{ flex: 1, minWidth: 0 }} translate="no" data-testid="statement-preview">
+                <Box sx={{ flex: 1, minWidth: 0, '& .MuiPaper-root': { height: 96 } }} translate="no" data-testid="statement-preview">
                     <Typography variant="caption" component="h3">{t('statement.preview')}</Typography>
                     <StatementDescription
                         statementButtonRef={statementButtonRef}
