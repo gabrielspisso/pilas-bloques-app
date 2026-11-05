@@ -156,6 +156,48 @@
 			"pending": "falta",
 			"missing": "Para compartilhar falta: {{items}}.",
 			"ready": "Tudo pronto para compartilhar!"
+		},
+		"objects": {
+			"obstacle": "obstáculo",
+			"Lita": {
+				"L": "alface",
+				"T": "tomate",
+				"E": "saladeira"
+			},
+			"Duba": {
+				"P": "churrasco"
+			},
+			"Chuy": {
+				"E": "raquete",
+				"T": "troféu",
+				"P": "bola de pingue-pongue",
+				"U": "bola de borracha",
+				"G": "bola de futebol"
+			},
+			"Manic": {
+				"T": "telescópio",
+				"E": "estrela",
+				"P": "planeta"
+			},
+			"Capy": {
+				"L": "lata",
+				"P": "papel"
+			},
+			"Yvoty": {
+				"L": "vaga-lume",
+				"M": "borboleta",
+				"C": "celular bloqueado",
+				"K": "carregador",
+				"P": "celular para carregar"
+			}
+		},
+		"board": {
+			"label": "Tabuleiro, cenário {{scenario}}: {{rows}} linhas por {{columns}} colunas",
+			"instructions": "Use as setas para se mover entre as casas, Enter para colocar a ferramenta escolhida e Delete para apagar.",
+			"cell": "Linha {{row}}, coluna {{column}}: {{content}}",
+			"empty": "vazia",
+			"tools": "Ferramentas",
+			"putObjectNamed": "Adicionar {{object}}"
 		}
 	},
 	"title": {

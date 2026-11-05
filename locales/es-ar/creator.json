@@ -156,6 +156,48 @@
 			"pending": "falta",
 			"missing": "Para compartir falta: {{items}}.",
 			"ready": "¡Todo listo para compartir!"
+		},
+		"objects": {
+			"obstacle": "obstáculo",
+			"Lita": {
+				"L": "lechuga",
+				"T": "tomate",
+				"E": "ensaladera"
+			},
+			"Duba": {
+				"P": "churrasco"
+			},
+			"Chuy": {
+				"E": "paleta",
+				"T": "trofeo",
+				"P": "pelota de ping pong",
+				"U": "pelota de goma",
+				"G": "pelota de fútbol"
+			},
+			"Manic": {
+				"T": "telescopio",
+				"E": "estrella",
+				"P": "planeta"
+			},
+			"Capy": {
+				"L": "lata",
+				"P": "papel"
+			},
+			"Yvoty": {
+				"L": "luciérnaga",
+				"M": "mariposa",
+				"C": "celular bloqueado",
+				"K": "cargador",
+				"P": "celular para cargar"
+			}
+		},
+		"board": {
+			"label": "Tablero, escenario {{scenario}}: {{rows}} filas por {{columns}} columnas",
+			"instructions": "Usá las flechas para moverte entre las casillas, Enter para colocar la herramienta elegida y Suprimir para borrar.",
+			"cell": "Fila {{row}}, columna {{column}}: {{content}}",
+			"empty": "vacía",
+			"tools": "Herramientas",
+			"putObjectNamed": "Añadir {{object}}"
 		}
 	},
 	"title": {

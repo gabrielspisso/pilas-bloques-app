@@ -64,6 +64,14 @@ const toyCommon: ThemeOptions = {
     }
 }
 
+const focusRing = (color: string) => ({
+    MuiButtonBase: {
+        styleOverrides: {
+            root: { '&.Mui-focusVisible': { outline: `3px solid ${color}`, outlineOffset: '2px' } }
+        }
+    }
+})
+
 const toyLight: ThemeOptions = {
     typography: {
         allVariants: { color: toyColors.ink }
@@ -71,12 +79,13 @@ const toyLight: ThemeOptions = {
     palette: {
         primary: { main: toyColors.violet, contrastText: toyColors.white },
         secondary: { main: toyColors.yellow, contrastText: toyColors.ink },
-        success: { main: toyColors.green, contrastText: toyColors.ink },
+        success: { main: toyColors.green, dark: '#2F7A1F', contrastText: toyColors.ink }, // dark: icons on white (AA 3:1)
         info: { main: toyColors.cyan, contrastText: toyColors.ink },
         text: { primary: toyColors.ink },
         background: { default: toyColors.white, paper: toyColors.white }
     },
     components: {
+        ...focusRing(toyColors.violet),
         MuiButtonGroup: {
             styleOverrides: {
                 grouped: { backgroundColor: toyColors.yellow }
@@ -90,11 +99,12 @@ const toyDark: ThemeOptions = {
         // A lighter violet keeps outlined buttons and icons readable on dark plum.
         primary: { main: toyColors.violetLight, contrastText: toyColors.ink },
         secondary: { main: toyColors.yellow, contrastText: toyColors.ink },
-        success: { main: toyColors.green, contrastText: toyColors.ink },
+        success: { main: toyColors.green, dark: toyColors.green, contrastText: toyColors.ink }, // dark: icons on plum
         info: { main: toyColors.cyan, contrastText: toyColors.ink },
         background: { default: toyColors.plumCard, paper: toyColors.plumPaper }
     },
     components: {
+        ...focusRing(toyColors.yellow),
         MuiButtonGroup: {
             styleOverrides: {
                 grouped: { backgroundColor: '#4A3155' }

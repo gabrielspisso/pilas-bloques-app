@@ -6,11 +6,15 @@ import { SceneType } from "../../../../serializedChallenge"
 import { CELL_COLUMN_ATTRIBUTE, CELL_ROW_ATTRIBUTE, useSceneDrag } from "../SceneDrag"
 import { useThemeContext } from "../../../../../theme/ThemeContext"
 import { alpha } from "@mui/material"
+import { useTranslation } from "react-i18next"
+import { cellLabel } from "../boardLabels"
 
 type CellProps = {
     position: Position
     content: string,
     sceneType: SceneType
+    /** Roving tabindex: only the focused cell of the grid is reachable with Tab. */
+    tabIndex?: number
 }
 
 export type Position = {
@@ -23,6 +27,7 @@ export const SceneCell: React.FC<CellProps> = (props) => {
     const { selectedTool, currentMap, setCurrentMap } = useContext(CreatorContext)
     const { drag, startCellDrag, shouldIgnoreClick } = useSceneDrag()
     const { theme } = useThemeContext()
+    const { t } = useTranslation('creator', { useSuspense: false }) // the board must render even before translations load
 
     const imagePath = `imagenes/sceneImages/${props.sceneType}`
     const backgroundCellImage = `${imagePath}/casilla.png`
@@ -42,6 +47,9 @@ export const SceneCell: React.FC<CellProps> = (props) => {
 
     return <div
         data-testid="challenge-cell"
+        role="gridcell"
+        aria-label={cellLabel(t, props.sceneType, props.position.row, props.position.column, props.content)}
+        tabIndex={props.tabIndex ?? -1}
         {...{ [CELL_ROW_ATTRIBUTE]: props.position.row, [CELL_COLUMN_ATTRIBUTE]: props.position.column }}
         className={styles.cell}
         style={{
@@ -59,7 +67,7 @@ export const SceneCell: React.FC<CellProps> = (props) => {
                 data-testid="challenge-cell-image"
                 key={props.position.row * 100 + props.position.column + obj + '-img'}
                 src={`${imagePath}/${obj}.png`}
-                alt={obj}
+                alt=""
                 draggable={false}
                 className={objectStyle(obj)} />
         )}

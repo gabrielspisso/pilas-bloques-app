@@ -35,3 +35,23 @@
     height: auto;
     align-self: center;
 }
+
+.cell:focus-visible {
+    outline: 3px solid var(--creator-focus-color, #6A3FD1) !important;
+    outline-offset: -3px;
+    box-shadow: inset 0 0 0 6px rgba(255, 255, 255, 0.85);
+    position: relative;
+    z-index: 2;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}

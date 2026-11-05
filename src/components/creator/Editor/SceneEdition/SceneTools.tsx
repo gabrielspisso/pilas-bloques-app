@@ -7,12 +7,15 @@ import { CreatorContext } from '../CreatorContext';
 import { PBCard } from '../../../PBCard';
 import { useThemeContext } from '../../../../theme/ThemeContext';
 import { useSceneDrag } from './SceneDrag';
+import { pieceName } from './boardLabels';
 
 
 export const SceneTools = () => {
     type ToolProps = {
         id: string
         image?: string
+        /** Accessible name: the buttons only show an image */
+        label: string
     }
     
     const { theme } = useThemeContext()
@@ -36,6 +39,8 @@ export const SceneTools = () => {
         return <Button variant='outlined'
             id={props.id}
             data-testid={props.id}
+            aria-label={props.label}
+            aria-pressed={props.id === selectedTool}
             onClick={selectTool}
             onPointerDown={(e) => startToolDrag(e, props.id, props.image || '')}
             style={{
@@ -70,28 +75,30 @@ const ToolGroup = (props: ToolGroupProps) =>
 
 const PutObstacleTool = () =>
     <ToolGroup type='putObstacle'>
-        <Tool id="O" image={`${imagePathScene}/O.png`} />
+        <Tool id="O" image={`${imagePathScene}/O.png`} label={t('tools.putObstacle')} />
     </ToolGroup>
 
 const PutObjectTool = () =>
     <ToolGroup type='putObject'>
         {sceneObjectByType(challenge!.scene.type).validCells.map((object) =>
-            <Tool id={object} key={object} image={`${imagePathScene}/${object}.png`} />)}
+            <Tool id={object} key={object} image={`${imagePathScene}/${object}.png`}
+                label={t('editor.board.putObjectNamed', { object: pieceName(t, challenge!.scene.type, object) })} />)}
     </ToolGroup>
 
 const PutActorTool = () =>
     <ToolGroup type='putActor' name={t(`selection.cards.${challenge?.scene.type}.name`)!}>     
-        <Tool id="A" image={`${imagePathScene}/tool.png`} />
+        <Tool id="A" image={`${imagePathScene}/tool.png`} label={`${t('tools.putActor')}${t(`selection.cards.${challenge?.scene.type}.name`)}`} />
     </ToolGroup>
 
 const DeleteTool = () =>
     <ToolGroup type='delete'>
-        <Tool id="-" image={`${imagePath}/eraser.png`} />
+        <Tool id="-" image={`${imagePath}/eraser.png`} label={t('tools.delete')} />
     </ToolGroup>
 
 return (
     <PBCard>
-        <Stack alignItems="center" justifyContent="flex-start" style={{ padding: theme.spacing(1), height: "100%" }}>
+        <Stack alignItems="center" justifyContent="flex-start" style={{ padding: theme.spacing(1), height: "100%" }}
+            role="group" aria-label={t('editor.board.tools')!}>
             <PutActorTool />
             <PutObstacleTool />
             <PutObjectTool />

@@ -156,6 +156,48 @@
 			"pending": "missing",
 			"missing": "To share it, it still needs: {{items}}.",
 			"ready": "All set to share!"
+		},
+		"objects": {
+			"obstacle": "obstacle",
+			"Lita": {
+				"L": "lettuce",
+				"T": "tomato",
+				"E": "salad bowl"
+			},
+			"Duba": {
+				"P": "steak"
+			},
+			"Chuy": {
+				"E": "paddle",
+				"T": "trophy",
+				"P": "ping pong ball",
+				"U": "rubber ball",
+				"G": "football"
+			},
+			"Manic": {
+				"T": "telescope",
+				"E": "star",
+				"P": "planet"
+			},
+			"Capy": {
+				"L": "can",
+				"P": "paper"
+			},
+			"Yvoty": {
+				"L": "firefly",
+				"M": "butterfly",
+				"C": "locked cellphone",
+				"K": "charger",
+				"P": "cellphone to charge"
+			}
+		},
+		"board": {
+			"label": "Board, scenario {{scenario}}: {{rows}} rows by {{columns}} columns",
+			"instructions": "Use the arrow keys to move between cells, Enter to place the selected tool and Delete to erase.",
+			"cell": "Row {{row}}, column {{column}}: {{content}}",
+			"empty": "empty",
+			"tools": "Tools",
+			"putObjectNamed": "Add {{object}}"
 		}
 	},
 	"title": {
