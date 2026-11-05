@@ -13,9 +13,10 @@ import { useNavigate } from "react-router-dom";
 import { LocalStorage } from "../../../localStorage";
 import { useEffect } from "react";
 import { ShareButton } from "./ActionButtons/ShareChallenge/ShareButton";
+import { CreatorThemeProvider, creatorPageBackground } from "../../../theme/creatorTheme";
 
 export const CreatorEditor = () => {
-  const { theme } = useThemeContext()
+  const { darkModeEnabled } = useThemeContext()
 
   const { t } = useTranslation('creator')
 
@@ -33,13 +34,15 @@ export const CreatorEditor = () => {
     <>
       {challengeExists ?
         (<CreatorContextProvider>
-          <Stack alignItems="center" height="inherit" sx={{ backgroundColor: theme.palette.background.paper }}>
+          <CreatorThemeProvider>
+          <Stack alignItems="center" height="inherit" sx={{ backgroundColor: creatorPageBackground(darkModeEnabled) }}>
             <Header CenterComponent={<HeaderText text={t("editor.editorHeader")} />}
               SubHeader={<EditorSubHeader viewButton={shouldShow ? <EmberPreviewButton /> : undefined} reactViewButton={<PreviewButton />} />} />
             <Stack justifyContent="center" width="100%" sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
               <SceneEdition />
             </Stack>
           </Stack>
+          </CreatorThemeProvider>
         </CreatorContextProvider>
         ) : <></>}
     </>
