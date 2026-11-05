@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { SerializedChallenge } from '../../../../serializedChallenge';
 import { DownloadButton } from '../DownloadButton';
 import ReactGA from "react-ga4";
+import { PublishChecklist, usePublishChecklist } from './PublishChecklist';
 
 export const CopyToClipboardButton = ({ textToCopy }: { textToCopy: string }) => {
 
@@ -38,24 +39,27 @@ export const CopyToClipboardButton = ({ textToCopy }: { textToCopy: string }) =>
 
 export const ShareButtons = () => {
     const { sharedId } = useContext(CreatorContext)
+    const { items, disabledReason } = usePublishChecklist()
 
     return <>
+        <PublishChecklist items={items} disabledReason={disabledReason} />
         <Stack direction="row" justifyContent="space-between" alignItems='center'>
             {// If the challenge has already been saved, show Save, else show Share, which saves for the first time.
-                sharedId ? <SaveButton /> : <ShareUrlButton />
+                sharedId ? <SaveButton disabledReason={disabledReason} /> : <ShareUrlButton disabledReason={disabledReason} />
             }
             <DownloadButton />
         </Stack>
     </>
 }
 
-const ShareUrlButton = () => 
-    <ChallengeUpsertButton Icon={<LinkIcon />} nametag="shareUrl" challengeUpsert={PilasBloquesApi.shareChallenge} />
+const ShareUrlButton = ({ disabledReason }: { disabledReason: string }) => 
+    <ChallengeUpsertButton Icon={<LinkIcon />} nametag="shareUrl" challengeUpsert={PilasBloquesApi.shareChallenge} disabledReason={disabledReason} />
 
-const SaveButton = () => 
-    <ChallengeUpsertButton Icon={<SaveIcon />} nametag="save" challengeUpsert={PilasBloquesApi.saveChallenge} />
+const SaveButton = ({ disabledReason }: { disabledReason: string }) => 
+    <ChallengeUpsertButton Icon={<SaveIcon />} nametag="save" challengeUpsert={PilasBloquesApi.saveChallenge} disabledReason={disabledReason} />
 
-export const ChallengeUpsertButton = ({ Icon, challengeUpsert, nametag }: { Icon: ReactNode, nametag: string, challengeUpsert: (challenge: SerializedChallenge) => Promise<SerializedChallenge> }) => {
+/** disabledReason: why the challenge can't be published yet (empty when it can). */
+export const ChallengeUpsertButton = ({ Icon, challengeUpsert, nametag, disabledReason = '' }: { Icon: ReactNode, nametag: string, challengeUpsert: (challenge: SerializedChallenge) => Promise<SerializedChallenge>, disabledReason?: string }) => {
 
     const { setSharedId } = useContext(CreatorContext)
     const userLoggedIn = !!LocalStorage.getUser()
@@ -86,9 +90,9 @@ export const ChallengeUpsertButton = ({ Icon, challengeUpsert, nametag }: { Icon
             autoHideDuration={2000}
             message={t('editor.buttons.savedCorrectly')}
         />
-        <Tooltip title={!userLoggedIn ? t('editor.loginWarning') : ''} followCursor>
+        <Tooltip title={[!userLoggedIn ? t('editor.loginWarning') : '', disabledReason].filter(Boolean).join(' ')} followCursor>
             <div>
-                <CreatorActionButton data-testid="upsertButton" onClick={handleClick} disabled={!userLoggedIn} startIcon={Icon} variant='contained' nametag={nametag} />
+                <CreatorActionButton data-testid="upsertButton" onClick={handleClick} disabled={!userLoggedIn || !!disabledReason} startIcon={Icon} variant='contained' nametag={nametag} />
             </div>
         </Tooltip>
         <DialogSnackbar open={serverError} onClose={() => setServerError(false)} message={t('editor.serverError')} />

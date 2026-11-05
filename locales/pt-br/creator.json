@@ -143,6 +143,19 @@
 			"region": "Título e enunciado do desafio",
 			"expand": "Mostrar título e enunciado",
 			"collapse": "Ocultar título e enunciado"
+		},
+		"checklist": {
+			"title": "Antes de publicar",
+			"items": {
+				"title": "Tem um título próprio",
+				"statement": "Tem um enunciado próprio",
+				"goals": "Cada cenário tem pelo menos um objetivo",
+				"blocks": "Tem blocos disponíveis para quem joga"
+			},
+			"done": "pronto",
+			"pending": "falta",
+			"missing": "Para compartilhar falta: {{items}}.",
+			"ready": "Tudo pronto para compartilhar!"
 		}
 	},
 	"title": {

@@ -43,10 +43,10 @@ const mockChallenge: SerializedChallenge = {
    },
     scene: {
         type: 'Lita',
-        maps: []
+        maps: [[["A", "L"]]] // complete enough to pass the publish checklist
     },
     toolbox: {
-        blocks: []
+        blocks: ["MoverACasillaDerecha"]
     }
 }
     

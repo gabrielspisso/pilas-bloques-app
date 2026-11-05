@@ -143,6 +143,19 @@
 			"region": "Challenge title and statement",
 			"expand": "Show title and statement",
 			"collapse": "Hide title and statement"
+		},
+		"checklist": {
+			"title": "Before publishing",
+			"items": {
+				"title": "Has its own title",
+				"statement": "Has its own statement",
+				"goals": "Every scenario has at least one goal",
+				"blocks": "Has blocks available for the player"
+			},
+			"done": "done",
+			"pending": "missing",
+			"missing": "To share it, it still needs: {{items}}.",
+			"ready": "All set to share!"
 		}
 	},
 	"title": {
