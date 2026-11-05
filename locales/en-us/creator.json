@@ -132,6 +132,12 @@
 			"redo": "Redo",
 			"undoShortcut": "Undo (Ctrl+Z)",
 			"redoShortcut": "Redo (Ctrl+Shift+Z)"
+		},
+		"mission": {
+			"title": "Mission",
+			"intro": "{{actor}} has to:",
+			"empty": "No goals yet. Add objects to the board to build the mission.",
+			"count": "× {{count}}"
 		}
 	},
 	"title": {

@@ -132,6 +132,12 @@
 			"redo": "Rehacer",
 			"undoShortcut": "Deshacer (Ctrl+Z)",
 			"redoShortcut": "Rehacer (Ctrl+Shift+Z)"
+		},
+		"mission": {
+			"title": "Misión",
+			"intro": "{{actor}} tiene que:",
+			"empty": "Todavía no hay objetivos. Agregá objetos al tablero para armar la misión.",
+			"count": "× {{count}}"
 		}
 	},
 	"title": {

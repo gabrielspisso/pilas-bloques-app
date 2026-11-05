@@ -132,6 +132,12 @@
 			"redo": "Refazer",
 			"undoShortcut": "Desfazer (Ctrl+Z)",
 			"redoShortcut": "Refazer (Ctrl+Shift+Z)"
+		},
+		"mission": {
+			"title": "Missão",
+			"intro": "{{actor}} tem que:",
+			"empty": "Ainda não há objetivos. Adicione objetos ao tabuleiro para montar a missão.",
+			"count": "× {{count}}"
 		}
 	},
 	"title": {
