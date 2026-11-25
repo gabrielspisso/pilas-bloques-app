@@ -49,7 +49,8 @@ export const xmlToProgram = (xml: string): Program => {
     if (document.getElementsByTagName('parsererror').length) throw new Error('Invalid XML')
     let main: Statement[] = []
     const procedures: Procedure[] = []
-    Array.from(document.documentElement.children).filter(c => c.tagName === 'block').forEach(block => {
+    // Disabled blocks left aside in the workspace do not run.
+    Array.from(document.documentElement.children).filter(c => c.tagName === 'block' && c.getAttribute('disabled') !== 'true').forEach(block => {
         const type = block.getAttribute('type')
         if (type === 'al_empezar_a_ejecutar') main = readStatement(block, 'program')
         else if (type === 'procedures_defnoreturn')

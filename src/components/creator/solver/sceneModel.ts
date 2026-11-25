@@ -1,6 +1,7 @@
 import { SceneType } from "../../serializedChallenge"
 import { ACTOR, EMPTY, OBSTACLE } from "../Editor/SceneEdition/mapUtils"
 import { MOVES, cellExists, parseMap, sameCell } from "./grid"
+import { capyModel } from "./scenes/capy"
 import { dubaModel } from "./scenes/duba"
 import { Cell, DELTA, Grid, SimulationFailure, SimulationResult, SolverFailure, Task, TaskPlan } from "./types"
 
@@ -123,7 +124,8 @@ export const simulateWith = (model: SceneModel, map: string[][], actions: string
 /** The model of each character the solver supports. A function, so the import cycle with the scenes is harmless. */
 export const modelFor = (type: SceneType): SceneModel | undefined => {
     const models: Partial<Record<SceneType, SceneModel>> = {
-        Duba: dubaModel
+        Duba: dubaModel,
+        Capy: capyModel
     }
     return models[type]
 }
