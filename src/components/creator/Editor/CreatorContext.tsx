@@ -6,6 +6,9 @@ import { ACTOR } from './SceneEdition/mapUtils';
 
 export const HISTORY_LIMIT = 50
 
+/** A program to load into the live preview (never saved). A new id mounts the preview again. */
+export type PreviewProgram = { xml: string, id: number }
+
 export type CreatorContextType = {
     selectedTool: string;
     setSelectedTool: (selectedTool: string) => void;
@@ -27,6 +30,8 @@ export type CreatorContextType = {
     setToolbox: (toolbox: Toolbox) => void
     assesments?: Assesments
     setAssesments: (assesments?: Assesments) => void
+    previewProgram: PreviewProgram | null
+    setPreviewProgram: (program: PreviewProgram | null) => void
     /** When the draft was last written to LocalStorage after an edit (null: nothing edited in this visit). */
     lastSavedAt: number | null
     /** Replaces the whole draft (e.g. restoring a version). The map change can be undone. */
@@ -61,6 +66,8 @@ const defaultCreatorContext = {
     setToolbox: () => { },
     assesments: undefined,
     setAssesments: () => { },
+    previewProgram: null,
+    setPreviewProgram: () => { },
     lastSavedAt: null,
     loadChallenge: () => { },
     undo: () => { },
@@ -97,6 +104,9 @@ export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ childre
     const [clue, setClue] = useState<string | undefined>(challenge.statement.clue)
     const [toolbox, setToolbox] = useState<Toolbox>(challenge.toolbox)
     const [assesments, setAssesments] = useState<Assesments | undefined>(challenge.assesments)
+
+    // Not part of the draft: it is neither saved nor restored.
+    const [previewProgram, setPreviewProgram] = useState<PreviewProgram | null>(null)
 
     const [lastSavedAt, setLastSavedAt] = useState<number | null>(null)
     const lastSavedJson = useRef<string | null>(null)
@@ -203,7 +213,7 @@ export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ childre
 
     return (
         <CreatorContext.Provider value={{
-            selectedTool, setSelectedTool, currentMap, setCurrentMap, sharedId: sharedId, setSharedId: setSharedId, title, setTitle, statement, setStatement, clue, setClue, toolbox, setToolbox, assesments, setAssesments, lastSavedAt, loadChallenge, index, setIndex, setMaps, maps,
+            selectedTool, setSelectedTool, currentMap, setCurrentMap, sharedId: sharedId, setSharedId: setSharedId, title, setTitle, statement, setStatement, clue, setClue, toolbox, setToolbox, assesments, setAssesments, previewProgram, setPreviewProgram, lastSavedAt, loadChallenge, index, setIndex, setMaps, maps,
             undo, redo, canUndo: past.length > 0, canRedo: future.length > 0, beginHistoryBatch, endHistoryBatch
         }}>
             {children}

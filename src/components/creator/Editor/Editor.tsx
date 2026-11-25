@@ -2,7 +2,7 @@ import { Box, Stack, Tab, Tabs, useMediaQuery } from "@mui/material";
 import { ChallengeHeaderEdition } from "./ChallengeDetailsEdition/ChallengeHeaderEdition";
 import { Header, HeaderText } from "../../header/Header";
 import { SceneEdition } from "./SceneEdition/SceneEdition";
-import { CreatorContextProvider } from "./CreatorContext";
+import { CreatorContext, CreatorContextProvider } from "./CreatorContext";
 import { CreatorSubHeader } from "./EditorSubHeader/CreatorSubHeader";
 import { useTranslation } from "react-i18next";
 import { DiscardChallengeButton } from "./ActionButtons/DiscardChallengeButton";
@@ -13,7 +13,7 @@ import { BetaBadge } from "../BetaBadge";
 import { useThemeContext } from "../../../theme/ThemeContext";
 import { useNavigate } from "react-router-dom";
 import { LocalStorage } from "../../../localStorage";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ShareButton } from "./ActionButtons/ShareChallenge/ShareButton";
 import { UndoRedoButtons } from "./EditorSubHeader/UndoRedoButtons";
 import { AutosaveStatus } from "./EditorSubHeader/AutosaveStatus";
@@ -49,7 +49,7 @@ export const CreatorEditor = () => {
             <Header CenterComponent={<HeaderText text={t("editor.editorHeader")} />}
               SubHeader={<EditorSubHeader viewButton={shouldShow ? <EmberPreviewButton /> : undefined} reactViewButton={<PreviewButton />} showHistory
                 modeSwitch={<CreatorModeSwitch mode={mode} onChange={setMode} />} />} />
-            <CreatorWorkspace mode={mode} />
+            <CreatorWorkspace mode={mode} onRequestTestMode={() => setMode('test')} />
             <CreatorTutorial />
           </Stack>
           </CreatorThemeProvider>
@@ -75,10 +75,20 @@ const EditionPanel = () =>
  * "test": edition panel and live preview side by side from SIDE_BY_SIDE_MIN_WIDTH, two tabs below it.
  * Both modes read the same CreatorContext, so switching keeps the selected tool, scenario and texts.
  */
-export const CreatorWorkspace = ({ mode }: { mode: CreatorMode }) => {
+export const CreatorWorkspace = ({ mode, onRequestTestMode }: { mode: CreatorMode, onRequestTestMode?: () => void }) => {
   const { t } = useTranslation('creator')
   const sideBySide = useMediaQuery(`(min-width:${SIDE_BY_SIDE_MIN_WIDTH}px)`)
   const [tab, setTab] = useState<'edit' | 'try'>('edit')
+  const { previewProgram } = useContext(CreatorContext)
+
+  // A program sent to the preview shows it: test mode and, on narrow screens, the "try" tab.
+  useEffect(() => {
+    if (!previewProgram) return
+    if (mode === 'editor') onRequestTestMode?.()
+    setTab('try')
+    // Only a new program moves the view: afterwards the user can switch modes and tabs freely.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [previewProgram])
 
   if (mode === 'editor') return <EditionPanel />
 
