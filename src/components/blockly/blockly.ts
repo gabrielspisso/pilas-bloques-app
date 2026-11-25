@@ -328,10 +328,14 @@ export const setXml = (xml: string) => {
   revalidateVariableBlocks(workspace);
 };
 
+// Served by the app (copied by scripts/change-pilas-versions.js). Blockly's default is an external host
+// that no longer serves these files, which left broken zoom controls, trashcan, cursors and sounds.
+export const BLOCKLY_MEDIA_PATH = 'libs/blockly-media/'
+
 export const setupBlockly = (container: Element, workspaceConfiguration: Blockly.BlocklyOptions) => {
   container.replaceChildren() //Removes previous injection, otherwise it might keep inserting below the current workspace
   container.ariaValueText = 'child-blockly'
-  const workspace = Blockly.inject(container, workspaceConfiguration)
+  const workspace = Blockly.inject(container, { media: BLOCKLY_MEDIA_PATH, ...workspaceConfiguration })
   workspace.addChangeListener(Blockly.Events.disableOrphans);
 }
 
