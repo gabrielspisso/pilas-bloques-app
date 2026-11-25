@@ -15,11 +15,23 @@ const MAX_PROCEDURES = 3
 const MAX_PROCEDURE_LENGTH = 12
 const CANDIDATES_PER_ROUND = 10
 
-export const tokenWeight = (token: string) => token.startsWith(MOVE_TO_PREFIX) ? 2 : 1
+/** A conditional action, "If (sensor) [action]", written as a single token. */
+export const IF_PREFIX = '#if:'
+export const ifToken = (sensor: string, action: string) => `${IF_PREFIX}${sensor}:${action}`
+
+/** Blocks a token takes: "Move to" has a value block; an "If" is the control, the sensor and the action. */
+export const tokenWeight = (token: string) =>
+    token.startsWith(IF_PREFIX) ? 3 : token.startsWith(MOVE_TO_PREFIX) ? 2 : 1
 const rawWeight = (tokens: string[]) => tokens.reduce((total, token) => total + tokenWeight(token), 0)
 
-export const toStatement = (token: string): Statement =>
-    token.startsWith(CALL_PREFIX) ? { kind: 'call', name: token.slice(CALL_PREFIX.length) } : { kind: 'action', block: token }
+export const toStatement = (token: string): Statement => {
+    if (token.startsWith(CALL_PREFIX)) return { kind: 'call', name: token.slice(CALL_PREFIX.length) }
+    if (token.startsWith(IF_PREFIX)) {
+        const [sensor, block] = token.slice(IF_PREFIX.length).split(':')
+        return { kind: 'if', sensor, body: [{ kind: 'action', block }] }
+    }
+    return { kind: 'action', block: token }
+}
 
 export type CompressOptions = {
     /** false: the toolbox has no "Repeat" block */
@@ -30,14 +42,14 @@ export type CompressOptions = {
 
 export type Compressed = { statements: Statement[], cost: number }
 
-const compressRuns = (tokens: string[], shortest: number): Compressed => {
+const compressRuns = (tokens: string[], shortest: number, nesting: boolean): Compressed => {
     const statements: Statement[] = []
     let cost = 0
     for (let i = 0, j = 0; i < tokens.length; i = j) {
         for (j = i + 1; j < tokens.length && tokens[j] === tokens[i]; j++);
         const times = j - i
         const weight = tokenWeight(tokens[i])
-        if (times >= shortest) {
+        if (times >= shortest && (nesting || !tokens[i].startsWith(IF_PREFIX))) {
             statements.push({ kind: 'repeat', times, body: [toStatement(tokens[i])] })
             cost += 1 + weight
         } else {
@@ -56,7 +68,7 @@ export const compress = (tokens: string[], nesting: boolean, options: CompressOp
     const { repeat = true, preferRepeatOnTie = false } = options
     const length = tokens.length
     if (!repeat) return { statements: tokens.map(toStatement), cost: rawWeight(tokens) }
-    if (length > MAX_COMPRESS_TOKENS) return compressRuns(tokens, preferRepeatOnTie ? 2 : 3)
+    if (length > MAX_COMPRESS_TOKENS) return compressRuns(tokens, preferRepeatOnTie ? 2 : 3, nesting)
 
     const size = length + 1
     const cost = new Int32Array(size * size)
@@ -89,6 +101,8 @@ export const compress = (tokens: string[], nesting: boolean, options: CompressOp
                 let periodic = true
                 for (let t = i + period; periodic && t < j; t++) periodic = tokens[t] === tokens[t - period]
                 if (!periodic) continue
+                // An "If" inside a "Repeat" is nesting.
+                if (!nesting && tokens.slice(i, i + period).some(token => token.startsWith(IF_PREFIX))) continue
                 take(1 + (nesting ? cost[i * size + i + period] : prefix[i + period] - prefix[i]), 1, -period)
             }
         }
