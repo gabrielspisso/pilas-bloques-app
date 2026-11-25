@@ -6,6 +6,7 @@ import { chuyModel } from "./scenes/chuy"
 import { dubaModel } from "./scenes/duba"
 import { litaModel } from "./scenes/lita"
 import { manicModel } from "./scenes/manic"
+import { yvotyModel } from "./scenes/yvoty"
 import { Cell, DELTA, Grid, SimulationFailure, SimulationResult, SolverFailure, Task, TaskPlan } from "./types"
 
 export type ObjectState = { cell: Cell, letter: string, status: 'present' | 'done' | 'removed' }
@@ -131,7 +132,8 @@ export const modelFor = (type: SceneType): SceneModel | undefined => {
         Capy: capyModel,
         Manic: manicModel,
         Lita: litaModel,
-        Chuy: chuyModel
+        Chuy: chuyModel,
+        Yvoty: yvotyModel
     }
     return models[type]
 }
