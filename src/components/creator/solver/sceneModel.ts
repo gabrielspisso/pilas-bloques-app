@@ -3,6 +3,7 @@ import { ACTOR, EMPTY, OBSTACLE } from "../Editor/SceneEdition/mapUtils"
 import { MOVES, cellExists, parseMap, sameCell } from "./grid"
 import { capyModel } from "./scenes/capy"
 import { dubaModel } from "./scenes/duba"
+import { litaModel } from "./scenes/lita"
 import { manicModel } from "./scenes/manic"
 import { Cell, DELTA, Grid, SimulationFailure, SimulationResult, SolverFailure, Task, TaskPlan } from "./types"
 
@@ -127,7 +128,8 @@ export const modelFor = (type: SceneType): SceneModel | undefined => {
     const models: Partial<Record<SceneType, SceneModel>> = {
         Duba: dubaModel,
         Capy: capyModel,
-        Manic: manicModel
+        Manic: manicModel,
+        Lita: litaModel
     }
     return models[type]
 }
