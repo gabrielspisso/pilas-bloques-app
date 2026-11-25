@@ -24,6 +24,8 @@ export const litaModel: SceneModel = {
             onDone: state => { state.flags.prepared = true }
         }
     },
+    sensors: { HayLechuga: 'L', HayTomate: 'T', HayEnsaladera: 'E' },
+    vanishing: [],
     won,
     planTasks: (grid, toolbox) => {
         if (hasNothingToDo(grid, won)) return { kind: 'nothingToDo' }

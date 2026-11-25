@@ -1,13 +1,13 @@
 import { SceneType } from "../../serializedChallenge"
 import { ACTOR, EMPTY, OBSTACLE } from "../Editor/SceneEdition/mapUtils"
-import { MOVES, cellExists, parseMap, sameCell } from "./grid"
+import { MOVES, cellExists, insideGrid, parseMap, sameCell } from "./grid"
 import { capyModel } from "./scenes/capy"
 import { chuyModel } from "./scenes/chuy"
 import { dubaModel } from "./scenes/duba"
 import { litaModel } from "./scenes/lita"
 import { manicModel } from "./scenes/manic"
 import { yvotyModel } from "./scenes/yvoty"
-import { Cell, DELTA, Grid, SimulationFailure, SimulationResult, SolverFailure, Task, TaskPlan } from "./types"
+import { Cell, DELTA, Direction, Grid, Program, SimulationFailure, SimulationResult, SolverFailure, Statement, Task, TaskPlan } from "./types"
 
 export type ObjectState = { cell: Cell, letter: string, status: 'present' | 'done' | 'removed' }
 export type SimState = { position: Cell, objects: ObjectState[], flags: Record<string, boolean> }
@@ -30,6 +30,10 @@ export type SceneModel = {
     letters: string[]
     /** action block id -> rule */
     actions: Record<string, ActionRule>
+    /** object sensor block id -> letter it detects */
+    sensors: Record<string, string>
+    /** letters that animate away after their action: a sensor on them is not reliable afterwards */
+    vanishing: string[]
     /** engine victory */
     won: (state: SimState) => boolean
     /** Mission tasks for a map, or a failure. Movement is not decided here. */
@@ -108,21 +112,131 @@ const move = (grid: Grid, state: SimState, token: string): SimulationFailure | n
 const isKnownLetter = (model: SceneModel, letter: string) =>
     [ACTOR, OBSTACLE, EMPTY].includes(letter) || model.letters.includes(letter)
 
-/** Runs a flat list of tokens on a map with the engine's rules. Throws if the map cannot be read. */
-export const simulateWith = (model: SceneModel, map: string[][], actions: string[]): SimulationResult => {
-    const grid = parseMap(map)
-    if (grid.objects.some(({ letter }) => !isKnownLetter(model, letter)))
-        return { solved: false, reason: 'unknownCell', step: -1 }
+const BORDER_SENSORS: Record<string, Direction> = {
+    BordeDerecho: 'right', BordeAbajo: 'down', BordeIzquierdo: 'left', BordeArriba: 'up'
+}
+const OBSTACLE_SENSORS: Record<string, Direction> = {
+    HayObstaculoDerecha: 'right', HayObstaculoAbajo: 'down', HayObstaculoIzquierda: 'left', HayObstaculoArriba: 'up'
+}
 
-    const state = initialState(grid)
-    for (let step = 0; step < actions.length; step++) {
-        const token = actions[step]
-        const failure = Object.prototype.hasOwnProperty.call(MOVES, token) ? move(grid, state, token)
-            : Object.prototype.hasOwnProperty.call(model.actions, token) ? act(state, model.actions[token])
-                : 'unknownBlock'
-        if (failure) return { solved: false, reason: failure, step }
+const neighbour = (cell: Cell, direction: Direction): Cell =>
+    ({ row: cell.row + DELTA[direction].row, column: cell.column + DELTA[direction].column })
+
+const has = (record: object, key: string) => Object.prototype.hasOwnProperty.call(record, key)
+
+/** The value of a sensor block where the character stands, or why the engine cannot give a reliable one. */
+const sense = (model: SceneModel, grid: Grid, state: SimState, sensor: string): boolean | SimulationFailure => {
+    if (has(BORDER_SENSORS, sensor)) return !insideGrid(grid, neighbour(state.position, BORDER_SENSORS[sensor]))
+    if (has(OBSTACLE_SENSORS, sensor)) {
+        const cell = neighbour(state.position, OBSTACLE_SENSORS[sensor])
+        // The engine throws when there is no cell to look at.
+        return cellExists(grid, cell) ? grid.obstacle[cell.row][cell.column] : 'sensorError'
     }
-    return model.won(state) ? { solved: true } : { solved: false, reason: 'notSolved', step: actions.length }
+    if (!has(model.sensors, sensor)) return 'unknownSensor'
+    const letter = model.sensors[sensor]
+    const here = state.objects.filter(object => object.letter === letter && sameCell(object.cell, state.position))
+    if (here.some(object => object.status === 'present')) return true
+    if (here.some(object => object.status === 'done')) return model.vanishing.includes(letter) ? 'indeterminateSensor' : true
+    return false
+}
+
+export const MAX_ACTIONS = 5000
+
+export type ProgramRun = SimulationResult & {
+    /** every sensor evaluation, in order */
+    trace: { sensor: string, value: boolean, node: Statement }[]
+    /** how many times the body ran, for every execution of every "until" */
+    loops: { node: Statement, times: number }[]
+    /** the tokens that were executed successfully */
+    executed: string[]
+    position: Cell
+}
+
+/**
+ * Runs a program on a map with the engine's rules. Throws if the map cannot be read.
+ * `step` is the number of actions executed before the failure.
+ */
+export const runProgram = (model: SceneModel, map: string[][], program: Program, maxActions = MAX_ACTIONS): ProgramRun => {
+    const grid = parseMap(map)
+    const state = initialState(grid)
+    const trace: ProgramRun['trace'] = []
+    const loops: ProgramRun['loops'] = []
+    const executed: string[] = []
+    // Loop turns and calls are limited too: an empty body or a recursion would never reach maxActions.
+    let turns = 0
+
+    const finish = (result: SimulationResult): ProgramRun => ({ ...result, trace, loops, executed, position: state.position })
+    if (grid.objects.some(({ letter }) => !isKnownLetter(model, letter)))
+        return finish({ solved: false, reason: 'unknownCell', step: -1 })
+
+    const turn = (): SimulationFailure | null => ++turns > maxActions ? 'tooManySteps' : null
+
+    const evaluate = (statement: Statement & { sensor: string }): boolean | SimulationFailure => {
+        const value = sense(model, grid, state, statement.sensor)
+        if (typeof value === 'boolean') trace.push({ sensor: statement.sensor, value, node: statement })
+        return value
+    }
+
+    const run = (statements: Statement[]): SimulationFailure | null => {
+        for (const statement of statements) {
+            const failure = runStatement(statement)
+            if (failure) return failure
+        }
+        return null
+    }
+
+    const runStatement = (statement: Statement): SimulationFailure | null => {
+        switch (statement.kind) {
+            case 'action': {
+                if (executed.length >= maxActions) return 'tooManySteps'
+                const token = statement.block
+                const failure = has(MOVES, token) ? move(grid, state, token)
+                    : has(model.actions, token) ? act(state, model.actions[token])
+                        : 'unknownBlock'
+                if (!failure) executed.push(token)
+                return failure
+            }
+            case 'call': {
+                const procedure = program.procedures.find(({ name }) => name === statement.name)
+                return procedure ? turn() ?? run(procedure.body) : 'unknownBlock'
+            }
+            case 'repeat': {
+                for (let i = 0; i < statement.times; i++) {
+                    const failure = turn() ?? run(statement.body)
+                    if (failure) return failure
+                }
+                return null
+            }
+            case 'if': {
+                const value = evaluate(statement)
+                if (typeof value !== 'boolean') return value
+                return value ? run(statement.body) : null
+            }
+            case 'until': {
+                for (let times = 0; ; times++) {
+                    const value = evaluate(statement)
+                    if (typeof value !== 'boolean') return value
+                    if (value) {
+                        loops.push({ node: statement, times })
+                        return null
+                    }
+                    const failure = turn() ?? run(statement.body)
+                    if (failure) return failure
+                }
+            }
+        }
+    }
+
+    const failure = run(program.main)
+    if (failure) return finish({ solved: false, reason: failure, step: executed.length })
+    return finish(model.won(state) ? { solved: true } : { solved: false, reason: 'notSolved', step: executed.length })
+}
+
+/** Runs a flat list of tokens. Throws if the map cannot be read. */
+export const simulateWith = (model: SceneModel, map: string[][], actions: string[]): SimulationResult => {
+    const run = runProgram(model, map, { main: actions.map(block => ({ kind: 'action', block })), procedures: [] },
+        Math.max(MAX_ACTIONS, actions.length))
+    return run.solved ? { solved: true } : { solved: false, reason: run.reason, step: run.step }
 }
 
 /** The model of each character the solver supports. A function, so the import cycle with the scenes is harmless. */

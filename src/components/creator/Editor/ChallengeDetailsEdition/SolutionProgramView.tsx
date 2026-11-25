@@ -36,6 +36,8 @@ export const SolutionProgramView = ({ program }: { program: Program }) => {
             case 'action': return actionText(statement.block)
             case 'call': return statement.name
             case 'repeat': return <>{t('solver.repeat', { times: statement.times })}{list(statement.body)}</>
+            case 'if':
+            case 'until': return <>{t(statement.kind === 'if' ? 'solver.ifLine' : 'solver.untilLine', { sensor: blockName(statement.sensor), ...plain })}{list(statement.body)}</>
         }
     }
 

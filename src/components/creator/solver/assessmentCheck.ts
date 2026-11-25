@@ -10,15 +10,18 @@ export const countCalls = (statements: Statement[]): number =>
             case 'action': return total + (statement.block.startsWith(MOVE_TO_PREFIX) ? 2 : 1)
             case 'call': return total + 1
             case 'repeat': return total + countCalls(statement.body)
+            // The sensor is a call; the negation of "until" is not.
+            case 'if':
+            case 'until': return total + 1 + countCalls(statement.body)
         }
     }, 0)
 
-const isControl = (statement: Statement) => statement.kind === 'repeat'
+const isControl = (statement: Statement) => 'body' in statement
 
 const containsControl = (statements: Statement[]): boolean => statements.some(isControl)
 
 const nestsControl = (statements: Statement[]) =>
-    statements.some(statement => statement.kind === 'repeat' && containsControl(statement.body))
+    statements.some(statement => 'body' in statement && containsControl(statement.body))
 
 const usesKind = (program: Program, kind: string): boolean => {
     const inside = (statements: Statement[]): boolean =>

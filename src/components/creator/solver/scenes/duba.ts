@@ -9,6 +9,8 @@ export const dubaModel: SceneModel = {
     actions: {
         ComerChurrasco: { letter: 'P', effect: 'remove' }
     },
+    sensors: { HayChurrasco: 'P' },
+    vanishing: [],
     won,
     planTasks: (grid, toolbox) => planOnePerObject(won, { P: 'ComerChurrasco' })(grid, toolbox)
 }

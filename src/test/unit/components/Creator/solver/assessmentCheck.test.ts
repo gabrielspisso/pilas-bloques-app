@@ -1,10 +1,10 @@
 import mulang from "mulang"
 import { entryPointType } from "../../../../../components/blockly/mulang/blockUtils"
-import { declarationDoesNotNestControlStructures, doSomething, doesNotUseRecursion, isUsed, isUsedFromMain, mainNotTooLong, mainTooLongId, multiExpect, nameWasChanged, notTooLong, parseExpect } from "../../../../../components/blockly/mulang/expectations"
+import { countCallsWithin, declarationDoesNotNestControlStructures, doSomething, doesNotUseRecursion, isUsed, isUsedFromMain, mainNotTooLong, mainTooLongId, multiExpect, nameWasChanged, notTooLong, parseExpect, usesConditionalAlternative, usesConditionalRepetition, usesSimpleRepetition } from "../../../../../components/blockly/mulang/expectations"
 import { checkAssessments, countCalls } from "../../../../../components/creator/solver/assessmentCheck"
 import { optimizeProgram, rawProgram } from "../../../../../components/creator/solver/optimize"
 import { Program, Statement } from "../../../../../components/creator/solver/types"
-import { application, entryPoint, number, procedure, rawSequence, repeat } from "../../blockly/mulang/astFactories"
+import { application, entryPoint, muIf, muUntil, number, procedure, rawSequence, repeat } from "../../blockly/mulang/astFactories"
 import { PROC, REPEAT } from "./helpers"
 
 const name = (n: number) => `Parte ${n}`
@@ -20,6 +20,8 @@ const toAst = (statement: Statement): any => {
         }
         case 'call': return application(statement.name)
         case 'repeat': return repeat(number(statement.times), ...statement.body.map(toAst))
+        case 'if': return muIf(application(statement.sensor), ...statement.body.map(toAst))
+        case 'until': return muUntil(application(statement.sensor), ...statement.body.map(toAst))
     }
 }
 
@@ -94,5 +96,33 @@ describe("against the real Mulang", () => {
     test("agrees that 3 'Move to' fit", () => {
         const program = rawProgram([move, move, move])
         expect(runMulang(program, decompositionEdl(program, 7))).toContainEqual([mainTooLongId, true])
+    })
+})
+
+describe("conditions, against the real Mulang", () => {
+    const [take, right] = actions('AgarrarLechuga', 'MoverACasillaDerecha')
+    const ifLettuce: Statement = { kind: 'if', sensor: 'HayLechuga', body: [take] }
+    const programs: [string, Statement, number, boolean, boolean, boolean, boolean][] = [
+        // name, statement, calls, uses if, uses while, uses repeat, nests
+        ['If', ifLettuce, 2, true, false, false, false],
+        ['Repeat until', { kind: 'until', sensor: 'BordeDerecho', body: [right] }, 2, false, true, false, false],
+        ['Repeat 3', { kind: 'repeat', times: 3, body: [right] }, 1, false, false, true, false],
+        ['If inside Repeat until', { kind: 'until', sensor: 'BordeDerecho', body: [right, ifLettuce] }, 4, true, true, false, true]
+    ]
+
+    const passes = (program: Program, edl: string) => runMulang(program, edl).every(([, passed]) => passed)
+
+    test.each(programs)("%s", (_, statement, calls, usesIf, usesWhile, usesRepeat, nests) => {
+        const program: Program = { main: [statement], procedures: [] }
+        const atMost = (n: number) => `expectation "${btoa('count')}": ${countCallsWithin(entryPointType)} <= ${n};`
+
+        expect(countCalls(program.main)).toBe(calls)
+        expect(passes(program, atMost(calls))).toBe(true)
+        expect(passes(program, atMost(calls - 1))).toBe(false)
+        expect(passes(program, usesConditionalAlternative())).toBe(usesIf)
+        expect(passes(program, usesConditionalRepetition())).toBe(usesWhile)
+        expect(passes(program, usesSimpleRepetition())).toBe(usesRepeat)
+        expect(passes(program, declarationDoesNotNestControlStructures(entryPointType))).toBe(!nests)
+        expect(checkAssessments(program, [], decomposition).some(w => w.id === 'nestedControl')).toBe(nests)
     })
 })

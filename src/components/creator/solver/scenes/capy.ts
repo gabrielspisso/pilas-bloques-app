@@ -13,6 +13,8 @@ export const capyModel: SceneModel = {
         RecogerLata: { letter: 'L', effect: 'markOnce' },
         RecogerPapel: { letter: 'P', effect: 'markOnce' }
     },
+    sensors: { TocandoLata: 'L', TocandoPapel: 'P' },
+    vanishing: ['L', 'P'],
     won,
     planTasks: (grid, toolbox) => planOnePerObject(won, { L: 'RecogerLata', P: 'RecogerPapel' })(grid, toolbox)
 }

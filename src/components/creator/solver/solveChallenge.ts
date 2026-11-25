@@ -1,10 +1,10 @@
 import { SerializedChallenge } from "../../serializedChallenge"
 import { findActions } from "./findSolution"
 import { parseMap } from "./grid"
-import { countBlocks, flatten, optimizeProgram, rawProgram } from "./optimize"
+import { countBlocks, optimizeProgram, rawProgram } from "./optimize"
 import { programToXml } from "./programXml"
 import { checkAssessments } from "./assessmentCheck"
-import { SceneModel, modelFor, simulateWith } from "./sceneModel"
+import { SceneModel, modelFor, runProgram, simulateWith } from "./sceneModel"
 import { Grid, Program, SolverResult } from "./types"
 
 const readMap = (map: string[][] | undefined): Grid | null => {
@@ -15,8 +15,8 @@ const readMap = (map: string[][] | undefined): Grid | null => {
     }
 }
 
-const solves = (model: SceneModel, map: string[][], tokens: string[]) =>
-    !!readMap(map) && simulateWith(model, map, tokens).solved
+const solves = (model: SceneModel, map: string[][], program: Program) =>
+    !!readMap(map) && runProgram(model, map, program).solved
 
 /**
  * A recommended solution for the scenario being edited, using only the blocks of the toolbox
@@ -43,15 +43,11 @@ export const solveChallenge = (challenge: SerializedChallenge, scenarioIndex: nu
 
     const found = findActions(grid, plan, toolbox)
     if ('kind' in found) return found
-    if (!solves(model, map, found.actions)) return { kind: 'verificationFailed' }
+    if (!solves(model, map, rawProgram(found.actions))) return { kind: 'verificationFailed' }
 
     let program: Program = optimizeProgram(found.actions, toolbox, challenge.assesments, procedureName)
-    if (!solves(model, map, flatten(program))) {
-        program = rawProgram(found.actions)
-        if (!solves(model, map, flatten(program))) return { kind: 'verificationFailed' }
-    }
+    if (!solves(model, map, program)) program = rawProgram(found.actions)
 
-    const tokens = flatten(program)
     return {
         kind: 'solved',
         program,
@@ -60,7 +56,7 @@ export const solveChallenge = (challenge: SerializedChallenge, scenarioIndex: nu
         blocks: countBlocks(program),
         exactOrder: found.exactOrder,
         scenarioIndex,
-        scenarios: maps.map((other, index) => ({ index, solved: solves(model, other, tokens) })),
+        scenarios: maps.map((other, index) => ({ index, solved: solves(model, other, program) })),
         warnings: checkAssessments(program, toolbox, challenge.assesments),
         notes: plan.notes
     }

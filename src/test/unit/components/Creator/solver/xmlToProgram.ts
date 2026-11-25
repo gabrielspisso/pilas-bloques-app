@@ -17,6 +17,13 @@ const readBlock = (block: Element): Statement => {
             const number = required(child(count, 'block') ?? child(count, 'shadow'), 'number')
             return { kind: 'repeat', times: Number(required(child(number, 'field', 'NUM'), 'NUM').textContent), body: readStatement(block, 'block') }
         }
+        case 'Si':
+        case 'si':
+        case 'Hasta':
+        case 'hasta': {
+            const condition = required(child(required(child(block, 'value', 'condition'), 'condition'), 'block'), 'sensor block')
+            return { kind: type.toLowerCase() === 'si' ? 'if' : 'until', sensor: condition.getAttribute('type')!, body: readStatement(block, 'block') }
+        }
         case 'procedures_callnoreturn':
             return { kind: 'call', name: required(child(block, 'mutation'), 'mutation').getAttribute('name')! }
         case 'MoverA': {

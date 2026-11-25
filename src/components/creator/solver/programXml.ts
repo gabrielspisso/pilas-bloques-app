@@ -18,6 +18,10 @@ const statementXml = (statement: Statement, next: string): string => {
         case 'repeat':
             return `<block type="Repetir"><value name="count"><block type="math_number"><field name="NUM">${statement.times}</field></block></value>` +
                 `<statement name="block">${chain(statement.body)}</statement>${next}</block>`
+        case 'if':
+        case 'until':
+            return `<block type="${statement.kind === 'if' ? 'Si' : 'Hasta'}"><value name="condition"><block type="${escape(statement.sensor)}"></block></value>` +
+                `<statement name="block">${chain(statement.body)}</statement>${next}</block>`
     }
 }
 

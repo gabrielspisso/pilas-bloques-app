@@ -18,6 +18,8 @@ export const yvotyModel: SceneModel = {
         AgarrarCargador: { letter: 'K', effect: 'remove' },
         CargarCelular: { letter: 'C', effect: 'markOnce', extraCheck: state => none(state, 'K') ? null : 'chargersLeft' }
     },
+    sensors: { TocandoLuciernaga: 'L', TocandoMariposa: 'M', TocandoCelular: 'C', HayCargador: 'K' },
+    vanishing: [],
     won,
     planTasks: (grid, toolbox) => {
         if (hasNothingToDo(grid, won)) return { kind: 'nothingToDo' }

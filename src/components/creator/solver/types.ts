@@ -41,6 +41,10 @@ export type Statement =
     | { kind: 'action', block: string }
     | { kind: 'call', name: string }
     | { kind: 'repeat', times: number, body: Statement[] }
+    /** Blockly 'Si' */
+    | { kind: 'if', sensor: string, body: Statement[] }
+    /** Blockly 'Hasta': while (!sensor) body */
+    | { kind: 'until', sensor: string, body: Statement[] }
 export type Procedure = { name: string, body: Statement[] }
 export type Program = { main: Statement[], procedures: Procedure[] }
 

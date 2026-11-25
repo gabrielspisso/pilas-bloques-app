@@ -18,6 +18,8 @@ export const chuyModel: SceneModel = {
         // The only ping pong block the creator offers: it calls a function this scene does not have.
         RebotarUnaVezPingPong: { letter: 'P', effect: 'remove', engineError: true }
     },
+    sensors: { HayTrofeo: 'T', TocandoPaleta: 'E', TocandoPulpito: 'U', TocandoPingPong: 'P', TocandoPelotaChuy: 'G' },
+    vanishing: ['G'],
     won,
     planTasks: (grid, toolbox) => {
         if (hasNothingToDo(grid, won)) return { kind: 'nothingToDo' }

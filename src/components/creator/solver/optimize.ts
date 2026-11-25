@@ -189,6 +189,9 @@ const countStatements = (statements: Statement[]): number =>
             case 'action': return total + tokenWeight(statement.block)
             case 'call': return total + 1
             case 'repeat': return total + 1 + countStatements(statement.body)
+            // The control block and its sensor.
+            case 'if':
+            case 'until': return total + 2 + countStatements(statement.body)
         }
     }, 0)
 
@@ -196,7 +199,7 @@ const countStatements = (statements: Statement[]): number =>
 export const countBlocks = ({ main, procedures }: Program) =>
     procedures.reduce((total, procedure) => total + 1 + countStatements(procedure.body), countStatements(main))
 
-/** Expands repetitions and calls back into tokens. */
+/** Expands repetitions and calls back into tokens. Programs with conditions have to be run instead. */
 export const flatten = ({ main, procedures }: Program): string[] => {
     const expand = (statements: Statement[]): string[] => statements.flatMap(statement => {
         switch (statement.kind) {
@@ -206,6 +209,8 @@ export const flatten = ({ main, procedures }: Program): string[] => {
                 const body = expand(statement.body)
                 return Array.from({ length: statement.times }, () => body).flat()
             }
+            case 'if':
+            case 'until': throw new Error('A program with conditions cannot be flattened')
         }
     })
     return expand(main)

@@ -8,9 +8,13 @@ export const manicModel: SceneModel = {
     letters: ['T', 'E', 'P'],
     actions: {
         RepararTelescopio: { letter: 'T', effect: 'markOnce' },
+        // Same behaviour, only offered by official challenges.
+        AlinearTelescopio: { letter: 'T', effect: 'markOnce' },
         ObservarEstrella: { letter: 'E', effect: 'markOnce' },
         ObservarPlaneta: { letter: 'P', effect: 'markOnce' }
     },
+    sensors: { TocandoTelescopio: 'T', TocandoEstrellaManic: 'E', TocandoPlaneta: 'P' },
+    vanishing: ['E', 'P'],
     won,
     planTasks: (grid, toolbox) =>
         planOnePerObject(won, { T: 'RepararTelescopio', E: 'ObservarEstrella', P: 'ObservarPlaneta' })(grid, toolbox)

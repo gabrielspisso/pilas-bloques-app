@@ -11,6 +11,13 @@ describe("programToXml", () => {
         ['procedures', {
             main: [{ kind: 'call', name: 'Parte 1' }, ...actions('MoverACasillaAbajo'), { kind: 'call', name: 'Parte 1' }],
             procedures: [{ name: 'Parte 1', body: [{ kind: 'repeat', times: 2, body: actions('MoverACasillaDerecha') }] }]
+        }],
+        ['conditions', {
+            main: [
+                { kind: 'until', sensor: 'BordeDerecho', body: [...actions('MoverACasillaDerecha'), { kind: 'if', sensor: 'HayChurrasco', body: actions('ComerChurrasco') }] },
+                ...actions('MoverACasillaAbajo')
+            ],
+            procedures: []
         }]
     ]
 
