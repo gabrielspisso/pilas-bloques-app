@@ -3,9 +3,10 @@ import { findActions } from "./findSolution"
 import { parseMap } from "./grid"
 import { countBlocks, optimizeProgram, rawProgram } from "./optimize"
 import { programToXml } from "./programXml"
-import { checkAssessments } from "./assessmentCheck"
+import { ConditionalReasons, checkAssessments } from "./assessmentCheck"
 import { SceneModel, modelFor, runProgram, simulateWith } from "./sceneModel"
-import { Grid, Program, SolverResult } from "./types"
+import { Grid, Program, SolverNote, SolverResult } from "./types"
+import { untilPass } from "./untilPass"
 
 const readMap = (map: string[][] | undefined): Grid | null => {
     try {
@@ -48,6 +49,16 @@ export const solveChallenge = (challenge: SerializedChallenge, scenarioIndex: nu
     let program: Program = optimizeProgram(found.actions, toolbox, challenge.assesments, procedureName)
     if (!solves(model, map, program)) program = rawProgram(found.actions)
 
+    const notes: SolverNote[] = [...plan.notes]
+    const reasons: ConditionalReasons = {}
+    if (challenge.assesments?.conditionalRepetition) {
+        const solved = maps.filter(other => solves(model, other, program))
+        const until = untilPass(model, program, solved, toolbox, challenge.assesments)
+        program = until.program
+        if (until.converted === false) reasons.repetition = { reason: until.reason, blocks: until.blocks }
+        else if (maps.length === 1) notes.push({ id: 'untilWithOneScenario' })
+    }
+
     return {
         kind: 'solved',
         program,
@@ -57,7 +68,7 @@ export const solveChallenge = (challenge: SerializedChallenge, scenarioIndex: nu
         exactOrder: found.exactOrder,
         scenarioIndex,
         scenarios: maps.map((other, index) => ({ index, solved: solves(model, other, program) })),
-        warnings: checkAssessments(program, toolbox, challenge.assesments),
-        notes: plan.notes
+        warnings: checkAssessments(program, toolbox, challenge.assesments, reasons),
+        notes
     }
 }

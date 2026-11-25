@@ -413,8 +413,8 @@
 			"procedureTooLong": "“{{name}}” tem {{count}} instruções; com comprimento máximo {{max}} são aceitas até {{allowed}}.",
 			"nestedControl": "Há uma repetição dentro de outra em {{name}}.",
 			"noRepetition": "Não usa a repetição simples.",
-			"needsConditionalRepetition": "A repetição condicional não é calculada automaticamente.",
-			"needsConditionalAlternative": "A alternativa condicional não é calculada automaticamente."
+			"needsConditionalRepetition": "Não usa a repetição condicional.",
+			"needsConditionalAlternative": "Não usa a alternativa condicional."
 		},
 		"reasons": {
 			"missingBlocks": "Faltam na caixa de blocos: {{blocks}}.",

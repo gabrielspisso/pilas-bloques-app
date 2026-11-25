@@ -413,8 +413,8 @@
 			"procedureTooLong": "“{{name}}” has {{count}} instructions; with maximum length {{max}} up to {{allowed}} are accepted.",
 			"nestedControl": "There is a repetition inside another one in {{name}}.",
 			"noRepetition": "It does not use simple repetition.",
-			"needsConditionalRepetition": "Conditional repetition is not calculated automatically.",
-			"needsConditionalAlternative": "Conditional alternative is not calculated automatically."
+			"needsConditionalRepetition": "It does not use conditional repetition.",
+			"needsConditionalAlternative": "It does not use a conditional alternative."
 		},
 		"reasons": {
 			"missingBlocks": "Missing from the toolbox: {{blocks}}.",

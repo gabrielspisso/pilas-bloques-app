@@ -140,6 +140,16 @@ const sense = (model: SceneModel, grid: Grid, state: SimState, sensor: string): 
     return false
 }
 
+/** The sensor block that detects objects with that letter. */
+export const sensorFor = (model: SceneModel, letter: string): string | undefined =>
+    Object.keys(model.sensors).find(sensor => model.sensors[sensor] === letter)
+
+export const borderSensor = (direction: Direction) =>
+    Object.keys(BORDER_SENSORS).find(sensor => BORDER_SENSORS[sensor] === direction)!
+
+export const obstacleSensor = (direction: Direction) =>
+    Object.keys(OBSTACLE_SENSORS).find(sensor => OBSTACLE_SENSORS[sensor] === direction)!
+
 export const MAX_ACTIONS = 5000
 
 export type ProgramRun = SimulationResult & {

@@ -29,8 +29,16 @@ const usesKind = (program: Program, kind: string): boolean => {
     return inside(program.main) || program.procedures.some(procedure => inside(procedure.body))
 }
 
+type ReasonOf<Id> = Omit<Extract<AssessmentWarning, { id: Id }>, 'id'>
+
+/** Why the conditional assessments could not be met, when the solver tried. */
+export type ConditionalReasons = {
+    repetition?: ReasonOf<'needsConditionalRepetition'>
+    alternative?: ReasonOf<'needsConditionalAlternative'>
+}
+
 /** Mimics the Mulang expectations of the active assessments, so the dialog can say what is not met. */
-export const checkAssessments = (program: Program, toolbox: string[], assesments?: Assesments): AssessmentWarning[] => {
+export const checkAssessments = (program: Program, toolbox: string[], assesments?: Assesments, reasons: ConditionalReasons = {}): AssessmentWarning[] => {
     const warnings: AssessmentWarning[] = []
 
     if (assesments?.decomposition) {
@@ -52,10 +60,10 @@ export const checkAssessments = (program: Program, toolbox: string[], assesments
 
     if (assesments?.simpleRepetition && !usesKind(program, 'repeat'))
         warnings.push({ id: 'noRepetition', reason: toolbox.includes('Repetir') ? 'nothingRepeats' : 'missingBlock' })
-    if (assesments?.conditionalRepetition)
-        warnings.push({ id: 'needsConditionalRepetition', reason: 'notYet' })
-    if (assesments?.conditionalAlternative)
-        warnings.push({ id: 'needsConditionalAlternative', reason: 'notYet' })
+    if (assesments?.conditionalRepetition && !usesKind(program, 'until'))
+        warnings.push({ id: 'needsConditionalRepetition', ...(reasons.repetition ?? { reason: 'notYet' }) })
+    if (assesments?.conditionalAlternative && !usesKind(program, 'if'))
+        warnings.push({ id: 'needsConditionalAlternative', ...(reasons.alternative ?? { reason: 'notYet' }) })
 
     return warnings
 }
