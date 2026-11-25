@@ -4,7 +4,7 @@ import { countCallsWithin, declarationDoesNotNestControlStructures, doSomething,
 import { checkAssessments, countCalls } from "../../../../../components/creator/solver/assessmentCheck"
 import { optimizeProgram, rawProgram } from "../../../../../components/creator/solver/optimize"
 import { Program, Statement } from "../../../../../components/creator/solver/types"
-import { application, entryPoint, muIf, muUntil, number, procedure, rawSequence, repeat } from "../../blockly/mulang/astFactories"
+import { programToAst } from "./programToAst"
 import { PROC, REPEAT } from "./helpers"
 
 const name = (n: number) => `Parte ${n}`
@@ -12,26 +12,8 @@ const decomposition = { decomposition: { maxProgramLength: 7 } }
 const actions = (...blocks: string[]): Statement[] => blocks.map(block => ({ kind: 'action', block }))
 const move = 'MoverA:ParaLaDerecha'
 
-const toAst = (statement: Statement): any => {
-    switch (statement.kind) {
-        case 'action': {
-            const [block, value] = statement.block.split(':')
-            return value ? application(block, application(value)) : application(block)
-        }
-        case 'call': return application(statement.name)
-        case 'repeat': return repeat(number(statement.times), ...statement.body.map(toAst))
-        case 'if': return muIf(application(statement.sensor), ...statement.body.map(toAst))
-        case 'until': return muUntil(application(statement.sensor), ...statement.body.map(toAst))
-    }
-}
-
-export const programToAst = ({ main, procedures }: Program) => rawSequence([
-    entryPoint(entryPointType, ...main.map(toAst)),
-    ...procedures.map(p => procedure(p.name, [], ...p.body.map(toAst)))
-])
-
 /** Runs EDL expectations with the real Mulang; returns [id, passed]. */
-export const runMulang = (program: Program, edl: string): [string, boolean][] =>
+const runMulang = (program: Program, edl: string): [string, boolean][] =>
     (mulang as any).astCode(programToAst(program)).customExpect(edl)
         .map(([encoded, passed]: [string, boolean]) => [parseExpect(window.atob(encoded))[0], passed])
 
@@ -44,13 +26,15 @@ const decompositionEdl = (program: Program, max: number) => [
 describe("checkAssessments", () => {
     test("main program too long", () => {
         const program = rawProgram(['a', 'b', 'c', 'd', 'e', 'f', 'g'])
-        expect(checkAssessments(program, [], decomposition)).toEqual([{ id: 'mainTooLong', count: 7, max: 7, allowed: 6 }])
+        const tooLong = { id: 'mainTooLong', count: 7, max: 7, allowed: 6 }
+        expect(checkAssessments(program, [PROC], decomposition)).toEqual([tooLong])
+        expect(checkAssessments(program, [], decomposition)).toEqual([tooLong, { id: 'decompositionMissingBlock' }])
     })
 
     test("'Move to' counts twice", () => {
         expect(countCalls(actions(move, move, move))).toBe(6)
         expect(checkAssessments(rawProgram([move, move, move]), [], decomposition)).toEqual([])
-        expect(checkAssessments(rawProgram([move, move, move, move]), [], decomposition))
+        expect(checkAssessments(rawProgram([move, move, move, move]), [PROC], decomposition))
             .toEqual([{ id: 'mainTooLong', count: 8, max: 7, allowed: 6 }])
     })
 
@@ -60,7 +44,7 @@ describe("checkAssessments", () => {
             main: [{ kind: 'repeat', times: 2, body: [inner] }, { kind: 'call', name: 'P' }],
             procedures: [{ name: 'P', body: actions('a', 'b', 'c', 'd', 'e', 'f', 'g') }]
         }
-        expect(checkAssessments(program, [REPEAT], decomposition)).toEqual([
+        expect(checkAssessments(program, [REPEAT, PROC], decomposition)).toEqual([
             { id: 'procedureTooLong', name: 'P', count: 7, max: 7, allowed: 6 },
             { id: 'nestedControl', name: null }
         ])
@@ -90,7 +74,7 @@ describe("against the real Mulang", () => {
     ])("agrees that %s is too long", (_, tokens) => {
         const program = rawProgram(tokens)
         expect(runMulang(program, decompositionEdl(program, 7))).toContainEqual([mainTooLongId, false])
-        expect(checkAssessments(program, [], decomposition).map(w => w.id)).toEqual(['mainTooLong'])
+        expect(checkAssessments(program, [PROC], decomposition).map(w => w.id)).toEqual(['mainTooLong'])
     })
 
     test("agrees that 3 'Move to' fit", () => {

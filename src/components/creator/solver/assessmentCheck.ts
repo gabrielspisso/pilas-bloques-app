@@ -43,6 +43,8 @@ export const checkAssessments = (program: Program, toolbox: string[], assesments
             if (count > allowed) warnings.push({ id: 'procedureTooLong', name, count, max, allowed })
         })
         if (nestsControl(program.main)) warnings.push({ id: 'nestedControl', name: null })
+        const tooLong = warnings.some(({ id }) => id === 'mainTooLong' || id === 'procedureTooLong')
+        if (tooLong && !toolbox.includes('Procedimiento')) warnings.push({ id: 'decompositionMissingBlock' })
         program.procedures.forEach(({ name, body }) => {
             if (nestsControl(body)) warnings.push({ id: 'nestedControl', name })
         })

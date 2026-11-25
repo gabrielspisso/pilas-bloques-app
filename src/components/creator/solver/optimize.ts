@@ -1,5 +1,6 @@
 import { Assesments } from "../../serializedChallenge"
-import { checkAssessments } from "./assessmentCheck"
+import { DEFAULT_MAX_PROGRAM_LENGTH } from "../assessments"
+import { checkAssessments, countCalls } from "./assessmentCheck"
 import { MOVE_TO_PREFIX } from "./grid"
 import { Procedure, Program, Statement } from "./types"
 
@@ -23,18 +24,20 @@ export const toStatement = (token: string): Statement =>
 export type CompressOptions = {
     /** false: the toolbox has no "Repeat" block */
     repeat?: boolean
+    /** among equally small programs, take one that repeats something (simple repetition assessment) */
+    preferRepeatOnTie?: boolean
 }
 
 export type Compressed = { statements: Statement[], cost: number }
 
-const compressRuns = (tokens: string[]): Compressed => {
+const compressRuns = (tokens: string[], shortest: number): Compressed => {
     const statements: Statement[] = []
     let cost = 0
     for (let i = 0, j = 0; i < tokens.length; i = j) {
         for (j = i + 1; j < tokens.length && tokens[j] === tokens[i]; j++);
         const times = j - i
         const weight = tokenWeight(tokens[i])
-        if (times >= 3) {
+        if (times >= shortest) {
             statements.push({ kind: 'repeat', times, body: [toStatement(tokens[i])] })
             cost += 1 + weight
         } else {
@@ -50,15 +53,17 @@ const compressRuns = (tokens: string[]): Compressed => {
  * Dynamic programming over intervals [i, j).
  */
 export const compress = (tokens: string[], nesting: boolean, options: CompressOptions = {}): Compressed => {
-    const { repeat = true } = options
+    const { repeat = true, preferRepeatOnTie = false } = options
     const length = tokens.length
     if (!repeat) return { statements: tokens.map(toStatement), cost: rawWeight(tokens) }
-    if (length > MAX_COMPRESS_TOKENS) return compressRuns(tokens)
+    if (length > MAX_COMPRESS_TOKENS) return compressRuns(tokens, preferRepeatOnTie ? 2 : 3)
 
     const size = length + 1
     const cost = new Int32Array(size * size)
     // 0: raw, k > 0: split at k, -p < 0: repeat with period p
     const choice = new Int32Array(size * size)
+    // 1 when the chosen way of writing the interval has some repetition
+    const repeats = new Uint8Array(size * size)
     const prefix = [0]
     tokens.forEach(token => prefix.push(prefix[prefix.length - 1] + tokenWeight(token)))
 
@@ -66,23 +71,25 @@ export const compress = (tokens: string[], nesting: boolean, options: CompressOp
         for (let i = 0, j = span; j <= length; i++, j++) {
             const at = i * size + j
             cost[at] = prefix[j] - prefix[i]
-            for (let k = i + 1; k < j; k++) {
-                const split = cost[i * size + k] + cost[k * size + j]
-                if (split < cost[at]) {
-                    cost[at] = split
-                    choice[at] = k
+            /** Strictly smaller wins; on a tie the first found stays, unless a repetition is preferred. */
+            const take = (candidate: number, repeated: number, chosen: number) => {
+                if (candidate < cost[at] || (preferRepeatOnTie && candidate === cost[at] && repeated && !repeats[at])) {
+                    cost[at] = candidate
+                    repeats[at] = repeated
+                    choice[at] = chosen
                 }
+            }
+            for (let k = i + 1; k < j; k++) {
+                const left = i * size + k
+                const right = k * size + j
+                take(cost[left] + cost[right], repeats[left] | repeats[right], k)
             }
             for (let period = 1; period <= span / 2; period++) {
                 if (span % period) continue
                 let periodic = true
                 for (let t = i + period; periodic && t < j; t++) periodic = tokens[t] === tokens[t - period]
                 if (!periodic) continue
-                const repeated = 1 + (nesting ? cost[i * size + i + period] : prefix[i + period] - prefix[i])
-                if (repeated < cost[at]) {
-                    cost[at] = repeated
-                    choice[at] = -period
-                }
+                take(1 + (nesting ? cost[i * size + i + period] : prefix[i + period] - prefix[i]), 1, -period)
             }
         }
     }
@@ -218,6 +225,63 @@ export const flatten = ({ main, procedures }: Program): string[] => {
 
 export const rawProgram = (tokens: string[]): Program => ({ main: tokens.map(toStatement), procedures: [] })
 
+/**
+ * Splits whatever is longer than `allowed` calls into procedures: consecutive stretches that fit,
+ * sharing one procedure when equal, again and again until the caller fits too. It stops when a
+ * round does not make the list shorter (the limit is too small for that).
+ */
+export const decompose = ({ main, procedures }: Program, allowed: number, procedureName: (n: number) => string): Program => {
+    const result: Procedure[] = []
+    const taken = new Set(procedures.map(({ name }) => name))
+    const created: Procedure[] = []
+    let number = 0
+
+    const callTo = (body: Statement[]): Statement => {
+        const key = JSON.stringify(body)
+        let existing = created.find(procedure => JSON.stringify(procedure.body) === key)
+        if (!existing) {
+            let name = procedureName(++number)
+            while (taken.has(name)) name = procedureName(++number)
+            existing = { name, body }
+            created.push(existing)
+        }
+        return { kind: 'call', name: existing.name }
+    }
+
+    const stretches = (statements: Statement[]) => {
+        const found: Statement[][] = []
+        let size = Infinity
+        statements.forEach(statement => {
+            const weight = countCalls([statement])
+            if (size + weight > allowed) {
+                found.push([])
+                size = 0
+            }
+            found[found.length - 1].push(statement)
+            size += weight
+        })
+        return found
+    }
+
+    const fit = (statements: Statement[], limit: number): Statement[] => {
+        // A single control statement can be too long on its own: its body is split inside it.
+        let list = statements.map(statement => 'body' in statement
+            ? { ...statement, body: fit(statement.body, statement.kind === 'repeat' ? allowed : allowed - 1) }
+            : statement)
+        while (countCalls(list) > limit) {
+            const parts = stretches(list)
+            // Every stretch becomes one call (a lone call stays as it is).
+            if (parts.length >= countCalls(list)) break
+            list = parts.map(part => part.length === 1 && part[0].kind === 'call' ? part[0] : callTo(part))
+        }
+        return list
+    }
+
+    procedures.forEach(({ name, body }) => result.push({ name, body: fit(body, allowed) }))
+    const fitted = fit(main, allowed)
+    return { main: fitted, procedures: result.concat(created) }
+}
+
 /** Phase 2: among the candidate programs, the one that misses fewer assessments with fewer blocks. */
 export const optimizeProgram = (actions: string[], toolbox: string[], assesments: Assesments | undefined, procedureName: (n: number) => string): Program => {
     const nesting = !assesments?.decomposition
@@ -227,6 +291,12 @@ export const optimizeProgram = (actions: string[], toolbox: string[], assesments
     if (repeat) candidates.push({ main: compress(actions, nesting).statements, procedures: [] })
     if (toolbox.includes('Procedimiento') && actions.length <= MAX_PROC_TOKENS)
         candidates.push(extractProcedures(actions, nesting, procedureName, { repeat }).program)
+    if (repeat && assesments?.simpleRepetition)
+        candidates.push({ main: compress(actions, nesting, { preferRepeatOnTie: true }).statements, procedures: [] })
+    if (toolbox.includes('Procedimiento') && assesments?.decomposition) {
+        const allowed = (assesments.decomposition.maxProgramLength ?? DEFAULT_MAX_PROGRAM_LENGTH) - 1
+        candidates.push(...candidates.map(candidate => decompose(candidate, allowed, procedureName)))
+    }
 
     const score = (program: Program) => [checkAssessments(program, toolbox, assesments).length, countBlocks(program), program.procedures.length]
     const scored = candidates.map(program => ({ program, score: score(program) }))
