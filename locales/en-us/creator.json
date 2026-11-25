@@ -391,5 +391,64 @@
 		"maxProgramLength": "Maximum program length",
 		"maxProgramLengthHelp": "Number of blocks per procedure (between {{min}} and {{max}}).",
 		"close": "Done"
+	},
+	"solver": {
+		"button": "Find a solution",
+		"title": "Recommended solution",
+		"calculating": "Calculating…",
+		"solved": "It can be solved! This solution uses {{blocks}} blocks.",
+		"notShortest": "It is one possible solution: it is not guaranteed to be the shortest.",
+		"rawSteps": "Before optimizing it had {{steps}} instructions, one step at a time.",
+		"notExact": "There are many objects: the route is good, but it may not be the shortest.",
+		"repeat": "Repeat {{times}} times",
+		"definition": "Procedure “{{name}}”",
+		"procedureName": "Part {{number}}",
+		"mainName": "the main program",
+		"scenarioOk": "Scenario {{number}}: solved",
+		"scenarioFail": "Scenario {{number}}: not solved",
+		"notAllScenarios": "This solution does not work for every scenario. A single program for different scenarios needs conditionals: the notes explain why it could not be built.",
+		"warningsTitle": "Assessments this solution does not meet",
+		"warnings": {
+			"mainTooLong": "The main program has {{count}} instructions; with maximum length {{max}} up to {{allowed}} are accepted.",
+			"procedureTooLong": "“{{name}}” has {{count}} instructions; with maximum length {{max}} up to {{allowed}} are accepted.",
+			"nestedControl": "There is a repetition inside another one in {{name}}.",
+			"noRepetition": "It does not use simple repetition.",
+			"needsConditionalRepetition": "Conditional repetition is not calculated automatically.",
+			"needsConditionalAlternative": "Conditional alternative is not calculated automatically."
+		},
+		"reasons": {
+			"missingBlocks": "Missing from the toolbox: {{blocks}}.",
+			"missingBlock": "“Repeat” is missing from the toolbox.",
+			"nothingRepeats": "The route has no repeated steps.",
+			"noLandmark": "No stretch ends at a border, an obstacle or an object that a toolbox sensor can detect.",
+			"nothingToDecide": "There is nothing to decide on this board: an “If” needs several scenarios where the same cell sometimes has an object and sometimes does not.",
+			"incompatibleScenarios": "The scenarios have different sizes or the character starts in different places, and a common program is not calculated in that case yet.",
+			"notYet": "It is not calculated automatically yet.",
+			"decompositionMissingBlock": "Decomposing needs “Procedures” in the toolbox."
+		},
+		"ifLine": "If {{sensor}}",
+		"untilLine": "Repeat until {{sensor}}",
+		"notes": {
+			"paddleNotRequired": "Paddles are not required to win and “Pick paddle” is not in the toolbox: this solution does not pick them up.",
+			"chargerNotRequired": "Chargers are not required when every cellphone is unlocked and “Pick charger” is not in the toolbox: this solution does not pick them up.",
+			"untilWithOneScenario": "With a single scenario, “Repeat N times” would also work; the condition keeps the program working if the board changes.",
+			"commonProgram": "One program solves the {{scenarios}} scenarios: it uses sensors to ask where the objects are.",
+			"scenariosIncompatible": "The scenarios cannot be solved with one program (different size, different start, or obstacles where another has objects): the solution is for the scenario you are editing.",
+			"commonNeedsBlocks": "For one program to solve every scenario, the toolbox needs: {{blocks}}."
+		},
+		"tryInPreview": "Try it in the preview",
+		"tryHint": "It is loaded in the preview so you can run it. It is not saved in the challenge.",
+		"close": "Close",
+		"cell": "row {{row}}, column {{column}}",
+		"errors": {
+			"unsupportedScene": "Solutions cannot be calculated for {{actor}} yet.",
+			"invalidMap": "The scenario must have exactly one character.",
+			"nothingToDo": "There is nothing to solve: add objects to the board.",
+			"missingBlocks": "Some blocks are missing from the toolbox: {{blocks}}.",
+			"engineLimitation": "{{actor}} cannot bounce ping pong balls with the creator's blocks: the available block does not remove them from the board. Remove the ping pong balls from: {{cells}}.",
+			"unreachable": "{{actor}} cannot reach: {{cells}}.",
+			"noRoute": "There is no route that solves everything with the available moves.",
+			"verificationFailed": "We could not check the solution. If you see this message, let us know."
+		}
 	}
 }

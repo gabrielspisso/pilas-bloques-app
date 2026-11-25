@@ -5,6 +5,7 @@ import { ScenarioEditionButtons } from "./ScenarioEditionButtons";
 import { useThemeContext } from "../../../../../theme/ThemeContext";
 import { ToolBoxEditor } from "../../ChallengeDetailsEdition/ToolBoxEditor/ToolBoxEditor";
 import { AssessmentsEdition } from "../../ChallengeDetailsEdition/AssessmentsEdition";
+import { SolverEdition } from "../../ChallengeDetailsEdition/SolverEdition";
 
 /** Board options. A column beside the board on wide screens, a wrapping row below it on small ones. */
 export const GridOptions = () => {
@@ -21,6 +22,7 @@ export const GridOptions = () => {
         </PBCard>
         <ToolBoxEditor />
         <AssessmentsEdition />
+        <SolverEdition />
         {/*<Button>Bloques iniciales</Button> Not in the MVP*/}
     </Stack>
 }

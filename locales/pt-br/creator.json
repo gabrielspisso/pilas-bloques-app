@@ -391,5 +391,64 @@
 		"maxProgramLength": "Tamanho máximo do programa",
 		"maxProgramLengthHelp": "Quantidade de blocos por procedimento (entre {{min}} e {{max}}).",
 		"close": "Pronto"
+	},
+	"solver": {
+		"button": "Calcular solução",
+		"title": "Solução recomendada",
+		"calculating": "Calculando…",
+		"solved": "Dá para resolver! Esta solução usa {{blocks}} blocos.",
+		"notShortest": "É uma solução possível: não garante ser a mais curta.",
+		"rawSteps": "Sem otimizar eram {{steps}} instruções, um passo por vez.",
+		"notExact": "Há muitos objetos: o percurso é bom, mas pode não ser o mais curto.",
+		"repeat": "Repita {{times}} vezes",
+		"definition": "Procedimento “{{name}}”",
+		"procedureName": "Parte {{number}}",
+		"mainName": "o programa principal",
+		"scenarioOk": "Cenário {{number}}: resolve",
+		"scenarioFail": "Cenário {{number}}: não resolve",
+		"notAllScenarios": "Esta solução não serve para todos os cenários. Para que um mesmo programa resolva cenários diferentes são necessárias condicionais: as notas explicam por que não foi possível montá-lo.",
+		"warningsTitle": "Avaliações que esta solução não cumpre",
+		"warnings": {
+			"mainTooLong": "O programa principal tem {{count}} instruções; com comprimento máximo {{max}} são aceitas até {{allowed}}.",
+			"procedureTooLong": "“{{name}}” tem {{count}} instruções; com comprimento máximo {{max}} são aceitas até {{allowed}}.",
+			"nestedControl": "Há uma repetição dentro de outra em {{name}}.",
+			"noRepetition": "Não usa a repetição simples.",
+			"needsConditionalRepetition": "A repetição condicional não é calculada automaticamente.",
+			"needsConditionalAlternative": "A alternativa condicional não é calculada automaticamente."
+		},
+		"reasons": {
+			"missingBlocks": "Faltam na caixa de blocos: {{blocks}}.",
+			"missingBlock": "Falta «Repita» na caixa de blocos.",
+			"nothingRepeats": "O percurso não tem passos que se repetem.",
+			"noLandmark": "Nenhum trecho termina em uma borda, em um obstáculo ou em um objeto que um sensor da caixa possa detectar.",
+			"nothingToDecide": "Neste tabuleiro não há nada para decidir: para usar um «Se» são necessários vários cenários em que, na mesma casa, às vezes há um objeto e às vezes não.",
+			"incompatibleScenarios": "Os cenários têm tamanhos diferentes ou o personagem começa em lugares diferentes, e nesse caso ainda não se calcula um programa comum.",
+			"notYet": "Ainda não é calculado automaticamente.",
+			"decompositionMissingBlock": "Para decompor é necessário «Procedimentos» na caixa de blocos."
+		},
+		"ifLine": "Se {{sensor}}",
+		"untilLine": "Repita até que {{sensor}}",
+		"notes": {
+			"paddleNotRequired": "As raquetes não são obrigatórias para ganhar e “Pegar raqueta” não está na caixa de blocos: esta solução não as pega.",
+			"chargerNotRequired": "Os carregadores não são obrigatórios quando todos os celulares são desbloqueados e “Pegar cargador” não está na caixa de blocos: esta solução não os pega.",
+			"untilWithOneScenario": "Com um só cenário, «Repita N vezes» também bastaria; a condição faz o programa continuar funcionando se o tabuleiro mudar.",
+			"commonProgram": "Um mesmo programa resolve os {{scenarios}} cenários: pergunta com sensores onde há objetos.",
+			"scenariosIncompatible": "Os cenários não podem ser resolvidos com um mesmo programa (tamanho diferente, início diferente ou obstáculos onde em outro há objetos): a solução é para o cenário que você está editando.",
+			"commonNeedsBlocks": "Para que um mesmo programa resolva todos os cenários, a caixa precisa de: {{blocks}}."
+		},
+		"tryInPreview": "Testar na pré-visualização",
+		"tryHint": "É carregada na pré-visualização para você executá-la. Não é salva no desafio.",
+		"close": "Fechar",
+		"cell": "linha {{row}}, coluna {{column}}",
+		"errors": {
+			"unsupportedScene": "Ainda não é possível calcular soluções para {{actor}}.",
+			"invalidMap": "O cenário deve ter exatamente um personagem.",
+			"nothingToDo": "Não há nada para resolver: adicione objetos ao tabuleiro.",
+			"missingBlocks": "Faltam blocos na caixa de blocos: {{blocks}}.",
+			"engineLimitation": "{{actor}} não consegue rebater as bolinhas de pingue-pongue com os blocos do criador: o bloco disponível não as tira do tabuleiro. Retire as bolinhas de pingue-pongue de: {{cells}}.",
+			"unreachable": "{{actor}} não consegue chegar a: {{cells}}.",
+			"noRoute": "Não há um percurso que resolva tudo com os movimentos disponíveis.",
+			"verificationFailed": "Não conseguimos verificar a solução. Se você vir esta mensagem, avise-nos."
+		}
 	}
 }
