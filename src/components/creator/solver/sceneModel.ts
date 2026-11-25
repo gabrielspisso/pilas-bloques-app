@@ -2,6 +2,7 @@ import { SceneType } from "../../serializedChallenge"
 import { ACTOR, EMPTY, OBSTACLE } from "../Editor/SceneEdition/mapUtils"
 import { MOVES, cellExists, parseMap, sameCell } from "./grid"
 import { capyModel } from "./scenes/capy"
+import { chuyModel } from "./scenes/chuy"
 import { dubaModel } from "./scenes/duba"
 import { litaModel } from "./scenes/lita"
 import { manicModel } from "./scenes/manic"
@@ -129,7 +130,8 @@ export const modelFor = (type: SceneType): SceneModel | undefined => {
         Duba: dubaModel,
         Capy: capyModel,
         Manic: manicModel,
-        Lita: litaModel
+        Lita: litaModel,
+        Chuy: chuyModel
     }
     return models[type]
 }

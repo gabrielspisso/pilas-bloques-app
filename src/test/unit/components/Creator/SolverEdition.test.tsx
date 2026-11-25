@@ -48,7 +48,14 @@ describe("SolverEdition", () => {
     })
 
     test("a character without a solver", async () => {
-        await open('Chuy', [[["A", "T"]]], MOVES4)
-        expect(await screen.findByTestId("solver-error")).toHaveTextContent("Todavía no se pueden calcular soluciones para Chuy")
+        await open('Custom', [[["A", "-"]]], MOVES4)
+        expect(await screen.findByTestId("solver-error")).toHaveTextContent("Todavía no se pueden calcular soluciones")
+    })
+
+    test("explains why Chuy cannot bounce ping pong balls", async () => {
+        await open('Chuy', [[["A", "P"]]], [...MOVES4, 'RebotarUnaVezPingPong'])
+        const error = await screen.findByTestId("solver-error")
+        expect(error).toHaveTextContent("ping pong")
+        expect(error).toHaveTextContent("fila 1, columna 2")
     })
 })
