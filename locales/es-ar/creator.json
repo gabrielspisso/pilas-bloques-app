@@ -455,6 +455,43 @@
 		}
 	},
 	"ai": {
+		"button": "Funciones de IA",
+		"connected": "Conectado",
+		"copy": "Copiar",
+		"menu": {
+			"connect": "Conectar un asistente",
+			"sharing": "Compartiendo con {{client}}",
+			"examples": "Copiá un pedido y pegalo en tu asistente:",
+			"stop": "Dejar de compartir",
+			"removeInitial": "Quitar bloques iniciales"
+		},
+		"examples": {
+			"solve": "Resolvé este desafío cumpliendo las evaluaciones.",
+			"texts": "Sugerime título, descripción y pista para este desafío, sin revelar la solución.",
+			"level": "Creá un nivel nuevo para este personaje, con solución recomendada y bloques iniciales."
+		},
+		"connect": {
+			"title": "Conectar un asistente",
+			"intro": "Un asistente de IA que corre en tu computadora puede proponerte soluciones, textos o niveles. Nada cambia hasta que vos lo apliques.",
+			"steps": {
+				"1": "Instalá {{assistant}} (si todavía no lo tenés).",
+				"2": "Prepará pilas-bloques-mcp (necesita Node 20 o más nuevo).",
+				"3": "Registralo en {{assistant}}.",
+				"4": "Pedile esto al asistente y pegá acá el código que te dé."
+			},
+			"folder": "Carpeta de pilas-bloques-mcp",
+			"code": "Código de emparejamiento",
+			"privacy": "El tablero, los bloques y los textos del desafío se envían al proveedor del modelo que uses.",
+			"share": "Compartir sesión",
+			"close": "Cerrar"
+		},
+		"errors": {
+			"unreachable": "No hay respuesta en el puerto {{port}}. Pedile primero al asistente «Connect to Pilas Bloques» y fijate que siga abierto.",
+			"lost": "Se cortó la conexión con el asistente.",
+			"bad_code": "El código no es correcto. Pedile al asistente el código actual (cambia después de 5 intentos fallidos).",
+			"busy": "Ya hay otra pestaña conectada a este asistente. Dejá de compartir en esa pestaña.",
+			"protocol": "La versión de pilas-bloques-mcp no coincide con la de esta aplicación. Actualizala y volvé a prepararla."
+		},
 		"proposal": {
 			"title": "Propuesta del asistente",
 			"before": "Antes",

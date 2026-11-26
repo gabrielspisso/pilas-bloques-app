@@ -455,6 +455,43 @@
 		}
 	},
 	"ai": {
+		"button": "AI features",
+		"connected": "Connected",
+		"copy": "Copy",
+		"menu": {
+			"connect": "Connect an assistant",
+			"sharing": "Sharing with {{client}}",
+			"examples": "Copy a request and paste it in your assistant:",
+			"stop": "Stop sharing",
+			"removeInitial": "Remove starting blocks"
+		},
+		"examples": {
+			"solve": "Solve this challenge meeting its evaluations.",
+			"texts": "Suggest a title, description and clue for this challenge, without revealing the solution.",
+			"level": "Create a new level for this character, with a recommended solution and starting blocks."
+		},
+		"connect": {
+			"title": "Connect an assistant",
+			"intro": "An AI assistant running on your computer can propose solutions, texts or levels. Nothing changes until you apply it.",
+			"steps": {
+				"1": "Install {{assistant}} (if you don't have it yet).",
+				"2": "Prepare pilas-bloques-mcp (it needs Node 20 or newer).",
+				"3": "Register it in {{assistant}}.",
+				"4": "Ask the assistant this and paste here the code it gives you."
+			},
+			"folder": "pilas-bloques-mcp folder",
+			"code": "Pairing code",
+			"privacy": "The board, the blocks and the texts of the challenge are sent to the provider of the model you use.",
+			"share": "Share session",
+			"close": "Close"
+		},
+		"errors": {
+			"unreachable": "Nothing answers on port {{port}}. First ask the assistant to \"Connect to Pilas Bloques\" and check it is still open.",
+			"lost": "The connection with the assistant was lost.",
+			"bad_code": "Wrong code. Ask the assistant for the current code (it changes after 5 wrong attempts).",
+			"busy": "Another tab is already connected to this assistant. Stop sharing in that tab.",
+			"protocol": "The version of pilas-bloques-mcp does not match this application. Update it and prepare it again."
+		},
 		"proposal": {
 			"title": "Assistant proposal",
 			"before": "Before",

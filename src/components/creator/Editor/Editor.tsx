@@ -21,6 +21,8 @@ import { CreatorThemeProvider, creatorPageBackground } from "../../../theme/crea
 import { CreatorMode, CreatorModeSwitch, SIDE_BY_SIDE_MIN_WIDTH, useCreatorMode } from "./CreatorMode";
 import { CreatorLivePreview } from "./CreatorLivePreview";
 import { CreatorTutorial } from "./CreatorTutorial";
+import { AiSessionProvider } from "../ai/AiSessionProvider";
+import { AiSharingIndicator } from "../ai/AiFunctions";
 
 export const CreatorEditor = () => {
   const { darkModeEnabled } = useThemeContext()
@@ -45,6 +47,7 @@ export const CreatorEditor = () => {
       {challengeExists ?
         (<CreatorContextProvider>
           <CreatorThemeProvider>
+          <AiSessionProvider>
           <Stack alignItems="center" height="inherit" sx={{ backgroundColor: creatorPageBackground(darkModeEnabled) }}>
             <Header CenterComponent={<HeaderText text={t("editor.editorHeader")} />}
               SubHeader={<EditorSubHeader viewButton={shouldShow ? <EmberPreviewButton /> : undefined} reactViewButton={<PreviewButton />} showHistory
@@ -52,6 +55,7 @@ export const CreatorEditor = () => {
             <CreatorWorkspace mode={mode} onRequestTestMode={() => setMode('test')} />
             <CreatorTutorial />
           </Stack>
+          </AiSessionProvider>
           </CreatorThemeProvider>
         </CreatorContextProvider>
         ) : <></>}
@@ -122,6 +126,7 @@ export const EditorSubHeader = (props: EditorSubHeaderProps) =>
     {props.showHistory && <UndoRedoButtons />}
     {props.showHistory && <AutosaveStatus />}
     {props.modeSwitch}
+    <AiSharingIndicator />
     {props.viewButton}
     {props.reactViewButton}
     <ShareButton />
