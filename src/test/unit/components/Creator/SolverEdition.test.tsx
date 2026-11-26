@@ -27,6 +27,7 @@ describe("SolverEdition", () => {
         const result = await screen.findByTestId("solver-result")
         expect(result).toHaveTextContent("3 bloques")
         expect(result).toHaveTextContent("no garantiza ser la más corta")
+        expect(result).toHaveTextContent("no significa que cumpla con tu criterio como docente")
         const program = screen.getByTestId("solution-program")
         expect(program).toHaveTextContent("Repetir 3 veces")
         expect(program).toHaveTextContent("Mover a la derecha")
@@ -91,5 +92,19 @@ describe("SolverEdition", () => {
         await screen.findByTestId("solver-result")
         expect(screen.getByTestId("solution-program")).toHaveTextContent("Repetir hasta que")
         expect(screen.getByTestId("solver-notes")).toHaveTextContent("Con un solo escenario")
+    })
+
+    test("adds the recommended blocks to an empty toolbox and solves", async () => {
+        await open('Duba', [line], ['MoverA'])
+        const recommended = await screen.findByTestId("solver-recommended")
+        expect(recommended).toHaveTextContent("Comer churrasco")
+        expect(screen.getByTestId("solver-error")).toBeInTheDocument()
+
+        fireEvent.click(screen.getByTestId("solver-add-blocks"))
+
+        expect(await screen.findByTestId("solver-result")).toHaveTextContent("3 bloques")
+        expect(screen.queryByTestId("solver-recommended")).toBeNull()
+        expect(LocalStorage.getCreatorChallenge()!.toolbox.blocks)
+            .toEqual(['MoverA', 'Repetir', 'MoverACasillaDerecha', 'ComerChurrasco'])
     })
 })

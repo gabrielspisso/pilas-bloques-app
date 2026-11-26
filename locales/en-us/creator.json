@@ -398,6 +398,7 @@
 		"calculating": "Calculating…",
 		"solved": "It can be solved! This solution uses {{blocks}} blocks.",
 		"notShortest": "It is one possible solution: it is not guaranteed to be the shortest.",
+		"disclaimer": "It is a basic solution: it may not meet your criteria as a teacher.",
 		"rawSteps": "Before optimizing it had {{steps}} instructions, one step at a time.",
 		"notExact": "There are many objects: the route is good, but it may not be the shortest.",
 		"repeat": "Repeat {{times}} times",
@@ -436,6 +437,8 @@
 			"scenariosIncompatible": "The scenarios cannot be solved with one program (different size, different start, or obstacles where another has objects): the solution is for the scenario you are editing.",
 			"commonNeedsBlocks": "For one program to solve every scenario, the toolbox needs: {{blocks}}."
 		},
+		"recommendedTitle": "Recommended blocks missing from the toolbox",
+		"addBlocks": "Add the missing ones",
 		"tryInPreview": "Try it in the preview",
 		"tryHint": "It is loaded in the preview so you can run it. It is not saved in the challenge.",
 		"close": "Close",

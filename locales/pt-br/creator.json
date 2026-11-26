@@ -398,6 +398,7 @@
 		"calculating": "Calculando…",
 		"solved": "Dá para resolver! Esta solução usa {{blocks}} blocos.",
 		"notShortest": "É uma solução possível: não garante ser a mais curta.",
+		"disclaimer": "É uma solução básica: não significa que cumpra o seu critério como docente.",
 		"rawSteps": "Sem otimizar eram {{steps}} instruções, um passo por vez.",
 		"notExact": "Há muitos objetos: o percurso é bom, mas pode não ser o mais curto.",
 		"repeat": "Repita {{times}} vezes",
@@ -436,6 +437,8 @@
 			"scenariosIncompatible": "Os cenários não podem ser resolvidos com um mesmo programa (tamanho diferente, início diferente ou obstáculos onde em outro há objetos): a solução é para o cenário que você está editando.",
 			"commonNeedsBlocks": "Para que um mesmo programa resolva todos os cenários, a caixa precisa de: {{blocks}}."
 		},
+		"recommendedTitle": "Blocos recomendados que faltam na caixa",
+		"addBlocks": "Adicionar os que faltam",
 		"tryInPreview": "Testar na pré-visualização",
 		"tryHint": "É carregada na pré-visualização para você executá-la. Não é salva no desafio.",
 		"close": "Fechar",
