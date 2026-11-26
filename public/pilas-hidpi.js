@@ -49,4 +49,14 @@
       if (id == this._primaryPointerID) { this.mouseX = data.x; this.mouseY = data.y; }
     };
   }
+
+  // pilasweb disables smoothing (meant for pixel art); Pilas Bloques sprites are high-resolution
+  // images drawn much smaller, which looks jagged without it.
+  var originalIniciar = Pilas.prototype.iniciar;
+  Pilas.prototype.iniciar = function () {
+    var result = originalIniciar.apply(this, arguments);
+    var ctx = this.canvas && this.canvas.getContext ? this.canvas.getContext('2d') : null;
+    if (ctx) { ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; }
+    return result;
+  };
 })(window);

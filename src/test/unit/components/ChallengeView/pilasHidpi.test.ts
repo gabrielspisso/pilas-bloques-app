@@ -114,6 +114,29 @@ describe('pilas-hidpi.js', () => {
     expect(stage.mouseY).toBe(150)
   })
 
+  const startPilas = (context: unknown) => {
+    setDpr(2)
+    runScript()
+    const pilas = new global.Pilas()
+    pilas.opciones = { ancho: 420, alto: 480 }
+    pilas.canvas = { getContext: () => context }
+    pilas.iniciar()
+  }
+
+  test('smooths the images after pilasweb starts', () => {
+    const context = { imageSmoothingEnabled: false, imageSmoothingQuality: 'low' }
+    // pilasweb disables smoothing at the end of its own start up
+    global.Pilas.prototype.iniciar = function () { this.canvas.getContext('2d').imageSmoothingEnabled = false }
+
+    startPilas(context)
+
+    expect(context).toEqual({ imageSmoothingEnabled: true, imageSmoothingQuality: 'high' })
+  })
+
+  test('starts even without a 2d context', () => {
+    expect(() => startPilas(null)).not.toThrow()
+  })
+
   test('does nothing without pilasweb', () => {
     delete global.Pilas
 
