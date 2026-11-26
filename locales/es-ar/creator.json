@@ -482,7 +482,7 @@
 			"folder": "Carpeta de pilas-bloques-mcp",
 			"code": "Código de emparejamiento",
 			"privacy": "El tablero, los bloques y los textos del desafío se envían al proveedor del modelo que uses.",
-			"share": "Compartir sesión",
+			"share": "Empezar sesión",
 			"close": "Cerrar"
 		},
 		"errors": {

@@ -482,7 +482,7 @@
 			"folder": "pilas-bloques-mcp folder",
 			"code": "Pairing code",
 			"privacy": "The board, the blocks and the texts of the challenge are sent to the provider of the model you use.",
-			"share": "Share session",
+			"share": "Start session",
 			"close": "Close"
 		},
 		"errors": {
