@@ -1,11 +1,12 @@
 import { useParams } from "react-router-dom"
 import { Challenge, PathToChallenge, currentIdFor, getPathToChallenge, shouldShowMultipleScenariosButton } from "../../staticData/challenges";
-import { Collapse, IconButton, PaperProps, Stack } from "@mui/material";
+import { Box, Collapse, IconButton, PaperProps, Stack } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { EditableBlocklyWorkspace } from "./EditableBlocklyWorkspace";
 import { InfoButton, SceneButtons } from "./SceneButtons/SceneButtons";
 import { SceneView } from "./SceneView";
+import { HorizontalChallengeLayout } from "./HorizontalChallengeLayout";
 import { StatementDescription } from "./StatementDescription";
 import { ChallengeFooter, InfoDrawer } from "./Info/ChallengeFooter";
 import { LocalStorage } from "../../localStorage"
@@ -171,21 +172,20 @@ const HorizontalChallengeWorkspace = ({ challenge, challengeIdentifier, blocklyW
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  return <Stack direction="row" >
-    <Stack direction="row" position="relative" flexWrap={"wrap"} flexGrow={1}>
-      
-          <Stack sx={{ position:"absolute", zIndex: 10, right: 15, top: 15 }}>
-              
-              <SolutionButtons direction="row" challengeIdentifier={challengeIdentifier} />
-          </Stack>
-      {blocklyWorkspace}
-    </Stack>
-    <Stack>
+  return <HorizontalChallengeLayout
+    descriptor={challenge.sceneDescriptor}
+    editor={<>
+      <Stack sx={{ position: "absolute", zIndex: 10, right: 15, top: 15 }}>
+        <SolutionButtons direction="row" challengeIdentifier={challengeIdentifier} />
+      </Stack>
+      <Box position="absolute" display="flex" sx={{ inset: 0 }}>
+        {blocklyWorkspace}
+      </Box>
+    </>}
+    controls={<>
       <SceneButtons challenge={challenge} running={running} setRunning={setRunning} />
-      {shouldShowMultipleScenariosButton(challenge) && (<MultipleScenariosButton challenge={challenge} disabled={running} />)}     
-      <SceneView descriptor={challenge.sceneDescriptor} />
-    </Stack>
-  </Stack>
+      {shouldShowMultipleScenariosButton(challenge) && (<MultipleScenariosButton challenge={challenge} disabled={running} />)}
+    </>} />
 }
 
 const VerticalChallengeWorkspace = ({ challenge, challengeIdentifier, blocklyWorkspaceProps }: ChallengeWorkspaceDistributionProps) => {

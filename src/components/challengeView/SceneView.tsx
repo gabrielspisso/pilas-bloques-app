@@ -10,14 +10,25 @@ import { adaptURL } from "../../scriptLoader"
 type SceneViewProps = {
     descriptor: Challenge["sceneDescriptor"]
     onLoad?: (event: any) => void
+    /** Size of the scene on screen. By default it depends on the window width. */
+    size?: SceneSize
+}
+
+type SceneSize = { width: string, height: string }
+
+export const useBaseSceneSize = (): SceneSize => {
+    const { theme, isSmallScreen } = useThemeContext()
+    const isNarrowScreen = useMediaQuery(theme.breakpoints.down('xl'))
+
+    return isSmallScreen ? { width: "200px", height: "243px" } :
+        isNarrowScreen ? { width: "300px", height: "343px" } :
+            { width: "420px", height: "480px" }
 }
 
 // It should react and rerender only on changes to the scene descriptor.
-export const SceneView = ({ descriptor, onLoad }: SceneViewProps) => {
-    const { theme, isSmallScreen } = useThemeContext()
-    const size = isSmallScreen ? { width: "200px", height: "243px" } :
-        useMediaQuery(theme.breakpoints.down('xl')) ? { width: "300px", height: "343px" } :
-            { width: "420px", height: "480px" }
+export const SceneView = ({ descriptor, onLoad, ...props }: SceneViewProps) => {
+    const baseSize = useBaseSceneSize()
+    const size = props.size ?? baseSize
 
     const [isLoading, setIsLoading] = useState(true)
 
