@@ -453,5 +453,33 @@
 			"noRoute": "No hay un recorrido que resuelva todo con los movimientos disponibles.",
 			"verificationFailed": "No pudimos comprobar la solución. Si ves este mensaje, avisanos."
 		}
+	},
+	"ai": {
+		"proposal": {
+			"title": "Propuesta del asistente",
+			"before": "Antes",
+			"after": "Después",
+			"none": "(nada)",
+			"scenario": "Escenario {{number}}",
+			"fields": {
+				"title": "Título",
+				"description": "Descripción",
+				"clue": "Pista",
+				"maps": "Tableros",
+				"toolbox": "Caja de bloques",
+				"assesments": "Evaluaciones",
+				"previewProgram": "Solución para la vista previa (no se guarda)",
+				"initialProgram": "Bloques iniciales del alumno"
+			},
+			"studentStarts": "El alumno va a arrancar con estos bloques",
+			"hasStartingBlocks": "Tiene bloques iniciales",
+			"removeStartingBlocks": "Se quitan los bloques iniciales",
+			"solved": "La solución resuelve el desafío resultante.",
+			"unsolved": "Atención: esta solución NO resuelve el desafío resultante. Podés aplicar igual.",
+			"notTested": "La propuesta no incluye una solución: revisá que el desafío se pueda resolver.",
+			"invalid": "Esta propuesta ya no se puede aplicar porque el desafío cambió.",
+			"apply": "Aplicar",
+			"reject": "Rechazar"
+		}
 	}
 }

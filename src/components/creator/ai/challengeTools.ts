@@ -8,7 +8,7 @@ import { programToXml } from "../solver/programXml"
 import { usedBlocks } from "../solver/recommendBlocks"
 import { modelFor, runProgram } from "../solver/sceneModel"
 import { solveChallenge } from "../solver/solveChallenge"
-import { Program } from "../solver/types"
+import { AssessmentWarning, Program, SimulationFailure } from "../solver/types"
 import { MAX_TEXT_LENGTH, MAX_TITLE_LENGTH, catalogFor } from "./catalog"
 import { parseProgram } from "./parseProgram"
 
@@ -92,7 +92,10 @@ const withOverrides = (challenge: SerializedChallenge, { maps, toolbox, assesmen
     ...(assesments === undefined ? {} : { assesments: assesments as Assesments })
 })
 
-export const testProgram = (challenge: SerializedChallenge, params: unknown) => {
+export type ScenarioRun = { index: number, solved: boolean, reason?: SimulationFailure | 'invalidMap', step?: number }
+export type ProgramTest = { scenarios: ScenarioRun[], blocks: number, warnings: AssessmentWarning[], missingBlocks: string[] }
+
+export const testProgram = (challenge: SerializedChallenge, params: unknown): ProgramTest | { errors: string[] } => {
     const request = isRecord(params) ? params : {}
     const errors = overrideErrors(challenge, request)
     const parsed = parseProgram(request.program, challenge.scene.type)
@@ -105,7 +108,7 @@ export const testProgram = (challenge: SerializedChallenge, params: unknown) => 
     const toolbox = tested.toolbox.blocks
 
     return {
-        scenarios: tested.scene.maps.map((map, index) => {
+        scenarios: tested.scene.maps.map((map, index): ScenarioRun => {
             try {
                 const run = runProgram(model, map, program)
                 return run.solved ? { index, solved: true } : { index, solved: false, reason: run.reason, step: run.step }

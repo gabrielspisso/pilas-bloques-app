@@ -453,5 +453,33 @@
 			"noRoute": "There is no route that solves everything with the available moves.",
 			"verificationFailed": "We could not check the solution. If you see this message, let us know."
 		}
+	},
+	"ai": {
+		"proposal": {
+			"title": "Assistant proposal",
+			"before": "Before",
+			"after": "After",
+			"none": "(none)",
+			"scenario": "Scenario {{number}}",
+			"fields": {
+				"title": "Title",
+				"description": "Description",
+				"clue": "Clue",
+				"maps": "Boards",
+				"toolbox": "Toolbox",
+				"assesments": "Evaluations",
+				"previewProgram": "Solution for the preview (not saved)",
+				"initialProgram": "Student's starting blocks"
+			},
+			"studentStarts": "The student will start with these blocks",
+			"hasStartingBlocks": "Has starting blocks",
+			"removeStartingBlocks": "The starting blocks are removed",
+			"solved": "The solution solves the resulting challenge.",
+			"unsolved": "Warning: this solution does NOT solve the resulting challenge. You can still apply it.",
+			"notTested": "The proposal has no solution: check that the challenge can be solved.",
+			"invalid": "This proposal can't be applied any more because the challenge changed.",
+			"apply": "Apply",
+			"reject": "Reject"
+		}
 	}
 }

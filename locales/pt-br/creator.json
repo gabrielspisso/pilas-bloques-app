@@ -453,5 +453,33 @@
 			"noRoute": "Não há um percurso que resolva tudo com os movimentos disponíveis.",
 			"verificationFailed": "Não conseguimos verificar a solução. Se você vir esta mensagem, avise-nos."
 		}
+	},
+	"ai": {
+		"proposal": {
+			"title": "Proposta do assistente",
+			"before": "Antes",
+			"after": "Depois",
+			"none": "(nada)",
+			"scenario": "Cenário {{number}}",
+			"fields": {
+				"title": "Título",
+				"description": "Descrição",
+				"clue": "Dica",
+				"maps": "Tabuleiros",
+				"toolbox": "Caixa de blocos",
+				"assesments": "Avaliações",
+				"previewProgram": "Solução para a pré-visualização (não é salva)",
+				"initialProgram": "Blocos iniciais do aluno"
+			},
+			"studentStarts": "O aluno vai começar com estes blocos",
+			"hasStartingBlocks": "Tem blocos iniciais",
+			"removeStartingBlocks": "Os blocos iniciais são removidos",
+			"solved": "A solução resolve o desafio resultante.",
+			"unsolved": "Atenção: esta solução NÃO resolve o desafio resultante. Você pode aplicar mesmo assim.",
+			"notTested": "A proposta não inclui uma solução: verifique se o desafio pode ser resolvido.",
+			"invalid": "Esta proposta não pode mais ser aplicada porque o desafio mudou.",
+			"apply": "Aplicar",
+			"reject": "Recusar"
+		}
 	}
 }

@@ -6,10 +6,11 @@ import { useThemeContext } from "../../../../theme/ThemeContext";
 import { PBCard } from "../../../PBCard";
 import { recommendedMissingBlocks } from "../../solver/recommendBlocks";
 import { solveChallenge } from "../../solver/solveChallenge";
-import { AssessmentWarning, Cell, SolverFailure, SolverNote, SolverResult, SolverSuccess } from "../../solver/types";
+import { Cell, SolverFailure, SolverNote, SolverResult, SolverSuccess } from "../../solver/types";
 import { CreatorContext } from "../CreatorContext";
 import { useChallengeInMemory } from "../CreatorLivePreview";
-import { SolutionProgramView, useBlockName } from "./SolutionProgramView";
+import { SolutionProgramView } from "./SolutionProgramView";
+import { useSolverText } from "./useSolverText";
 
 /** Card and dialog with a recommended solution for the scenario being edited. Nothing is saved. */
 export const SolverEdition = () => {
@@ -17,7 +18,7 @@ export const SolverEdition = () => {
     const { theme, isSmallScreen } = useThemeContext()
     const { index, toolbox, setToolbox, setPreviewProgram } = useContext(CreatorContext)
     const challenge = useChallengeInMemory()
-    const blockName = useBlockName()
+    const { text, blockNames, warningText } = useSolverText()
     const [open, setOpen] = useState(false)
     const [result, setResult] = useState<SolverResult | null>(null)
     const [recommended, setRecommended] = useState<string[]>([])
@@ -46,11 +47,6 @@ export const SolverEdition = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, challenge])
 
-    /** Interpolated values are plain text (React already escapes them). */
-    const text = (key: string, values: object = {}): string =>
-        t(`solver.${key}`, { ...values, interpolation: { escapeValue: false } }) as string
-
-    const blockNames = (blocks: string[] = []) => blocks.map(blockName).join(', ')
     const actorName = () => t(`selection.cards.${challenge.scene.type}.name`, { defaultValue: challenge.scene.type }) as string
     const cellNames = (cells: Cell[]) => cells.map(({ row, column }) => text('cell', { row: row + 1, column: column + 1 })).join('; ')
 
@@ -59,13 +55,6 @@ export const SolverEdition = () => {
         blocks: 'blocks' in failure ? blockNames(failure.blocks) : '',
         cells: 'cells' in failure ? cellNames(failure.cells) : ''
     })
-
-    const warningText = (warning: AssessmentWarning) => {
-        if (warning.id === 'decompositionMissingBlock') return text('reasons.decompositionMissingBlock')
-        const message = text(`warnings.${warning.id}`, { ...warning, name: 'name' in warning ? warning.name ?? text('mainName') : '' })
-        if (!('reason' in warning)) return message
-        return `${message} ${text(`reasons.${warning.reason}`, { blocks: blockNames('blocks' in warning ? warning.blocks : []) })}`
-    }
 
     const noteText = (note: SolverNote) =>
         text(`notes.${note.id}`, { ...note, blocks: 'blocks' in note ? blockNames(note.blocks) : '' })
