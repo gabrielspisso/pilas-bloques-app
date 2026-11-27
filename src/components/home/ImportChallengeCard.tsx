@@ -10,9 +10,6 @@ import UploadIcon from './UploadIcon';
 import { extractChallenge } from '../creator/challengePng';
 import { blobToBytes } from '../creator/drawBoardImage';
 
-/** Accepted files: the .dpbq challenge file and the PNG exported by the creator (challenge inside). */
-export const IMPORT_ACCEPT = ".dpbq,.png,image/png"
-
 const isPngFile = (file: File) => file.type === 'image/png' || /\.png$/i.test(file.name || '')
 
 export type ImportOutcome = { challenge: SerializedChallenge } | { errorKey: 'importError' | 'importPngNoData' | 'importNewerVersion' }
@@ -64,7 +61,7 @@ export const ImportChallengeCard = () => {
     return <>
     <Button component="label" style={{textTransform: 'none', padding: 0}}>
         <CreatorCard visibleBadge={true} text={t("cards.import")} color={"#ffffff"} icon={UploadIcon}/>
-        <input data-testid="import-input" hidden accept={IMPORT_ACCEPT} type="file" onChange={readFile}/>
+        <input data-testid="import-input" hidden type="file" onChange={readFile}/>
         <DialogSnackbar
             open={snackbarOpen}
             onClose={() => setSnackbarOpen(false)}

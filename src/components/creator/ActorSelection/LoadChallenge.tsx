@@ -2,7 +2,7 @@ import { Button, darken, Tooltip } from "@mui/material"
 import UploadIcon from '../../home/UploadIcon';
 import { LocalStorage } from "../../../localStorage"
 import { SerializedChallenge } from "../../serializedChallenge"
-import { IMPORT_ACCEPT, ImportOutcome, readChallengeFile } from "../../home/ImportChallengeCard"
+import { ImportOutcome, readChallengeFile } from "../../home/ImportChallengeCard"
 import { DialogSnackbar } from "../../dialogSnackbar/DialogSnackbar";
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -51,7 +51,7 @@ export const LoadChallengeButton = () => {
                 component="label"
                 startIcon={<UploadIcon />}>
                 {t(`editor.buttons.loadChallenge${isSmallScreen ? 'Short' : ''}`)}
-                <input data-testid="import-input" hidden accept={IMPORT_ACCEPT} type="file" onChange={readFile} />
+                <input data-testid="import-input" hidden type="file" onChange={readFile} />
                 <DialogSnackbar
                     open={snackbarOpen}
                     onClose={() => setSnackbarOpen(false)}

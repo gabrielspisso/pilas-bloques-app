@@ -28,11 +28,10 @@ describe('Open a created challenge from the character selection', () => {
 
     const png = (bytes: Uint8Array) => new File([bytes], 'desafio.png', { type: 'image/png' })
 
-    test('accepts .dpbq and .png files', async () => {
+    // With an "accept" list the file dialog preselects a filter that can hide the PNG files.
+    test('the file dialog is not filtered by type', async () => {
         render(<MemoryRouter><I18nextProvider i18n={i18n}><LoadChallengeButton /></I18nextProvider></MemoryRouter>)
-        const accept = (await screen.findByTestId('import-input')).getAttribute('accept')!
-        expect(accept).toContain('.dpbq')
-        expect(accept).toContain('.png')
+        expect(await screen.findByTestId('import-input')).not.toHaveAttribute('accept')
     })
 
     test('opens in the editor the challenge stored in an exported PNG', async () => {

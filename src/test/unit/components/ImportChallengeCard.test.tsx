@@ -61,11 +61,10 @@ test('shows error snackbar when invalid file is uploaded', async () => {
 describe('import from .dpbq and .png', () => {
   beforeAll(() => i18n.loadNamespaces(['home']))
 
-  test('accepts both file types', async () => {
+  // With an "accept" list the file dialog preselects a filter that can hide the PNG files.
+  test('the file dialog is not filtered by type', async () => {
     renderWithRoutes()
-    const accept = (await screen.findByTestId('import-input')).getAttribute('accept')!
-    expect(accept).toContain('.dpbq')
-    expect(accept).toContain('.png')
+    expect(await screen.findByTestId('import-input')).not.toHaveAttribute('accept')
   })
 
   test('an old .dpbq file still opens the challenge', async () => {
