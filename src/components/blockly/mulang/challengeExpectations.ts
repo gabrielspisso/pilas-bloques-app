@@ -17,12 +17,12 @@ import {
   usesConditionalRepetition,
 } from './expectations'
 
-const idsToExpectations = (defaultProcedureName: string) => ({
+const idsToExpectations = (defaultProcedureName: string, maxProgramLength?: number) => ({
   decomposition: multiExpect(
-    () => mainNotTooLong(),
+    () => mainNotTooLong(maxProgramLength),
     doesNotNestControlStructures,
     allProceduresShould(
-      notTooLong(),
+      notTooLong(maxProgramLength),
       doSomething,
       isUsed,
       isUsedFromMain,
@@ -62,13 +62,14 @@ export const mergeConfigurations = (expectationsConfigs: Array<Record<string, bo
 export const configToExpectation = (
   expectationsConfig: Record<string, boolean> | undefined,
   workspace: Blockly.WorkspaceSvg,
-  defaultProcedureName: string
+  defaultProcedureName: string,
+  maxProgramLength?: number
 ) => {
   if (!expectationsConfig || !Object.keys(expectationsConfig).length) return noExpectation()
 
   const expectationFns = Object.entries(expectationsConfig)
     .filter(([, shouldApply]) => shouldApply)
-    .map(([id]) => idsToExpectations(defaultProcedureName)[id as keyof ReturnType<typeof idsToExpectations>])
+    .map(([id]) => idsToExpectations(defaultProcedureName, maxProgramLength)[id as keyof ReturnType<typeof idsToExpectations>])
     .filter((expectation): expectation is (element: any) => string => Boolean(expectation))
 
   if (!expectationFns.length) return noExpectation()
@@ -77,7 +78,8 @@ export const configToExpectation = (
 }
 
 const allExpectConfigurations = (challenge: any) => {
-  if (!challenge?.id) return []
+  // Creator challenges (id 0) carry their own configuration, translated from their assessments.
+  if (!challenge?.id) return [challenge?.expectations]
 
   const { book, chapter, group, challenge: pathChallenge } = getPathToChallenge(challenge.id)
   return [book as any, chapter as any, group as any, pathChallenge].map(model => model?.expectations)
@@ -92,5 +94,6 @@ export const expectationFor = (
   defaultProcedureName = 'Hacer algo'
 ) => {
   const expectationsConfig = allExpectConfigurationsMerged(challenge)
-  return configToExpectation(expectationsConfig, workspace, defaultProcedureName)
+  const maxProgramLength = challenge?.id ? undefined : challenge?.maxProgramLength
+  return configToExpectation(expectationsConfig, workspace, defaultProcedureName, maxProgramLength)
 }

@@ -10,5 +10,7 @@
 		"import": "Importe seu desafio",
 		"creator": "Crie seu desafio"
 	},
-    "header": "Uma ferramenta para aprender a programar"
+	"header": "Uma ferramenta para aprender a programar",
+	"importPngNoData": "Esta imagem não tem um desafio guardado. Talvez não tenha sido exportada do Pilas Bloques ou foi recomprimida ou capturada.",
+	"importNewerVersion": "Este desafio foi feito com uma versão mais nova do Pilas Bloques. Atualize o aplicativo para abri-lo."
 }

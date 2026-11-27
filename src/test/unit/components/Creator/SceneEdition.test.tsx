@@ -4,6 +4,12 @@ import { SceneEdition } from '../../../../components/creator/Editor/SceneEdition
 import { LocalStorage } from '../../../../localStorage';
 import { renderWithContext } from '../../../testUtils';
 
+// The +/- buttons were replaced by the size picker (see GridSizePicker.test.tsx).
+const pickSize = async (rows: number, columns: number) => {
+    fireEvent.click(await screen.findByTestId('grid-size-button'))
+    fireEvent.click((await screen.findAllByTestId('grid-size-square'))[(rows - 1) * 8 + (columns - 1)])
+}
+
 describe('Scene Edition', () => {
     afterEach(() => {
         localStorage.clear()
@@ -28,11 +34,7 @@ describe('Scene Edition', () => {
   
         renderWithContext(<SceneEdition />)
 
-        const incCols = await screen.findByTestId('inc-btn-col')
-        const incRows = await screen.findByTestId('inc-btn-row')
-                
-        fireEvent.click(incCols);
-        fireEvent.click(incRows);
+        await pickSize(4, 4)
 
         expect((await getGridSize()).rows).toBe(4)
         expect((await getGridSize()).columns).toBe(4)
@@ -42,11 +44,7 @@ describe('Scene Edition', () => {
   
         renderWithContext(<SceneEdition />)
 
-        const decCols = await screen.findByTestId('dec-btn-col')
-        const decRows = await screen.findByTestId('dec-btn-row')
-                
-        fireEvent.click(decCols);
-        fireEvent.click(decRows);
+        await pickSize(2, 2)
 
         expect((await getGridSize()).rows).toBe(2)
         expect((await getGridSize()).columns).toBe(2)
@@ -66,9 +64,7 @@ describe('Scene Edition', () => {
       
         renderWithContext(<SceneEdition />)
 
-        const decCols = await screen.findByTestId('dec-btn-col')
-                
-        fireEvent.click(decCols);
+        await pickSize(3, 4)
 
         expect((await getGridSize()).columns).toBe(4)
         expect((LocalStorage.getCreatorChallenge())?.scene.maps[0][0][0].includes("A")).toBeTruthy()

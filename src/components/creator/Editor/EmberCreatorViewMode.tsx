@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material"
+import { ChallengeTitleText } from "../ChallengeTitleText"
 import { Ember } from "../../../emberCommunication"
 import { EmberView } from "../../emberView/EmberView"
 import { LocalStorage } from "../../../localStorage"
@@ -42,6 +42,6 @@ export const EmberCreatorViewHeader = ({ title }: { title: string }) => {
 
     return <PBreadcrumbs>
         <HeaderText text={t("editor.previewModeHeader")} />
-        <Typography>{title}</Typography>
+        <ChallengeTitleText title={title} />
     </PBreadcrumbs>
 }

@@ -18,6 +18,13 @@ function copyToPublic(dependency){
   shell.cp("-rf", `node_modules/${dependency}/dist/*`, LIBS_PATH )
 }
 
+function copyBlocklyMedia(){
+  const MEDIA_PATH = `public/libs/blockly-media/`
+  console.log(`Copying blockly media files to ${MEDIA_PATH}`)
+  shell.mkdir('-p', MEDIA_PATH)
+  shell.cp("-rf", `node_modules/blockly/media/*`, MEDIA_PATH )
+}
+
 function changeVersion(dependency){
   copyToPublic(dependency)
   console.log(`Changing ${dependency} version in pilas.html`)
@@ -28,3 +35,4 @@ function changeVersion(dependency){
 
 changeVersion('pilasweb')
 changeVersion('pilas-bloques-exercises')
+copyBlocklyMedia()

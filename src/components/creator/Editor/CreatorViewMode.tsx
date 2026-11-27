@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material"
+import { ChallengeTitleText } from "../ChallengeTitleText"
 import { LocalStorage } from "../../../localStorage"
 import { EMBER_IMPORTED_CHALLENGE_PATH } from "../../ImportedChallengeView"
 import { Header, HeaderText } from "../../header/Header"
@@ -41,6 +41,6 @@ export const CreatorViewHeader = ({ title }: { title: string }) => {
 
   return <PBreadcrumbs>
     <HeaderText text={t("editor.previewModeHeader")} />
-    <Typography>{title}</Typography>
+    <ChallengeTitleText title={title} />
   </PBreadcrumbs>
 }

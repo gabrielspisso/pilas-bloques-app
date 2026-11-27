@@ -6,9 +6,10 @@
 		"import": "Import your challenge",
 		"creator": "Create your own challenge"
 	},
-
 	"title": "Choose your level and start programming",
 	"signUp": "Sign up",
 	"importError": "The file is invalid",
-	"header": "A tool to learn computer programming"
+	"header": "A tool to learn computer programming",
+	"importPngNoData": "This image has no challenge stored in it. It may not have been exported from Pilas Bloques, or it was recompressed or screenshotted.",
+	"importNewerVersion": "This challenge was made with a newer version of Pilas Bloques. Update the app to open it."
 }

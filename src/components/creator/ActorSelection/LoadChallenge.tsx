@@ -1,7 +1,8 @@
 import { Button, darken, Tooltip } from "@mui/material"
 import UploadIcon from '../../home/UploadIcon';
 import { LocalStorage } from "../../../localStorage"
-import { SerializedChallenge, isValidChallenge } from "../../serializedChallenge"
+import { SerializedChallenge } from "../../serializedChallenge"
+import { ImportOutcome, readChallengeFile } from "../../home/ImportChallengeCard"
 import { DialogSnackbar } from "../../dialogSnackbar/DialogSnackbar";
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -10,34 +11,31 @@ import { useNavigate } from "react-router-dom"
 
 export const LoadChallengeButton = () => {
 	const { t } = useTranslation("creator")
+    // The error messages are the ones of the home screen import, which reads the same files.
+    const { t: tHome } = useTranslation("home")
     const { isSmallScreen, theme } = useThemeContext()
 	const navigate = useNavigate()
     const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [errorKey, setErrorKey] = useState<Extract<ImportOutcome, { errorKey: string }>['errorKey']>('importError');
 
 	const goToCreatorChallenge = (challenge: SerializedChallenge) => {
 		LocalStorage.saveCreatorChallenge(challenge)
 		navigate("/creador/editar")
 	}
 
-    const showErrorSnackbar = () => {
-        setSnackbarOpen(true)
-    }
-
     const readFile = async (event: any) => {
         const file: File = event.target.files[0]
-        const content: string = await file.text()
-        const challengeJson: unknown = JSON.parse(content)
+        event.target.value = null // Without this Chrome seems to cache the file and prevents reruns of this function.
+        if (!file) return
 
-        event.target.value = null // Without this Chrome seems to cache the file and prevents reruns of this function. 
-
-        if (isValidChallenge(challengeJson)) {
-            goToCreatorChallenge(challengeJson)
-        }
+        const outcome = await readChallengeFile(file)
+        if ('challenge' in outcome) goToCreatorChallenge(outcome.challenge)
         else {
-            showErrorSnackbar()
+            setErrorKey(outcome.errorKey)
+            setSnackbarOpen(true)
         }
     }
-    
+
 	return (
         <Tooltip title={isSmallScreen ? t(`editor.buttons.loadChallenge`) : ''}>
             <Button variant="outlined" sx={{
@@ -53,11 +51,11 @@ export const LoadChallengeButton = () => {
                 component="label"
                 startIcon={<UploadIcon />}>
                 {t(`editor.buttons.loadChallenge${isSmallScreen ? 'Short' : ''}`)}
-                <input data-testid="import-input" hidden accept=".dpbq" type="file" onChange={readFile} />
+                <input data-testid="import-input" hidden type="file" onChange={readFile} />
                 <DialogSnackbar
                     open={snackbarOpen}
                     onClose={() => setSnackbarOpen(false)}
-                    message={t('selection.importError')} /> 
+                    message={tHome(errorKey)} />
             </Button>            
         </Tooltip>
 	)

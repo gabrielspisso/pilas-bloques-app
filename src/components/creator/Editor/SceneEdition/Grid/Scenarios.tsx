@@ -1,49 +1,52 @@
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
-import { MobileStepper, Stack, Typography, useMediaQuery } from "@mui/material";
+import { MobileStepper, Stack, Typography } from "@mui/material";
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { useThemeContext } from "../../../../../theme/ThemeContext";
 import { PBCard } from "../../../../PBCard";
 import { CreatorContext } from "../../CreatorContext";
 import { IconButtonTooltip } from "../IconButtonTooltip";
-import { SceneGrid, SceneGridProps } from "./SceneGrid";
+import { SceneGrid } from "./SceneGrid";
+import { MissionCard } from "../MissionCard";
+import { useBoardZoom, ZoomControls } from "./useBoardZoom";
 
-export const Scenarios = (props: SceneGridProps) => {
+/**
+ * Board card: one compact row (previous, "Scenario n / N", next), the mission and the board.
+ * The arrows live in that row, not beside the board, so the board gets the whole width.
+ */
+export const Scenarios = () => {
     const { index, maps, setIndex } = useContext(CreatorContext)
 
-    const { theme } = useThemeContext()
+    const { theme, isSmallScreen } = useThemeContext()
 
     const { t } = useTranslation('creator');
 
-    const isVerySmallScreen: boolean = useMediaQuery(theme.breakpoints.down("sm"));
+    const boardZoom = useBoardZoom()
 
     const isFirstMap = index === 0
     const isLastMap = index === maps.length - 1
 
-    const handleBack = () => {
-        setIndex(index - 1)
-    }
-
-    const handleNext = () => {
-        setIndex(index + 1)
-    }
-
-    return <PBCard sx={{ flexGrow: 1 }}>
-        <Stack width='100%' justifyContent='space-between' alignItems='center'>
-            <Typography variant="h6" sx={{ marginTop: theme.spacing(2) }}>{`${isVerySmallScreen ? '' : t("mapNavigation.multipleInitialScenarios") + ':'} ${index + 1} / ${maps.length}`}</Typography>
-            <Stack width='100%' direction='row' justifyContent='space-around' alignItems='center'>
-                <IconButtonTooltip sx={{ marginLeft: theme.spacing(1), visibility: isFirstMap ? "hidden" : "visible"}} disabled={isFirstMap} onClick={handleBack} icon={<KeyboardArrowLeft />} tooltip={t("mapNavigation.prev")} /> 
-                <SceneGrid styling={props.styling} />
-                <IconButtonTooltip sx={{ marginRight: theme.spacing(1), visibility: isLastMap ? "hidden" : "visible"}} disabled={isLastMap} onClick={handleNext} icon={<KeyboardArrowRight />} tooltip={t("mapNavigation.next")} /> 
+    return <PBCard sx={{ flex: '1 1 0', minWidth: 0, minHeight: 0, alignItems: 'stretch' }} data-testid="scenarios-card">
+        <Stack width='100%' alignItems='center' sx={{ minHeight: 0, minWidth: 0 }}>
+            {/* One row: the scenario navigation (centered in the free space) and the zoom buttons at the end. */}
+            <Stack direction='row' width='100%' alignItems='center' sx={{ paddingTop: theme.spacing(0.5), minWidth: 0 }}>
+                <Stack direction='row' alignItems='center' justifyContent='center' gap={isSmallScreen ? 0 : 1} sx={{ flex: '1 1 0', minWidth: 0 }}>
+                    <IconButtonTooltip sx={{ visibility: isFirstMap ? "hidden" : "visible" }} disabled={isFirstMap} onClick={() => setIndex(index - 1)} icon={<KeyboardArrowLeft />} tooltip={t("mapNavigation.prev")} />
+                    <Typography variant="subtitle1" fontWeight="bold" noWrap>{`${isSmallScreen ? '' : t("mapNavigation.multipleInitialScenarios") + ':'} ${index + 1} / ${maps.length}`}</Typography>
+                    <IconButtonTooltip sx={{ visibility: isLastMap ? "hidden" : "visible" }} disabled={isLastMap} onClick={() => setIndex(index + 1)} icon={<KeyboardArrowRight />} tooltip={t("mapNavigation.next")} />
+                </Stack>
+                <ZoomControls boardZoom={boardZoom} />
             </Stack>
-            <MobileStepper
+            <MissionCard />
+            <SceneGrid boardZoom={boardZoom} />
+            {maps.length > 1 && <MobileStepper
                 variant="dots"
-                style={{ margin: theme.spacing(1), backgroundColor: 'transparent' }}
+                style={{ padding: theme.spacing(0.5), backgroundColor: 'transparent' }}
                 position='static'
                 backButton={<span />}
                 nextButton={<span />}
                 activeStep={index}
-                steps={maps.length} />
+                steps={maps.length} />}
         </Stack>
     </PBCard>
 }
