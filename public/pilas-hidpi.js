@@ -3,26 +3,30 @@
  * pilasweb sizes the canvas to its logical size (e.g. 420x480) and disables image smoothing,
  * so on high-density screens the scene is stretched and looks blurry/pixelated.
  * Logical coordinates (pilas.opciones.ancho/alto, actors, camera) do not change: only the
- * backing store is larger and the stage is drawn scaled. Loaded by pilas.html right after pilasweb.js.
+ * backing store is larger and the stage is drawn scaled. The same applies when the scene iframe is
+ * shown larger than that size. Loaded by pilas.html right after pilasweb.js.
  * public/libs is regenerated on install, which is why this lives in its own versioned file.
  */
 (function (global) {
-  var MAX_SCALE = 2;
+  var MAX_DENSITY = 2;
+  var MAX_SCALE = 3;
   var Pilas = global.Pilas;
   var createjs = global.createjs;
   if (!Pilas || !createjs || !createjs.Stage) return;
 
   global.pbCanvasScale = 1;
 
-  function currentScale() {
-    var dpr = Number(global.devicePixelRatio) || 1;
-    return Math.min(MAX_SCALE, Math.max(1, dpr));
+  // The canvas fills the iframe, so innerWidth is the width at which the scene is shown.
+  function currentScale(logicalWidth) {
+    var density = Math.min(MAX_DENSITY, Math.max(1, Number(global.devicePixelRatio) || 1));
+    var enlargement = Math.max(1, (Number(global.innerWidth) || 0) / logicalWidth);
+    return Math.min(MAX_SCALE, density * enlargement);
   }
 
   var originalSize = Pilas.prototype.definir_tamano_del_canvas;
   Pilas.prototype.definir_tamano_del_canvas = function () {
     originalSize.call(this);
-    var scale = currentScale();
+    var scale = currentScale(this.opciones.ancho);
     global.pbCanvasScale = scale;
     this.canvas.width = Math.round(this.opciones.ancho * scale);
     this.canvas.height = Math.round(this.opciones.alto * scale);

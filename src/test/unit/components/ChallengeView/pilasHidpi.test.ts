@@ -6,6 +6,8 @@ const source = publicFile('pilas-hidpi.js')
 
 const setDpr = (value: number) => Object.defineProperty(window, 'devicePixelRatio', { value, configurable: true })
 
+const setWidth = (value: number) => Object.defineProperty(window, 'innerWidth', { value, configurable: true })
+
 const global = window as any
 let calls: unknown[][]
 
@@ -51,7 +53,11 @@ const sizedCanvas = (dpr: number) => {
 
 const fakeContext = () => ({ scale: (x: number, y: number) => calls.push(['scale', x, y]) })
 
-beforeEach(defineFakes)
+// innerWidth is the width at which the scene iframe shows the canvas
+beforeEach(() => {
+  defineFakes()
+  setWidth(420)
+})
 
 afterEach(() => {
   delete global.Pilas
@@ -66,7 +72,7 @@ describe('pilas-hidpi.js', () => {
     expect(global.pbCanvasScale).toBe(2)
   })
 
-  test('caps the scale at 2', () => {
+  test('caps the screen density at 2', () => {
     expect(sizedCanvas(3)).toEqual({ width: 840, height: 960 })
   })
 
@@ -80,6 +86,27 @@ describe('pilas-hidpi.js', () => {
 
   test('supports fractional densities', () => {
     expect(sizedCanvas(1.5)).toEqual({ width: 630, height: 720 })
+  })
+
+  test('adds pixels when the scene is shown larger than its logical size', () => {
+    setWidth(630)
+
+    expect(sizedCanvas(1)).toEqual({ width: 630, height: 720 })
+  })
+
+  test('combines the screen density with an enlarged scene, up to 3', () => {
+    setWidth(525)
+    expect(sizedCanvas(2)).toEqual({ width: 1050, height: 1200 })
+
+    defineFakes()
+    setWidth(840)
+    expect(sizedCanvas(2)).toEqual({ width: 1260, height: 1440 })
+  })
+
+  test('does not remove pixels when the scene is shown smaller', () => {
+    setWidth(300)
+
+    expect(sizedCanvas(2)).toEqual({ width: 840, height: 960 })
   })
 
   test('scales the context before applying the stage transformation', () => {
