@@ -32,8 +32,13 @@ export type CreatorContextType = {
     setAssesments: (assesments?: Assesments) => void
     previewProgram: PreviewProgram | null
     setPreviewProgram: (program: PreviewProgram | null) => void
+    /** The blocks the student starts with, as Blockly XML (predefinedSolution in the file). */
+    initialSolution?: string
+    setInitialSolution: (xml?: string) => void
     /** When the draft was last written to LocalStorage after an edit (null: nothing edited in this visit). */
     lastSavedAt: number | null
+    /** Saves the draft as it is as a version that the next edit does not replace. */
+    keepVersion: () => void
     /** Replaces the whole draft (e.g. restoring a version). The map change can be undone. */
     loadChallenge: (challenge: SerializedChallenge) => void
     undo: () => void
@@ -68,7 +73,10 @@ const defaultCreatorContext = {
     setAssesments: () => { },
     previewProgram: null,
     setPreviewProgram: () => { },
+    initialSolution: undefined,
+    setInitialSolution: () => { },
     lastSavedAt: null,
+    keepVersion: () => { },
     loadChallenge: () => { },
     undo: () => { },
     redo: () => { },
@@ -104,6 +112,7 @@ export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ childre
     const [clue, setClue] = useState<string | undefined>(challenge.statement.clue)
     const [toolbox, setToolbox] = useState<Toolbox>(challenge.toolbox)
     const [assesments, setAssesments] = useState<Assesments | undefined>(challenge.assesments)
+    const [initialSolution, setInitialSolution] = useState<string | undefined>(challenge.predefinedSolution)
 
     // Not part of the draft: it is neither saved nor restored.
     const [previewProgram, setPreviewProgram] = useState<PreviewProgram | null>(null)
@@ -111,6 +120,7 @@ export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ childre
     const [lastSavedAt, setLastSavedAt] = useState<number | null>(null)
     const lastSavedJson = useRef<string | null>(null)
     const openedAt = useRef<number | undefined>(undefined)
+    const keptAt = useRef<number | undefined>(undefined)
 
     const [past, setPast] = useState<HistoryEntry[]>([])
     const [future, setFuture] = useState<HistoryEntry[]>([])
@@ -170,6 +180,12 @@ export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ childre
         restore(entry, entry.index)
     }
 
+    const keepVersion = () => {
+        const versions = addVersion(LocalStorage.getCreatorVersions(), LocalStorage.getCreatorChallenge() || challenge, Date.now(), openedAt.current)
+        LocalStorage.saveCreatorVersions(versions)
+        keptAt.current = versions[versions.length - 1]?.savedAt
+    }
+
     const loadChallenge = (loaded: SerializedChallenge) => {
         commit(cloneMaps(loaded.scene.maps))
         setIndex(0)
@@ -178,6 +194,7 @@ export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ childre
         setClue(loaded.statement.clue)
         setToolbox(loaded.toolbox)
         setAssesments(loaded.assesments)
+        setInitialSolution(loaded.predefinedSolution)
     }
 
     const beginHistoryBatch = useCallback(() => { batch.current = { active: true, recorded: false } }, [])
@@ -192,6 +209,8 @@ export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ childre
         challenge.toolbox = toolbox
         if (assesments) challenge.assesments = assesments
         else delete challenge.assesments
+        if (initialSolution !== undefined) challenge.predefinedSolution = initialSolution
+        else delete challenge.predefinedSolution
         LocalStorage.saveCreatorChallenge(challenge)
 
         // Only real edits count for the indicator and the versions (this effect also runs on mount).
@@ -205,15 +224,17 @@ export const CreatorContextProvider: React.FC<CreatorProviderProps> = ({ childre
             openedAt.current = updated[updated.length - 1]?.savedAt
         } else if (lastSavedJson.current !== json) {
             const now = Date.now()
-            LocalStorage.saveCreatorVersions(addVersion(LocalStorage.getCreatorVersions(), challenge, now, openedAt.current))
+            LocalStorage.saveCreatorVersions(addVersion(LocalStorage.getCreatorVersions(), challenge, now, keptAt.current ?? openedAt.current))
+            // After this edit the kept version is no longer the latest one, so it can't be replaced.
+            keptAt.current = undefined
             setLastSavedAt(now)
         }
         lastSavedJson.current = json
-    }, [maps, challenge, sharedId, title, statement, clue, toolbox, assesments])
+    }, [maps, challenge, sharedId, title, statement, clue, toolbox, assesments, initialSolution])
 
     return (
         <CreatorContext.Provider value={{
-            selectedTool, setSelectedTool, currentMap, setCurrentMap, sharedId: sharedId, setSharedId: setSharedId, title, setTitle, statement, setStatement, clue, setClue, toolbox, setToolbox, assesments, setAssesments, previewProgram, setPreviewProgram, lastSavedAt, loadChallenge, index, setIndex, setMaps, maps,
+            selectedTool, setSelectedTool, currentMap, setCurrentMap, sharedId: sharedId, setSharedId: setSharedId, title, setTitle, statement, setStatement, clue, setClue, toolbox, setToolbox, assesments, setAssesments, previewProgram, setPreviewProgram, initialSolution, setInitialSolution, lastSavedAt, keepVersion, loadChallenge, index, setIndex, setMaps, maps,
             undo, redo, canUndo: past.length > 0, canRedo: future.length > 0, beginHistoryBatch, endHistoryBatch
         }}>
             {children}

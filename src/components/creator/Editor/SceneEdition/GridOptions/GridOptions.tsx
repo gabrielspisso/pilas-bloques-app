@@ -6,6 +6,7 @@ import { useThemeContext } from "../../../../../theme/ThemeContext";
 import { ToolBoxEditor } from "../../ChallengeDetailsEdition/ToolBoxEditor/ToolBoxEditor";
 import { AssessmentsEdition } from "../../ChallengeDetailsEdition/AssessmentsEdition";
 import { SolverEdition } from "../../ChallengeDetailsEdition/SolverEdition";
+import { AiFunctions } from "../../../ai/AiFunctions";
 
 /** Board options. A column beside the board on wide screens, a wrapping row below it on small ones. */
 export const GridOptions = () => {
@@ -23,6 +24,7 @@ export const GridOptions = () => {
         <ToolBoxEditor />
         <AssessmentsEdition />
         <SolverEdition />
+        <AiFunctions />
         {/*<Button>Bloques iniciales</Button> Not in the MVP*/}
     </Stack>
 }

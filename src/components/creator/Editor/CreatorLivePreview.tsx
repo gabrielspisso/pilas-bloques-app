@@ -12,7 +12,7 @@ export const PREVIEW_DEBOUNCE_MS = 400
 
 /** The challenge as it is in memory right now (LocalStorage is only written after render). */
 export const useChallengeInMemory = (): SerializedChallenge => {
-    const { maps, title, statement, clue, toolbox, assesments, sharedId } = useContext(CreatorContext)
+    const { maps, title, statement, clue, toolbox, assesments, sharedId, initialSolution } = useContext(CreatorContext)
     const saved = LocalStorage.getCreatorChallenge() || defaultChallenge('Duba')
     const json = JSON.stringify({
         ...saved,
@@ -21,6 +21,7 @@ export const useChallengeInMemory = (): SerializedChallenge => {
         scene: { ...saved.scene, maps },
         toolbox,
         assesments,
+        predefinedSolution: initialSolution,
         sharedId: sharedId || undefined
     })
     // Same content => same object, so the debounce below only restarts on real changes.
@@ -56,7 +57,7 @@ export const CreatorLivePreview = () => {
     return <Stack data-testid="creator-live-preview" sx={{ height: '100%', minHeight: 0, minWidth: 0, overflow: 'auto', borderRadius: '16px', backgroundColor: 'background.paper' }}>
         {/* ChallengeView reads the starting blocks only when mounted: a new program needs a new key. */}
         {isPlayable(challenge)
-            ? <ChallengeView key={previewProgram ? `program-${previewProgram.id}` : 'no-program'} path={EMBER_IMPORTED_CHALLENGE_PATH} serializedChallenge={shown} />
+            ? <ChallengeView key={previewProgram ? `program-${previewProgram.id}` : `initial-${shown.predefinedSolution ?? ''}`} path={EMBER_IMPORTED_CHALLENGE_PATH} serializedChallenge={shown} />
             : <Alert severity="info" role="status" data-testid="creator-live-preview-invalid" sx={{ margin: 2 }}>{t('editor.mode.invalid')}</Alert>}
     </Stack>
 }

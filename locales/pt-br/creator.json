@@ -453,5 +453,70 @@
 			"noRoute": "Não há um percurso que resolva tudo com os movimentos disponíveis.",
 			"verificationFailed": "Não conseguimos verificar a solução. Se você vir esta mensagem, avise-nos."
 		}
+	},
+	"ai": {
+		"button": "Funções de IA",
+		"connected": "Conectado",
+		"copy": "Copiar",
+		"menu": {
+			"connect": "Conectar um assistente",
+			"sharing": "Compartilhando com {{client}}",
+			"examples": "Copie um pedido e cole no seu assistente:",
+			"stop": "Parar de compartilhar",
+			"removeInitial": "Remover blocos iniciais"
+		},
+		"examples": {
+			"solve": "Resolva este desafio cumprindo as avaliações.",
+			"texts": "Sugira um título, uma descrição e uma dica para este desafio, sem revelar a solução.",
+			"level": "Crie um nível novo para este personagem, com solução recomendada e blocos iniciais."
+		},
+		"connect": {
+			"title": "Conectar um assistente",
+			"intro": "Um assistente de IA que roda no seu computador pode propor soluções, textos ou níveis. Nada muda até você aplicar.",
+			"steps": {
+				"1": "Instale o {{assistant}} (se ainda não tiver).",
+				"2": "Prepare o pilas-bloques-mcp (precisa de Node 20 ou mais novo).",
+				"3": "Registre-o no {{assistant}}.",
+				"4": "Peça isto ao assistente e cole aqui o código que ele der."
+			},
+			"folder": "Pasta do pilas-bloques-mcp",
+			"code": "Código de pareamento",
+			"privacy": "O tabuleiro, os blocos e os textos do desafio são enviados ao provedor do modelo que você usar.",
+			"share": "Iniciar sessão",
+			"close": "Fechar"
+		},
+		"errors": {
+			"unreachable": "Nada responde na porta {{port}}. Primeiro peça ao assistente \"Connect to Pilas Bloques\" e verifique se ele continua aberto.",
+			"lost": "A conexão com o assistente caiu.",
+			"bad_code": "Código incorreto. Peça ao assistente o código atual (ele muda depois de 5 tentativas erradas).",
+			"busy": "Já há outra aba conectada a este assistente. Pare de compartilhar nessa aba.",
+			"protocol": "A versão do pilas-bloques-mcp não corresponde a esta aplicação. Atualize e prepare de novo."
+		},
+		"proposal": {
+			"title": "Proposta do assistente",
+			"before": "Antes",
+			"after": "Depois",
+			"none": "(nada)",
+			"scenario": "Cenário {{number}}",
+			"fields": {
+				"title": "Título",
+				"description": "Descrição",
+				"clue": "Dica",
+				"maps": "Tabuleiros",
+				"toolbox": "Caixa de blocos",
+				"assesments": "Avaliações",
+				"previewProgram": "Solução para a pré-visualização (não é salva)",
+				"initialProgram": "Blocos iniciais do aluno"
+			},
+			"studentStarts": "O aluno vai começar com estes blocos",
+			"hasStartingBlocks": "Tem blocos iniciais",
+			"removeStartingBlocks": "Os blocos iniciais são removidos",
+			"solved": "A solução resolve o desafio resultante.",
+			"unsolved": "Atenção: esta solução NÃO resolve o desafio resultante. Você pode aplicar mesmo assim.",
+			"notTested": "A proposta não inclui uma solução: verifique se o desafio pode ser resolvido.",
+			"invalid": "Esta proposta não pode mais ser aplicada porque o desafio mudou.",
+			"apply": "Aplicar",
+			"reject": "Recusar"
+		}
 	}
 }

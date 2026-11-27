@@ -18,6 +18,7 @@ export namespace LocalStorage {
     const PB_MULANG_SUGGESTIONS_ENABLED = 'PB_MULANG_SUGGESTIONS_ENABLED'
     const PB_CREATOR_MODE = 'PB_CREATOR_MODE'
     const PB_CREATOR_VERSIONS = 'PB_CREATOR_VERSIONS'
+    const PB_AI_MCP_FOLDER = 'PB_AI_MCP_FOLDER'
     const PB_CREATOR_TUTORIAL_DONE = 'PB_CREATOR_TUTORIAL_DONE'
 
     const remove = (key: string) => { localStorage.removeItem(key) }
@@ -41,6 +42,8 @@ export namespace LocalStorage {
         return Array.isArray(versions) ? versions : []
     }
     export const saveCreatorVersions = (versions: CreatorVersion[]) => _save(PB_CREATOR_VERSIONS, versions)
+    export const getAiMcpFolder = (): string | null => _get(PB_AI_MCP_FOLDER)
+    export const saveAiMcpFolder = (folder: string) => _save(PB_AI_MCP_FOLDER, folder)
     export const getCreatorTutorialDone = (): boolean => _get(PB_CREATOR_TUTORIAL_DONE) === true
     export const saveCreatorTutorialDone = () => _save(PB_CREATOR_TUTORIAL_DONE, true)
 
