@@ -391,5 +391,67 @@
 		"maxProgramLength": "Largo máximo del programa",
 		"maxProgramLengthHelp": "Cantidad de bloques por procedimiento (entre {{min}} y {{max}}).",
 		"close": "Listo"
+	},
+	"solver": {
+		"button": "Calcular solución",
+		"title": "Solución recomendada",
+		"calculating": "Calculando…",
+		"solved": "¡Se puede resolver! Esta solución usa {{blocks}} bloques.",
+		"notShortest": "Es una solución posible: no garantiza ser la más corta.",
+		"disclaimer": "Es una solución básica: no significa que cumpla con tu criterio como docente.",
+		"rawSteps": "Sin optimizar eran {{steps}} instrucciones, de a un paso.",
+		"notExact": "Hay muchos objetos: el recorrido es bueno, pero puede que no sea el más corto.",
+		"repeat": "Repetir {{times}} veces",
+		"definition": "Procedimiento «{{name}}»",
+		"procedureName": "Parte {{number}}",
+		"mainName": "el programa principal",
+		"scenarioOk": "Escenario {{number}}: la resuelve",
+		"scenarioFail": "Escenario {{number}}: no la resuelve",
+		"notAllScenarios": "Esta solución no sirve para todos los escenarios. Para que un mismo programa resuelva escenarios distintos hacen falta condicionales: en las notas está por qué no se pudo armar.",
+		"warningsTitle": "Evaluaciones que esta solución no cumple",
+		"warnings": {
+			"mainTooLong": "El programa principal tiene {{count}} instrucciones; con largo máximo {{max}} se aceptan hasta {{allowed}}.",
+			"procedureTooLong": "«{{name}}» tiene {{count}} instrucciones; con largo máximo {{max}} se aceptan hasta {{allowed}}.",
+			"nestedControl": "Hay una repetición dentro de otra en {{name}}.",
+			"noRepetition": "No usa la repetición simple.",
+			"needsConditionalRepetition": "No usa la repetición condicional.",
+			"needsConditionalAlternative": "No usa la alternativa condicional."
+		},
+		"reasons": {
+			"missingBlocks": "Faltan en la caja de bloques: {{blocks}}.",
+			"missingBlock": "Falta «Repetir» en la caja de bloques.",
+			"nothingRepeats": "El recorrido no tiene pasos que se repitan.",
+			"noLandmark": "Ningún tramo termina en un borde, en un obstáculo o en un objeto que un sensor de la caja pueda detectar.",
+			"nothingToDecide": "Con este tablero no hay nada que decidir: para usar un «Si» hacen falta varios escenarios en los que, en una misma casilla, a veces haya un objeto y a veces no.",
+			"incompatibleScenarios": "Los escenarios tienen distinto tamaño o el personaje empieza en lugares distintos, y en esa situación todavía no se calcula un programa común.",
+			"notYet": "Todavía no se calcula automáticamente.",
+			"decompositionMissingBlock": "Para descomponer hace falta «Procedimientos» en la caja de bloques."
+		},
+		"ifLine": "Si {{sensor}}",
+		"untilLine": "Repetir hasta que {{sensor}}",
+		"notes": {
+			"paddleNotRequired": "Las paletas no son obligatorias para ganar y «Recoger paleta» no está en la caja de bloques: esta solución no las recoge.",
+			"chargerNotRequired": "Los cargadores no son obligatorios cuando se desbloquean todos los celulares y «Agarrar cargador» no está en la caja de bloques: esta solución no los agarra.",
+			"untilWithOneScenario": "Con un solo escenario, «Repetir N veces» también alcanzaría; la condición hace que el programa siga funcionando si el tablero cambia.",
+			"commonProgram": "Un mismo programa resuelve los {{scenarios}} escenarios: pregunta con sensores dónde hay objetos.",
+			"scenariosIncompatible": "Los escenarios no se pueden resolver con un mismo programa (distinto tamaño, distinto inicio u obstáculos donde en otro hay objetos): la solución es para el escenario que estás editando.",
+			"commonNeedsBlocks": "Para que un mismo programa resuelva todos los escenarios hacen falta en la caja: {{blocks}}."
+		},
+		"recommendedTitle": "Bloques recomendados que faltan en la caja",
+		"addBlocks": "Agregar los que faltan",
+		"tryInPreview": "Probar en la vista previa",
+		"tryHint": "Se carga en la vista previa para que la ejecutes. No se guarda en el desafío.",
+		"close": "Cerrar",
+		"cell": "fila {{row}}, columna {{column}}",
+		"errors": {
+			"unsupportedScene": "Todavía no se pueden calcular soluciones para {{actor}}.",
+			"invalidMap": "El escenario tiene que tener exactamente un personaje.",
+			"nothingToDo": "No hay nada que resolver: agregá objetos al tablero.",
+			"missingBlocks": "Faltan bloques en la caja de bloques: {{blocks}}.",
+			"engineLimitation": "{{actor}} no puede rebotar las pelotas de ping pong con los bloques del creador: el bloque disponible no las saca del tablero. Quitá las pelotas de ping pong de: {{cells}}.",
+			"unreachable": "{{actor}} no puede llegar a: {{cells}}.",
+			"noRoute": "No hay un recorrido que resuelva todo con los movimientos disponibles.",
+			"verificationFailed": "No pudimos comprobar la solución. Si ves este mensaje, avisanos."
+		}
 	}
 }

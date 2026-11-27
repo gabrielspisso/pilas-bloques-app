@@ -1,0 +1,112 @@
+import mulang from "mulang"
+import { entryPointType } from "../../../../../components/blockly/mulang/blockUtils"
+import { countCallsWithin, declarationDoesNotNestControlStructures, doSomething, doesNotUseRecursion, isUsed, isUsedFromMain, mainNotTooLong, mainTooLongId, multiExpect, nameWasChanged, notTooLong, parseExpect, usesConditionalAlternative, usesConditionalRepetition, usesSimpleRepetition } from "../../../../../components/blockly/mulang/expectations"
+import { checkAssessments, countCalls } from "../../../../../components/creator/solver/assessmentCheck"
+import { optimizeProgram, rawProgram } from "../../../../../components/creator/solver/optimize"
+import { Program, Statement } from "../../../../../components/creator/solver/types"
+import { programToAst } from "./programToAst"
+import { PROC, REPEAT } from "./helpers"
+
+const name = (n: number) => `Parte ${n}`
+const decomposition = { decomposition: { maxProgramLength: 7 } }
+const actions = (...blocks: string[]): Statement[] => blocks.map(block => ({ kind: 'action', block }))
+const move = 'MoverA:ParaLaDerecha'
+
+/** Runs EDL expectations with the real Mulang; returns [id, passed]. */
+const runMulang = (program: Program, edl: string): [string, boolean][] =>
+    (mulang as any).astCode(programToAst(program)).customExpect(edl)
+        .map(([encoded, passed]: [string, boolean]) => [parseExpect(window.atob(encoded))[0], passed])
+
+const decompositionEdl = (program: Program, max: number) => [
+    mainNotTooLong(max),
+    ...program.procedures.map(p => multiExpect(notTooLong(max), doSomething, isUsed, isUsedFromMain, doesNotUseRecursion, nameWasChanged('Hacer algo'))(p.name)),
+    ...[entryPointType, ...program.procedures.map(p => p.name)].map(declarationDoesNotNestControlStructures)
+].join('\n')
+
+describe("checkAssessments", () => {
+    test("main program too long", () => {
+        const program = rawProgram(['a', 'b', 'c', 'd', 'e', 'f', 'g'])
+        const tooLong = { id: 'mainTooLong', count: 7, max: 7, allowed: 6 }
+        expect(checkAssessments(program, [PROC], decomposition)).toEqual([tooLong])
+        expect(checkAssessments(program, [], decomposition)).toEqual([tooLong, { id: 'decompositionMissingBlock' }])
+    })
+
+    test("'Move to' counts twice", () => {
+        expect(countCalls(actions(move, move, move))).toBe(6)
+        expect(checkAssessments(rawProgram([move, move, move]), [], decomposition)).toEqual([])
+        expect(checkAssessments(rawProgram([move, move, move, move]), [PROC], decomposition))
+            .toEqual([{ id: 'mainTooLong', count: 8, max: 7, allowed: 6 }])
+    })
+
+    test("long procedures and nested repetitions", () => {
+        const inner: Statement = { kind: 'repeat', times: 2, body: actions('a') }
+        const program: Program = {
+            main: [{ kind: 'repeat', times: 2, body: [inner] }, { kind: 'call', name: 'P' }],
+            procedures: [{ name: 'P', body: actions('a', 'b', 'c', 'd', 'e', 'f', 'g') }]
+        }
+        expect(checkAssessments(program, [REPEAT, PROC], decomposition)).toEqual([
+            { id: 'procedureTooLong', name: 'P', count: 7, max: 7, allowed: 6 },
+            { id: 'nestedControl', name: null }
+        ])
+    })
+
+    test("repetition and conditionals", () => {
+        const program = rawProgram(['a'])
+        expect(checkAssessments(program, [REPEAT], { simpleRepetition: true })).toEqual([{ id: 'noRepetition', reason: 'nothingRepeats' }])
+        expect(checkAssessments(program, [], { simpleRepetition: true })).toEqual([{ id: 'noRepetition', reason: 'missingBlock' }])
+        expect(checkAssessments(program, [], { conditionalAlternative: true })).toEqual([{ id: 'needsConditionalAlternative', reason: 'notYet' }])
+        expect(checkAssessments(program, [], { conditionalRepetition: true })).toEqual([{ id: 'needsConditionalRepetition', reason: 'notYet' }])
+    })
+})
+
+describe("against the real Mulang", () => {
+    test("the optimized program meets every decomposition expectation", () => {
+        const program = optimizeProgram('a b c d e f a b c d e g a b c d e h'.split(' '), [PROC], decomposition, name)
+        const results = runMulang(program, decompositionEdl(program, 7))
+        expect(results.length).toBeGreaterThan(5)
+        expect(results.filter(([, passed]) => !passed)).toEqual([])
+        expect(checkAssessments(program, [PROC], decomposition)).toEqual([])
+    })
+
+    test.each([
+        ['7 actions', ['a', 'b', 'c', 'd', 'e', 'f', 'g']],
+        ["4 'Move to'", [move, move, move, move]]
+    ])("agrees that %s is too long", (_, tokens) => {
+        const program = rawProgram(tokens)
+        expect(runMulang(program, decompositionEdl(program, 7))).toContainEqual([mainTooLongId, false])
+        expect(checkAssessments(program, [PROC], decomposition).map(w => w.id)).toEqual(['mainTooLong'])
+    })
+
+    test("agrees that 3 'Move to' fit", () => {
+        const program = rawProgram([move, move, move])
+        expect(runMulang(program, decompositionEdl(program, 7))).toContainEqual([mainTooLongId, true])
+    })
+})
+
+describe("conditions, against the real Mulang", () => {
+    const [take, right] = actions('AgarrarLechuga', 'MoverACasillaDerecha')
+    const ifLettuce: Statement = { kind: 'if', sensor: 'HayLechuga', body: [take] }
+    const programs: [string, Statement, number, boolean, boolean, boolean, boolean][] = [
+        // name, statement, calls, uses if, uses while, uses repeat, nests
+        ['If', ifLettuce, 2, true, false, false, false],
+        ['Repeat until', { kind: 'until', sensor: 'BordeDerecho', body: [right] }, 2, false, true, false, false],
+        ['Repeat 3', { kind: 'repeat', times: 3, body: [right] }, 1, false, false, true, false],
+        ['If inside Repeat until', { kind: 'until', sensor: 'BordeDerecho', body: [right, ifLettuce] }, 4, true, true, false, true]
+    ]
+
+    const passes = (program: Program, edl: string) => runMulang(program, edl).every(([, passed]) => passed)
+
+    test.each(programs)("%s", (_, statement, calls, usesIf, usesWhile, usesRepeat, nests) => {
+        const program: Program = { main: [statement], procedures: [] }
+        const atMost = (n: number) => `expectation "${btoa('count')}": ${countCallsWithin(entryPointType)} <= ${n};`
+
+        expect(countCalls(program.main)).toBe(calls)
+        expect(passes(program, atMost(calls))).toBe(true)
+        expect(passes(program, atMost(calls - 1))).toBe(false)
+        expect(passes(program, usesConditionalAlternative())).toBe(usesIf)
+        expect(passes(program, usesConditionalRepetition())).toBe(usesWhile)
+        expect(passes(program, usesSimpleRepetition())).toBe(usesRepeat)
+        expect(passes(program, declarationDoesNotNestControlStructures(entryPointType))).toBe(!nests)
+        expect(checkAssessments(program, [], decomposition).some(w => w.id === 'nestedControl')).toBe(nests)
+    })
+})
